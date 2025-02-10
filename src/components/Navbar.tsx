@@ -29,22 +29,32 @@ const Navbar = () => {
             <span className="font-bold text-xl">OpositaPlace</span>
           </Link>
           
-          {user ? (
-            <Button
-              variant="ghost"
-              onClick={handleLogout}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Cerrar sesión
-            </Button>
-          ) : (
-            <Link
-              to="/inicia-sesion"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Iniciar sesión
-            </Link>
-          )}
+          <div className="flex items-center space-x-4">
+            {user && (
+              <Link
+                to="/dashboard"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Dashboard
+              </Link>
+            )}
+            {user ? (
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Cerrar sesión
+              </Button>
+            ) : (
+              <Link
+                to="/inicia-sesion"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Iniciar sesión
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </nav>

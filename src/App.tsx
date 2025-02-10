@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import NotificacionesOposicion from "./pages/NotificacionesOposicion";
 import NotFound from "./pages/NotFound";
 import IniciaSesion from "./pages/IniciaSesion";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -26,6 +28,14 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/notificaciones-oposicion" element={<NotificacionesOposicion />} />
               <Route path="/inicia-sesion" element={<IniciaSesion />} />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
