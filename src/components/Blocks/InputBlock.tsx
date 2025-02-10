@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,7 +28,6 @@ const InputBlock = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSave = async () => {
-    // Solo guardar si el contenido ha cambiado
     if (value === content.text) {
       setIsEditing(false);
       return;
@@ -47,7 +45,6 @@ const InputBlock = ({
 
       if (error) throw error;
 
-      // Update note's updated_at timestamp
       const { error: updateError } = await supabase
         .from("notes")
         .update({ updated_at: new Date().toISOString() })
@@ -64,25 +61,17 @@ const InputBlock = ({
   };
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Si se presiona Enter sin Shift
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Prevenir nueva línea
-      
-      // Si el bloque está vacío y existe la función onEmptyBlockEnter
+      e.preventDefault();
       if (value.trim() === "" && onEmptyBlockEnter) {
         onEmptyBlockEnter();
         return;
       }
-
-      // Primero guardar el contenido actual
       await handleSave();
-      
-      // Si hay contenido y existe la función onContentBlockEnter, crear nuevo bloque
       if (value.trim() !== "" && onContentBlockEnter) {
         onContentBlockEnter(position);
       }
     }
-    // Si se presiona Shift + Enter, permitir nueva línea (comportamiento por defecto)
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -92,31 +81,26 @@ const InputBlock = ({
     
     setIsEditing(true);
     
-    // Necesitamos usar setTimeout para asegurarnos de que el textarea está renderizado
     setTimeout(() => {
       if (textareaRef.current) {
-        // Calculamos la posición del cursor basándonos en el punto del clic
         const textareaElement = textareaRef.current;
         const style = window.getComputedStyle(textareaElement);
         const lineHeight = parseInt(style.lineHeight);
         const paddingLeft = parseInt(style.paddingLeft);
         
-        // Estimamos la posición del cursor basándonos en la posición del clic
-        const approximateCharWidth = 8; // Valor aproximado para fuentes monospace
+        const approximateCharWidth = 8;
         const clickedLine = Math.floor(y / lineHeight);
         const clickedChar = Math.floor((x - paddingLeft) / approximateCharWidth);
         
-        // Calculamos la posición en el texto
         const lines = value.split('\n');
         let position = 0;
         
         for (let i = 0; i < clickedLine && i < lines.length; i++) {
-          position += lines[i].length + 1; // +1 por el salto de línea
+          position += lines[i].length + 1;
         }
         
         position += Math.min(clickedChar, lines[Math.min(clickedLine, lines.length - 1)].length);
         
-        // Establecemos la posición del cursor
         textareaRef.current.setSelectionRange(position, position);
       }
     }, 0);
@@ -142,9 +126,9 @@ const InputBlock = ({
   return (
     <div
       onClick={handleClick}
-      className={`${sharedStyles} cursor-text`}
+      className={`${sharedStyles} cursor-text text-gray-800`}
     >
-      {value || '\u00A0'}
+      {value || <span className="text-gray-400">Presiona '/' para ver comandos</span>}
     </div>
   );
 };

@@ -1,14 +1,12 @@
-
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
-import { Loader, Check, Plus } from "lucide-react";
+import { Loader, Check } from "lucide-react";
 import { useBlockManagement } from "@/hooks/useBlockManagement";
 import InputBlock from "@/components/Blocks/InputBlock";
 import NoteTitleInput from "@/components/Notes/NoteTitleInput";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 const DetalleApunte = () => {
@@ -73,12 +71,6 @@ const DetalleApunte = () => {
       console.error("Error updating title:", error);
       toast.error("Error al actualizar el título");
     }
-  };
-
-  const handleCreateBlock = async () => {
-    if (!id) return;
-    const newPosition = blocks?.length ? blocks.length : 0;
-    await createNewBlock(newPosition, id);
   };
 
   const handleEmptyBlockEnter = async () => {
@@ -150,17 +142,6 @@ const DetalleApunte = () => {
           </div>
         ))}
       </div>
-
-      {blocks.length === 0 && (
-        <Button 
-          onClick={handleCreateBlock}
-          className="mt-4"
-          variant="outline"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Agregar bloque
-        </Button>
-      )}
     </div>
   );
 };
