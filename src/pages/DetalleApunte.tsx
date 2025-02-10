@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect, useRef } from "react";
@@ -43,7 +42,6 @@ const DetalleApunte = () => {
     fetchNoteTitle();
   }, [id]);
 
-  // Aseguramos que siempre haya al menos un bloque
   useEffect(() => {
     if (blocks && blocks.length === 0 && id) {
       createNewBlock(0, id);
@@ -105,6 +103,10 @@ const DetalleApunte = () => {
     await createNewBlock(position + 1, id);
   };
 
+  const handleBlockDelete = async () => {
+    await refetchBlocks();
+  };
+
   const focusFirstBlock = () => {
     if (firstBlockRef.current) {
       firstBlockRef.current.focus();
@@ -149,6 +151,7 @@ const DetalleApunte = () => {
                 onSaveEnd={handleSaveEnd}
                 onEmptyBlockEnter={handleEmptyBlockEnter}
                 onContentBlockEnter={handleContentBlockEnter}
+                onDelete={handleBlockDelete}
                 ref={index === 0 ? firstBlockRef : undefined}
               />
             ) : (

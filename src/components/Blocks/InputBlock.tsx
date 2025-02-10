@@ -12,6 +12,7 @@ interface InputBlockProps {
   onSaveEnd: () => void;
   onEmptyBlockEnter?: () => void;
   onContentBlockEnter?: (position: number) => void;
+  onDelete?: () => void;
 }
 
 const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(({ 
@@ -22,7 +23,8 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(({
   onSaveStart, 
   onSaveEnd,
   onEmptyBlockEnter,
-  onContentBlockEnter 
+  onContentBlockEnter,
+  onDelete
 }, ref) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(content.text);
@@ -71,6 +73,22 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(({
       await handleSave();
       if (value.trim() !== "" && onContentBlockEnter) {
         onContentBlockEnter(position);
+      }
+    } else if (e.key === "Delete" && value.trim() === "") {
+      e.preventDefault();
+      try {
+        const { error } = await supabase
+          .from("blocks")
+          .delete()
+          .eq("id", id);
+
+        if (error) throw error;
+
+        if (onDelete) {
+          onDelete();
+        }
+      } catch (error) {
+        console.error("Error deleting block:", error);
       }
     }
   };
