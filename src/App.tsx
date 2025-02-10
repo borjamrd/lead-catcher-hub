@@ -8,25 +8,30 @@ import Navbar from "./components/Navbar";
 import Index from "./pages/Index";
 import NotificacionesOposicion from "./pages/NotificacionesOposicion";
 import NotFound from "./pages/NotFound";
+import IniciaSesion from "./pages/IniciaSesion";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/notificaciones-oposicion" element={<NotificacionesOposicion />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/notificaciones-oposicion" element={<NotificacionesOposicion />} />
+              <Route path="/inicia-sesion" element={<IniciaSesion />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
