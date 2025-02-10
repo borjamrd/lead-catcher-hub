@@ -39,32 +39,29 @@ const Dashboard = () => {
     <div className="min-h-screen flex w-full">
       <AppSidebar />
       <main className="flex-1 p-8">
-        <div className="flex flex-col gap-4 mb-8">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          {!isRootDashboard && (
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to="/dashboard">Dashboard</Link>
-                  </BreadcrumbLink>
+        {!isRootDashboard && (
+          <Breadcrumb className="mb-8">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to="/dashboard">Dashboard</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {getBreadcrumbs().slice(1).map((breadcrumb, index) => (
+                <BreadcrumbItem key={breadcrumb.url}>
+                  <BreadcrumbSeparator />
+                  {breadcrumb.isLast ? (
+                    <BreadcrumbPage>{breadcrumb.path}</BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <Link to={breadcrumb.url}>{breadcrumb.path}</Link>
+                    </BreadcrumbLink>
+                  )}
                 </BreadcrumbItem>
-                {getBreadcrumbs().slice(1).map((breadcrumb, index) => (
-                  <BreadcrumbItem key={breadcrumb.url}>
-                    <BreadcrumbSeparator />
-                    {breadcrumb.isLast ? (
-                      <BreadcrumbPage>{breadcrumb.path}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink asChild>
-                        <Link to={breadcrumb.url}>{breadcrumb.path}</Link>
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
-          )}
-        </div>
+              ))}
+            </BreadcrumbList>
+          </Breadcrumb>
+        )}
         <Outlet />
       </main>
     </div>

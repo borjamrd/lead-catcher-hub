@@ -1,6 +1,5 @@
 
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 interface NoteTitleInputProps {
   title: string;
@@ -9,16 +8,12 @@ interface NoteTitleInputProps {
 
 const NoteTitleInput = ({ title, onChange }: NoteTitleInputProps) => {
   return (
-    <div className="space-y-2 w-full">
-      <Label htmlFor="title">Título</Label>
-      <Input
-        id="title"
-        value={title || "Sin título"}
-        onChange={onChange}
-        placeholder="Sin título"
-        className="w-full"
-      />
-    </div>
+    <Input
+      value={title || "Sin título"}
+      onChange={onChange}
+      placeholder="Sin título"
+      className="w-full"
+    />
   );
 };
 
