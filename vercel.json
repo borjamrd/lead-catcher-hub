@@ -1,0 +1,9 @@
+
+{
+  "crons": [
+    {
+      "path": "/api/notificaciones-inap",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
