@@ -162,6 +162,16 @@ const NuevoApunte = () => {
     await createNewBlock(position + 1);
   };
 
+  const handleTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+    if (!noteId) {
+      const newNoteId = await createInitialNote();
+      if (newNoteId) {
+        createNewBlock(0);
+      }
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-12">
       <h1 className="text-2xl font-bold mb-6">Crear nuevo apunte</h1>
@@ -171,7 +181,7 @@ const NuevoApunte = () => {
           <Input
             id="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={handleTitleChange}
             placeholder="Introduce el título del apunte"
             className="w-full"
           />
@@ -208,3 +218,4 @@ const NuevoApunte = () => {
 };
 
 export default NuevoApunte;
+
