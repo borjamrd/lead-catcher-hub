@@ -28,14 +28,23 @@ const Index = () => {
           },
         ]);
 
-      if (error) throw error;
-
-      toast({
-        title: "¡Gracias por tu interés!",
-        description: "Te mantendremos informado sobre el lanzamiento.",
-      });
-      
-      reset();
+      if (error) {
+        // Check if it's a unique violation error
+        if (error.code === '23505') {
+          toast({
+            title: "Ya estás registrado",
+            description: "Este email ya está en nuestra lista de espera.",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({
+          title: "¡Gracias por tu interés!",
+          description: "Te mantendremos informado sobre el lanzamiento.",
+        });
+        reset();
+      }
     } catch (error) {
       console.error('Error submitting lead:', error);
       toast({
