@@ -37,11 +37,11 @@ const NuevoApunte = () => {
 
       if (noteError) throw noteError;
 
-      // Then create the initial text block
+      // Then create the initial text block with the correct type
       const { error: blockError } = await supabase.from("blocks").insert([
         {
           note_id: note.id,
-          type: "text",
+          type: "text" as const, // Explicitly set as a valid type
           content: { text: content },
           position: 0,
         },
@@ -89,7 +89,7 @@ const NuevoApunte = () => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Escribe el contenido de tu apunte..."
-            className="min-h-[200px] w-full border-0"
+            className="min-h-[200px] w-full"
             required
           />
         </div>
