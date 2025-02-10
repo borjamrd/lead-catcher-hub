@@ -1,5 +1,5 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -26,6 +26,9 @@ serve(async (req) => {
 
   try {
     const { email, subscriptions } = await req.json();
+
+    console.log("Received request with email:", email);
+    console.log("Subscriptions:", JSON.stringify(subscriptions, null, 2));
 
     const subscriptionsList = (subscriptions as Subscription[])
       .map((sub) => `<li><a href="${sub.urls.url}">${sub.urls.name}</a></li>`)
