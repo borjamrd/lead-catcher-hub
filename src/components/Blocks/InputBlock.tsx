@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+
+import { useState, useRef, forwardRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,7 +14,7 @@ interface InputBlockProps {
   onContentBlockEnter?: (position: number) => void;
 }
 
-const InputBlock = ({ 
+const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(({ 
   id, 
   content, 
   noteId, 
@@ -22,7 +23,7 @@ const InputBlock = ({
   onSaveEnd,
   onEmptyBlockEnter,
   onContentBlockEnter 
-}: InputBlockProps) => {
+}, ref) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(content.text);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -111,7 +112,18 @@ const InputBlock = ({
   if (isEditing) {
     return (
       <Textarea
-        ref={textareaRef}
+        ref={(element) => {
+          // Mantén la referencia local
+          if (textareaRef) {
+            (textareaRef as any).current = element;
+          }
+          // También maneja la referencia externa
+          if (typeof ref === 'function') {
+            ref(element);
+          } else if (ref) {
+            ref.current = element;
+          }
+        }}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={handleSave}
@@ -131,6 +143,8 @@ const InputBlock = ({
       {value || <span className="text-gray-400">Presiona '/' para ver comandos</span>}
     </div>
   );
-};
+});
+
+InputBlock.displayName = "InputBlock";
 
 export default InputBlock;

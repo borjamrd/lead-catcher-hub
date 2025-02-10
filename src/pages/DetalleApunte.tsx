@@ -1,6 +1,7 @@
+
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Loader, Check } from "lucide-react";
 import { useBlockManagement } from "@/hooks/useBlockManagement";
 import InputBlock from "@/components/Blocks/InputBlock";
@@ -16,6 +17,7 @@ const DetalleApunte = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [title, setTitle] = useState("");
   const { blocks, createNewBlock, refetchBlocks } = useBlockManagement(id);
+  const firstBlockRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const fetchNoteTitle = async () => {
@@ -40,6 +42,13 @@ const DetalleApunte = () => {
 
     fetchNoteTitle();
   }, [id]);
+
+  // Aseguramos que siempre haya al menos un bloque
+  useEffect(() => {
+    if (blocks && blocks.length === 0 && id) {
+      createNewBlock(0, id);
+    }
+  }, [blocks, id]);
 
   const handleSaveStart = () => {
     setIsSaving(true);
@@ -96,6 +105,12 @@ const DetalleApunte = () => {
     await createNewBlock(position + 1, id);
   };
 
+  const focusFirstBlock = () => {
+    if (firstBlockRef.current) {
+      firstBlockRef.current.focus();
+    }
+  };
+
   if (!blocks) {
     return (
       <div className="p-8">
@@ -115,13 +130,14 @@ const DetalleApunte = () => {
         <NoteTitleInput
           title={title}
           onChange={handleTitleChange}
+          onEnter={focusFirstBlock}
         />
       </div>
 
       <Separator className="my-4" />
 
       <div className="space-y-4 mt-8">
-        {blocks.map((block) => (
+        {blocks.map((block, index) => (
           <div key={block.id}>
             {block.type === "text" && block.content && typeof block.content === 'object' && 'text' in block.content ? (
               <InputBlock
@@ -133,6 +149,7 @@ const DetalleApunte = () => {
                 onSaveEnd={handleSaveEnd}
                 onEmptyBlockEnter={handleEmptyBlockEnter}
                 onContentBlockEnter={handleContentBlockEnter}
+                ref={index === 0 ? firstBlockRef : undefined}
               />
             ) : (
               <pre className="bg-gray-100 p-4 rounded-lg overflow-auto">
