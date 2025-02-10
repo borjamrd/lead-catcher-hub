@@ -4,11 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import InputBlock from "@/components/Blocks/InputBlock";
 import { Database } from "@/integrations/supabase/types";
+import { useState } from "react";
+import { Loader, Check } from "lucide-react";
 
 type Block = Database['public']['Tables']['blocks']['Row'];
 
 const DetalleApunte = () => {
   const { id } = useParams();
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const { data: blocks, isLoading } = useQuery({
     queryKey: ["blocks", id],
@@ -25,6 +29,18 @@ const DetalleApunte = () => {
     enabled: !!id,
   });
 
+  const handleSaveStart = () => {
+    setIsSaving(true);
+  };
+
+  const handleSaveEnd = () => {
+    setIsSaving(false);
+    setShowSuccess(true);
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 3000);
+  };
+
   if (isLoading) {
     return (
       <div className="p-8">
@@ -34,7 +50,11 @@ const DetalleApunte = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 relative">
+      <div className="absolute top-4 right-4">
+        {isSaving && <Loader className="h-5 w-5 animate-spin" />}
+        {showSuccess && <Check className="h-5 w-5 text-green-500" />}
+      </div>
       <h1 className="text-2xl font-bold mb-4">Detalle del apunte</h1>
       <div className="space-y-4">
         {blocks?.map((block) => (
@@ -45,6 +65,8 @@ const DetalleApunte = () => {
                 content={block.content as { text: string }}
                 noteId={id!}
                 position={block.position}
+                onSaveStart={handleSaveStart}
+                onSaveEnd={handleSaveEnd}
               />
             ) : (
               <pre className="bg-gray-100 p-4 rounded-lg overflow-auto">

@@ -1,22 +1,21 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader, Check } from "lucide-react";
 
 interface InputBlockProps {
   id: string;
   content: { text: string };
   noteId: string;
   position: number;
+  onSaveStart: () => void;
+  onSaveEnd: () => void;
 }
 
-const InputBlock = ({ id, content, noteId, position }: InputBlockProps) => {
+const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: InputBlockProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(content.text);
-  const [isSaving, setIsSaving] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const { toast } = useToast();
 
   const handleSave = async () => {
@@ -26,7 +25,7 @@ const InputBlock = ({ id, content, noteId, position }: InputBlockProps) => {
       return;
     }
 
-    setIsSaving(true);
+    onSaveStart();
     try {
       const { error } = await supabase
         .from("blocks")
@@ -47,13 +46,7 @@ const InputBlock = ({ id, content, noteId, position }: InputBlockProps) => {
       if (updateError) throw updateError;
 
       setIsEditing(false);
-      setIsSaving(false);
-      setShowSuccess(true);
-      
-      // Ocultar el icono de éxito después de 3 segundos
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
+      onSaveEnd();
 
       toast({
         title: "Bloque actualizado",
@@ -61,7 +54,7 @@ const InputBlock = ({ id, content, noteId, position }: InputBlockProps) => {
       });
     } catch (error) {
       console.error("Error updating block:", error);
-      setIsSaving(false);
+      onSaveEnd();
       toast({
         variant: "destructive",
         title: "Error",
@@ -73,36 +66,26 @@ const InputBlock = ({ id, content, noteId, position }: InputBlockProps) => {
 
   if (isEditing) {
     return (
-      <div className="relative">
-        <Input
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onBlur={handleSave}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSave();
-            }
-          }}
-          autoFocus
-        />
-        <div className="absolute top-2 right-2">
-          {isSaving && <Loader className="h-4 w-4 animate-spin" />}
-          {showSuccess && <Check className="h-4 w-4 text-green-500" />}
-        </div>
-      </div>
+      <Input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSave();
+          }
+        }}
+        autoFocus
+      />
     );
   }
 
   return (
     <div
       onClick={() => setIsEditing(true)}
-      className="p-2 rounded-md hover:bg-gray-100 cursor-text relative"
+      className="p-2 rounded-md hover:bg-gray-100 cursor-text"
     >
       {value}
-      <div className="absolute top-2 right-2">
-        {isSaving && <Loader className="h-4 w-4 animate-spin" />}
-        {showSuccess && <Check className="h-4 w-4 text-green-500" />}
-      </div>
     </div>
   );
 };
