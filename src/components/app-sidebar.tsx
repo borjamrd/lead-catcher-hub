@@ -34,7 +34,6 @@ export function AppSidebar() {
   return (
     <aside className="w-64 bg-white border-r border-gray-200">
       <div className="p-4">
-        <h2 className="text-lg font-semibold mb-4">OpositaPlace</h2>
         <nav>
           <ul className="space-y-2">
             {items.map((item) => (
