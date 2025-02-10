@@ -98,6 +98,8 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
     }, 0);
   };
 
+  const sharedStyles = "p-2 rounded-md hover:bg-gray-100 whitespace-pre-wrap min-h-[100px]";
+
   if (isEditing) {
     return (
       <Textarea
@@ -107,7 +109,7 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
         autoFocus
-        className="focus:ring-0 focus:ring-offset-0 border-none focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[100px] resize-none"
+        className={`${sharedStyles} focus:ring-0 focus:ring-offset-0 border-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none cursor-text`}
       />
     );
   }
@@ -115,7 +117,7 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
   return (
     <div
       onClick={handleClick}
-      className="p-2 rounded-md hover:bg-gray-100 cursor-text whitespace-pre-wrap"
+      className={`${sharedStyles} cursor-text`}
     >
       {value}
     </div>
