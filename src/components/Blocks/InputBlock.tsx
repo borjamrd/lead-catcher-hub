@@ -10,9 +10,18 @@ interface InputBlockProps {
   position: number;
   onSaveStart: () => void;
   onSaveEnd: () => void;
+  onEmptyBlockEnter?: () => void;
 }
 
-const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: InputBlockProps) => {
+const InputBlock = ({ 
+  id, 
+  content, 
+  noteId, 
+  position, 
+  onSaveStart, 
+  onSaveEnd,
+  onEmptyBlockEnter 
+}: InputBlockProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(content.text);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -52,10 +61,17 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Si se presiona Enter sin Shift, guardar
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Si se presiona Enter sin Shift
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault(); // Prevenir nueva línea
+      
+      // Si el bloque está vacío y existe la función onEmptyBlockEnter
+      if (value.trim() === "" && onEmptyBlockEnter) {
+        onEmptyBlockEnter();
+        return;
+      }
+      
       handleSave();
     }
     // Si se presiona Shift + Enter, permitir nueva línea (comportamiento por defecto)

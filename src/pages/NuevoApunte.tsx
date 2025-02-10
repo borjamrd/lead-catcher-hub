@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,15 +7,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import InputBlock from "@/components/Blocks/InputBlock";
+import { useQuery } from "@tanstack/react-query";
 
 const NuevoApunte = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
   const [noteId, setNoteId] = useState<string | null>(null);
+
+  // Query to fetch blocks for the current note
+  const { data: blocks, refetch: refetchBlocks } = useQuery({
+    queryKey: ["blocks", noteId],
+    queryFn: async () => {
+      if (!noteId) return [];
+      const { data, error } = await supabase
+        .from("blocks")
+        .select("*")
+        .eq("note_id", noteId)
+        .order("position", { ascending: true });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!noteId,
+  });
 
   const createInitialNote = async () => {
     if (!user) return;
@@ -41,31 +58,30 @@ const NuevoApunte = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description:
-          "Ha ocurrido un error al crear el apunte. Por favor, inténtalo de nuevo.",
+        description: "Ha ocurrido un error al crear el apunte. Por favor, inténtalo de nuevo.",
       });
       return null;
     }
   };
 
-  const handleContentSubmit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== 'Enter') return;
+  const createNewBlock = async (position: number) => {
     if (!user) return;
 
-    setIsLoading(true);
     try {
       const currentNoteId = noteId || await createInitialNote();
       if (!currentNoteId) return;
 
       // Create the new block
-      const { error: blockError } = await supabase.from("blocks").insert([
-        {
-          note_id: currentNoteId,
-          type: "text" as const,
-          content: { text: content },
-          position: 0,
-        },
-      ]);
+      const { error: blockError } = await supabase
+        .from("blocks")
+        .insert([
+          {
+            note_id: currentNoteId,
+            type: "text",
+            content: { text: "" },
+            position,
+          },
+        ]);
 
       if (blockError) throw blockError;
 
@@ -77,24 +93,24 @@ const NuevoApunte = () => {
 
       if (updateError) throw updateError;
 
-      setContent(""); // Clear input after successful submission
-      toast({
-        title: "Bloque guardado",
-        description: "El contenido se ha guardado correctamente.",
-      });
+      refetchBlocks();
 
     } catch (error) {
-      console.error("Error saving block:", error);
+      console.error("Error creating block:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description:
-          "Ha ocurrido un error al guardar el contenido. Por favor, inténtalo de nuevo.",
+        description: "Ha ocurrido un error al crear el bloque. Por favor, inténtalo de nuevo.",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
+
+  // Create initial block when note is created
+  useEffect(() => {
+    if (noteId && (!blocks || blocks.length === 0)) {
+      createNewBlock(0);
+    }
+  }, [noteId, blocks]);
 
   const handleFinish = () => {
     if (noteId) {
@@ -102,6 +118,18 @@ const NuevoApunte = () => {
     } else {
       navigate("/dashboard/mis-apuntes");
     }
+  };
+
+  const handleSaveStart = () => {
+    // Esta función podría usarse para mostrar un indicador de guardado
+  };
+
+  const handleSaveEnd = () => {
+    // Esta función podría usarse para mostrar un indicador de éxito
+  };
+
+  const handleEmptyBlockEnter = async (position: number) => {
+    await createNewBlock(position + 1);
   };
 
   return (
@@ -118,16 +146,22 @@ const NuevoApunte = () => {
             className="w-full"
           />
         </div>
-        <div className="w-full">
-          <Input
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            onKeyDown={handleContentSubmit}
-            placeholder="Escribe el contenido y presiona Enter para guardar..."
-            className="w-full"
-            disabled={isLoading}
-          />
+        <div className="space-y-4">
+          {blocks?.map((block) => (
+            <div key={block.id}>
+              {block.type === "text" && block.content && typeof block.content === 'object' && 'text' in block.content ? (
+                <InputBlock
+                  id={block.id}
+                  content={block.content as { text: string }}
+                  noteId={noteId!}
+                  position={block.position}
+                  onSaveStart={handleSaveStart}
+                  onSaveEnd={handleSaveEnd}
+                  onEmptyBlockEnter={() => handleEmptyBlockEnter(block.position)}
+                />
+              ) : null}
+            </div>
+          ))}
         </div>
         <div className="flex justify-end gap-4">
           <Button
