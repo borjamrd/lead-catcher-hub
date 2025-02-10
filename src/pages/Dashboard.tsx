@@ -12,9 +12,9 @@ const Dashboard = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <main className="flex-1 p-8">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold">Dashboard</h1>
+          <div className="flex items-center gap-4 mb-8">
             <SidebarTrigger />
+            <h1 className="text-2xl font-bold">Dashboard</h1>
           </div>
           <Outlet />
         </main>
