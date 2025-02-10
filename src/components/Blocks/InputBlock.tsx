@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface InputBlockProps {
@@ -16,7 +15,6 @@ interface InputBlockProps {
 const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: InputBlockProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(content.text);
-  const { toast } = useToast();
 
   const handleSave = async () => {
     // Solo guardar si el contenido ha cambiado
@@ -47,20 +45,9 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
 
       setIsEditing(false);
       onSaveEnd();
-
-      toast({
-        title: "Bloque actualizado",
-        description: "El contenido se ha guardado correctamente.",
-      });
     } catch (error) {
       console.error("Error updating block:", error);
       onSaveEnd();
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description:
-          "Ha ocurrido un error al actualizar el bloque. Por favor, inténtalo de nuevo.",
-      });
     }
   };
 
