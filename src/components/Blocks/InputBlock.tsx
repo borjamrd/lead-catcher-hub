@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,6 +15,7 @@ interface InputBlockProps {
 const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: InputBlockProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(content.text);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSave = async () => {
     // Solo guardar si el contenido ha cambiado
@@ -60,9 +61,47 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
     // Si se presiona Shift + Enter, permitir nueva línea (comportamiento por defecto)
   };
 
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    setIsEditing(true);
+    
+    // Necesitamos usar setTimeout para asegurarnos de que el textarea está renderizado
+    setTimeout(() => {
+      if (textareaRef.current) {
+        // Calculamos la posición del cursor basándonos en el punto del clic
+        const textareaElement = textareaRef.current;
+        const style = window.getComputedStyle(textareaElement);
+        const lineHeight = parseInt(style.lineHeight);
+        const paddingLeft = parseInt(style.paddingLeft);
+        
+        // Estimamos la posición del cursor basándonos en la posición del clic
+        const approximateCharWidth = 8; // Valor aproximado para fuentes monospace
+        const clickedLine = Math.floor(y / lineHeight);
+        const clickedChar = Math.floor((x - paddingLeft) / approximateCharWidth);
+        
+        // Calculamos la posición en el texto
+        const lines = value.split('\n');
+        let position = 0;
+        
+        for (let i = 0; i < clickedLine && i < lines.length; i++) {
+          position += lines[i].length + 1; // +1 por el salto de línea
+        }
+        
+        position += Math.min(clickedChar, lines[Math.min(clickedLine, lines.length - 1)].length);
+        
+        // Establecemos la posición del cursor
+        textareaRef.current.setSelectionRange(position, position);
+      }
+    }, 0);
+  };
+
   if (isEditing) {
     return (
       <Textarea
+        ref={textareaRef}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={handleSave}
@@ -75,7 +114,7 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
 
   return (
     <div
-      onClick={() => setIsEditing(true)}
+      onClick={handleClick}
       className="p-2 rounded-md hover:bg-gray-100 cursor-text whitespace-pre-wrap"
     >
       {value}
