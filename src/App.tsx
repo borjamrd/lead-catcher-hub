@@ -33,45 +33,18 @@ const App = () => (
               <Route path="/notificaciones-oposicion" element={<NotificacionesOposicion />} />
               <Route path="/inicia-sesion" element={<IniciaSesion />} />
               <Route 
-                path="/dashboard" 
+                path="/dashboard/*" 
                 element={
                   <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
                 } 
-              />
-              <Route 
-                path="/nuevo-test" 
-                element={
-                  <ProtectedRoute>
-                    <NuevoTest />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/chat-juridico" 
-                element={
-                  <ProtectedRoute>
-                    <ChatJuridico />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/mis-apuntes" 
-                element={
-                  <ProtectedRoute>
-                    <MisApuntes />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/mis-recursos" 
-                element={
-                  <ProtectedRoute>
-                    <MisRecursos />
-                  </ProtectedRoute>
-                } 
-              />
+              >
+                <Route path="nuevo-test" element={<NuevoTest />} />
+                <Route path="chat-juridico" element={<ChatJuridico />} />
+                <Route path="mis-apuntes" element={<MisApuntes />} />
+                <Route path="mis-recursos" element={<MisRecursos />} />
+              </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

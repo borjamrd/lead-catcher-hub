@@ -2,6 +2,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Outlet } from 'react-router-dom';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -15,9 +16,7 @@ const Dashboard = () => {
             <h1 className="text-2xl font-bold">Dashboard</h1>
             <SidebarTrigger />
           </div>
-          <p className="text-gray-600">
-            Bienvenido {user?.email}
-          </p>
+          <Outlet />
         </main>
       </div>
     </SidebarProvider>

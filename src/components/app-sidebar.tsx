@@ -15,22 +15,22 @@ import { Link } from "react-router-dom";
 const items = [
   {
     title: "Hacer test",
-    url: "/nuevo-test",
+    url: "/dashboard/nuevo-test",
     icon: CheckSquare,
   },
   {
     title: "Chat jurídico",
-    url: "/chat-juridico",
+    url: "/dashboard/chat-juridico",
     icon: MessageSquare,
   },
   {
     title: "Mis apuntes",
-    url: "/mis-apuntes",
+    url: "/dashboard/mis-apuntes",
     icon: FileText,
   },
   {
     title: "Recursos",
-    url: "/mis-recursos",
+    url: "/dashboard/mis-recursos",
     icon: Database,
   },
 ];
