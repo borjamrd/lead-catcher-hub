@@ -36,6 +36,28 @@ export const useBlockManagement = (noteId: string | null) => {
     if (!user) return;
 
     try {
+      // Primero actualizamos las posiciones de los bloques existentes
+      if (blocks) {
+        const blocksToUpdate = blocks
+          .filter(block => block.position >= position)
+          .map(block => ({
+            id: block.id,
+            position: block.position + 1
+          }));
+
+        for (const block of blocksToUpdate) {
+          const { error } = await supabase
+            .from("blocks")
+            .update({ position: block.position })
+            .eq("id", block.id);
+
+          if (error) {
+            console.error("Error updating block positions:", error);
+          }
+        }
+      }
+
+      // Luego creamos el nuevo bloque en la posición deseada
       const { error: blockError } = await supabase
         .from("blocks")
         .insert([
