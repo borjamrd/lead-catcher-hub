@@ -45,8 +45,8 @@ const App = () => (
                 <Route path="nuevo-test" element={<NuevoTest />} />
                 <Route path="chat-juridico" element={<ChatJuridico />} />
                 <Route path="mis-apuntes" element={<MisApuntes />} />
-                <Route path="apuntes/nuevo" element={<NuevoApunte />} />
-                <Route path="apuntes/:id" element={<DetalleApunte />} />
+                <Route path="mis-apuntes/nuevo" element={<NuevoApunte />} />
+                <Route path="mis-apuntes/:id" element={<DetalleApunte />} />
                 <Route path="mis-recursos" element={<MisRecursos />} />
               </Route>
               <Route path="*" element={<NotFound />} />

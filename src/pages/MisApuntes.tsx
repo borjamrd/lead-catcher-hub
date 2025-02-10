@@ -37,11 +37,11 @@ const MisApuntes = () => {
   });
 
   const handleCreateNote = () => {
-    navigate("/dashboard/apuntes/nuevo");
+    navigate("/dashboard/mis-apuntes/nuevo");
   };
 
   const handleNoteClick = (noteId: string) => {
-    navigate(`/dashboard/apuntes/${noteId}`);
+    navigate(`/dashboard/mis-apuntes/${noteId}`);
   };
 
   if (isLoading) {
