@@ -125,17 +125,15 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(({
     }, 0);
   };
 
-  const sharedStyles = "p-2 rounded-md hover:bg-gray-100 whitespace-pre-wrap min-h-[42px]";
+  const sharedStyles = "p-2 rounded-md hover:bg-gray-100 whitespace-pre-wrap break-words min-h-[42px] overflow-visible";
 
   if (isEditing) {
     return (
       <Textarea
         ref={(element) => {
-          // Mantén la referencia local
           if (textareaRef) {
             (textareaRef as any).current = element;
           }
-          // También maneja la referencia externa
           if (typeof ref === 'function') {
             ref(element);
           } else if (ref) {
@@ -166,3 +164,4 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(({
 InputBlock.displayName = "InputBlock";
 
 export default InputBlock;
+
