@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 
 interface InputBlockProps {
@@ -51,19 +51,24 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Si se presiona Enter sin Shift, guardar
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // Prevenir nueva línea
+      handleSave();
+    }
+    // Si se presiona Shift + Enter, permitir nueva línea (comportamiento por defecto)
+  };
+
   if (isEditing) {
     return (
-      <Input
+      <Textarea
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={handleSave}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleSave();
-          }
-        }}
+        onKeyDown={handleKeyDown}
         autoFocus
-        className="focus:ring-0 focus:ring-offset-0 border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        className="focus:ring-0 focus:ring-offset-0 border-none focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[100px] resize-none"
       />
     );
   }
@@ -71,7 +76,7 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
   return (
     <div
       onClick={() => setIsEditing(true)}
-      className="p-2 rounded-md hover:bg-gray-100 cursor-text"
+      className="p-2 rounded-md hover:bg-gray-100 cursor-text whitespace-pre-wrap"
     >
       {value}
     </div>
