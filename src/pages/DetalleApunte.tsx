@@ -9,6 +9,7 @@ import NoteTitleInput from "@/components/Notes/NoteTitleInput";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const DetalleApunte = () => {
   const { id } = useParams();
@@ -57,7 +58,6 @@ const DetalleApunte = () => {
   };
 
   const handleEmptyBlockEnter = async () => {
-    // Cuando se presiona Enter en un bloque vacío, lo eliminamos
     if (!id || !blocks?.length) return;
 
     try {
@@ -102,7 +102,9 @@ const DetalleApunte = () => {
         />
       </div>
 
-      <div className="space-y-4">
+      <Separator className="my-8" />
+
+      <div className="space-y-4 mt-8">
         {blocks.map((block) => (
           <div key={block.id}>
             {block.type === "text" && block.content && typeof block.content === 'object' && 'text' in block.content ? (

@@ -12,7 +12,7 @@ const NoteTitleInput = ({ title, onChange }: NoteTitleInputProps) => {
       value={title || "Sin título"}
       onChange={onChange}
       placeholder="Sin título"
-      className="w-full"
+      className="w-full text-4xl font-bold border-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0"
     />
   );
 };
