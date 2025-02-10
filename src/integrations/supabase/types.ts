@@ -137,6 +137,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_url_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          url_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          url_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          url_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_url_subscriptions_url_id_fkey"
+            columns: ["url_id"]
+            isOneToOne: false
+            referencedRelation: "urls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

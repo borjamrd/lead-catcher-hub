@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface URL {
   id: string;
@@ -22,6 +24,8 @@ const NotificacionesOposicion = () => {
   const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
@@ -37,11 +41,22 @@ const NotificacionesOposicion = () => {
 
       if (error) throw error;
       setUrls(data || []);
+
+      // If user is logged in, fetch their subscriptions
+      if (user) {
+        const { data: subscriptions, error: subError } = await supabase
+          .from('user_url_subscriptions')
+          .select('url_id')
+          .eq('user_id', user.id);
+
+        if (subError) throw subError;
+        setSelectedUrls(subscriptions?.map(sub => sub.url_id) || []);
+      }
     } catch (error) {
       console.error('Error fetching URLs:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load URLs. Please try again later.',
+        description: 'No se pudieron cargar las URLs. Por favor, inténtalo de nuevo más tarde.',
         variant: 'destructive',
       });
     }
@@ -60,7 +75,7 @@ const NotificacionesOposicion = () => {
     if (selectedUrls.length === 0) {
       toast({
         title: 'Error',
-        description: 'Please select at least one URL',
+        description: 'Por favor, selecciona al menos una URL',
         variant: 'destructive',
       });
       return;
@@ -68,29 +83,56 @@ const NotificacionesOposicion = () => {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('leads')
-        .insert([
-          {
-            email: data.email,
-            selected_urls: selectedUrls,
-          },
-        ]);
+      if (user) {
+        // Delete existing subscriptions first
+        const { error: deleteError } = await supabase
+          .from('user_url_subscriptions')
+          .delete()
+          .eq('user_id', user.id);
 
-      if (error) throw error;
+        if (deleteError) throw deleteError;
 
-      toast({
-        title: 'Success!',
-        description: 'Thank you for your submission.',
-      });
-      
-      // Reset form
-      setSelectedUrls([]);
+        // Insert new subscriptions
+        const { error: insertError } = await supabase
+          .from('user_url_subscriptions')
+          .insert(
+            selectedUrls.map(urlId => ({
+              user_id: user.id,
+              url_id: urlId,
+            }))
+          );
+
+        if (insertError) throw insertError;
+
+        toast({
+          title: '¡Éxito!',
+          description: 'Tus suscripciones se han actualizado correctamente.',
+        });
+        
+        navigate('/dashboard/mis-notificaciones');
+      } else {
+        // For non-authenticated users, store in leads table
+        const { error } = await supabase
+          .from('leads')
+          .insert([
+            {
+              email: data.email,
+              selected_urls: selectedUrls,
+            },
+          ]);
+
+        if (error) throw error;
+
+        toast({
+          title: '¡Gracias!',
+          description: 'Te avisaremos cuando haya actualizaciones.',
+        });
+      }
     } catch (error) {
-      console.error('Error submitting lead:', error);
+      console.error('Error submitting:', error);
       toast({
         title: 'Error',
-        description: 'Failed to submit. Please try again.',
+        description: 'No se pudo completar la operación. Por favor, inténtalo de nuevo.',
         variant: 'destructive',
       });
     } finally {
@@ -102,28 +144,32 @@ const NotificacionesOposicion = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Choose Your Resources</h1>
-          <p className="mt-2 text-gray-600">Select the URLs you're interested in and enter your email to receive them.</p>
+          <h1 className="text-3xl font-bold text-gray-900">Suscríbete a actualizaciones</h1>
+          <p className="mt-2 text-gray-600">
+            Selecciona las URLs que te interesan y te avisaremos cuando haya cambios.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
-          <div className="rounded-md">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              {...register('email', {
-                required: 'Email is required',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address',
-                },
-              })}
-              className={`w-full ${errors.email ? 'border-red-500' : ''}`}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
+          {!user && (
+            <div className="rounded-md">
+              <Input
+                type="email"
+                placeholder="Introduce tu email"
+                {...register('email', {
+                  required: 'El email es obligatorio',
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: 'Email inválido',
+                  },
+                })}
+                className={`w-full ${errors.email ? 'border-red-500' : ''}`}
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+              )}
+            </div>
+          )}
 
           <div className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
             {urls.map((url) => (
@@ -149,7 +195,7 @@ const NotificacionesOposicion = () => {
             disabled={isLoading || selectedUrls.length === 0}
             className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isLoading ? 'Submitting...' : 'Submit'}
+            {isLoading ? 'Guardando...' : user ? 'Guardar suscripciones' : 'Suscribirse'}
           </button>
         </form>
       </div>

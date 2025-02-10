@@ -1,5 +1,5 @@
 
-import { FileText, MessageSquare, CheckSquare, Database } from "lucide-react";
+import { FileText, MessageSquare, CheckSquare, Database, Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const items = [
@@ -22,6 +22,11 @@ const items = [
     title: "Recursos",
     url: "/dashboard/mis-recursos",
     icon: Database,
+  },
+  {
+    title: "Mis notificaciones",
+    url: "/dashboard/mis-notificaciones",
+    icon: Bell,
   },
 ];
 
