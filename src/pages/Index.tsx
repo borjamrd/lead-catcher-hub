@@ -1,71 +1,22 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'lucide-react';
+import { Mail, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-interface URL {
-  id: string;
-  name: string;
-  url: string;
-}
 
 interface FormData {
   email: string;
 }
 
 const Index = () => {
-  const [urls, setUrls] = useState<URL[]>([]);
-  const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
-
-  useEffect(() => {
-    fetchUrls();
-  }, []);
-
-  const fetchUrls = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('urls')
-        .select('*');
-
-      if (error) throw error;
-      setUrls(data || []);
-    } catch (error) {
-      console.error('Error fetching URLs:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load URLs. Please try again later.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleUrlToggle = (urlId: string) => {
-    setSelectedUrls(prev => {
-      if (prev.includes(urlId)) {
-        return prev.filter(id => id !== urlId);
-      }
-      return [...prev, urlId];
-    });
-  };
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>();
 
   const onSubmit = async (data: FormData) => {
-    if (selectedUrls.length === 0) {
-      toast({
-        title: 'Error',
-        description: 'Please select at least one URL',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setIsLoading(true);
     try {
       const { error } = await supabase
@@ -73,24 +24,23 @@ const Index = () => {
         .insert([
           {
             email: data.email,
-            selected_urls: selectedUrls,
+            selected_urls: [], // Empty array as this is just for early access
           },
         ]);
 
       if (error) throw error;
 
       toast({
-        title: 'Success!',
-        description: 'Thank you for your submission.',
+        title: "¡Gracias por tu interés!",
+        description: "Te mantendremos informado sobre el lanzamiento.",
       });
       
-      // Reset form
-      setSelectedUrls([]);
+      reset();
     } catch (error) {
       console.error('Error submitting lead:', error);
       toast({
         title: 'Error',
-        description: 'Failed to submit. Please try again.',
+        description: 'No pudimos procesar tu solicitud. Por favor, inténtalo de nuevo.',
         variant: 'destructive',
       });
     } finally {
@@ -99,59 +49,90 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Choose Your Resources</h1>
-          <p className="mt-2 text-gray-600">Select the URLs you're interested in and enter your email to receive them.</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+            OpositaPlace
+          </h1>
+          <p className="text-xl sm:text-2xl text-gray-600 mb-12">
+            Toda tu oposición, en un mismo lugar
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
-          <div className="rounded-md">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              {...register('email', {
-                required: 'Email is required',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address',
-                },
-              })}
-              className={`w-full ${errors.email ? 'border-red-500' : ''}`}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
-            {urls.map((url) => (
-              <div key={url.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
-                <Checkbox
-                  id={url.id}
-                  checked={selectedUrls.includes(url.id)}
-                  onCheckedChange={() => handleUrlToggle(url.id)}
-                />
-                <label htmlFor={url.id} className="flex items-center space-x-3 cursor-pointer flex-1">
-                  <Link className="h-4 w-4 text-gray-500" />
-                  <div>
-                    <p className="font-medium text-gray-900">{url.name}</p>
-                    <p className="text-sm text-gray-500">{url.url}</p>
-                  </div>
-                </label>
+        <div className="max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {[
+              {
+                title: "Avisos INAP",
+                description: "Recibe y configura los avisos sobre principales cambios en el INAP",
+              },
+              {
+                title: "Tests Gratuitos",
+                description: "Realiza test 100% gratuitos sobre tu oposición",
+              },
+              {
+                title: "Chat Jurídico",
+                description: "Chat jurídico actualizado con la normativa vigente",
+              },
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600">{feature.description}</p>
               </div>
             ))}
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading || selectedUrls.length === 0}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {isLoading ? 'Submitting...' : 'Submit'}
-          </button>
-        </form>
+          <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+              ¿Te interesa?
+            </h2>
+            <p className="text-gray-600 mb-6 text-center">
+              Sé el primero en enterarte cuando lancemos
+            </p>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input
+                  type="email"
+                  placeholder="Tu correo electrónico"
+                  className="pl-10"
+                  {...register('email', {
+                    required: 'El email es requerido',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Email inválido',
+                    },
+                  })}
+                />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  "Enviando..."
+                ) : (
+                  <>
+                    Mantenerme informado
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
