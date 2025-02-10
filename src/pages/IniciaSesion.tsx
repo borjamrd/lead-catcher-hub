@@ -19,7 +19,7 @@ const IniciaSesion = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [user, navigate]);
 
@@ -45,7 +45,7 @@ const IniciaSesion = () => {
           "Te hemos enviado un correo de confirmación. Por favor, revisa tu bandeja de entrada"
         );
       }
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       toast.error(
         error.message === "Invalid login credentials"
