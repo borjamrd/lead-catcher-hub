@@ -114,7 +114,7 @@ const InputBlock = ({
     }, 0);
   };
 
-  const sharedStyles = "p-2 rounded-md hover:bg-gray-100 whitespace-pre-wrap min-h-[100px]";
+  const sharedStyles = "p-2 rounded-md hover:bg-gray-100 whitespace-pre-wrap min-h-[42px]";
 
   if (isEditing) {
     return (
@@ -125,6 +125,7 @@ const InputBlock = ({
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
         autoFocus
+        rows={1}
         className={`${sharedStyles} focus:ring-0 focus:ring-offset-0 border-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none cursor-text`}
       />
     );
@@ -135,7 +136,7 @@ const InputBlock = ({
       onClick={handleClick}
       className={`${sharedStyles} cursor-text`}
     >
-      {value}
+      {value || '\u00A0'}
     </div>
   );
 };
