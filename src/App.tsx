@@ -13,6 +13,8 @@ import Dashboard from "./pages/Dashboard";
 import NuevoTest from "./pages/NuevoTest";
 import ChatJuridico from "./pages/ChatJuridico";
 import MisApuntes from "./pages/MisApuntes";
+import NuevoApunte from "./pages/NuevoApunte";
+import DetalleApunte from "./pages/DetalleApunte";
 import MisRecursos from "./pages/MisRecursos";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -43,6 +45,8 @@ const App = () => (
                 <Route path="nuevo-test" element={<NuevoTest />} />
                 <Route path="chat-juridico" element={<ChatJuridico />} />
                 <Route path="mis-apuntes" element={<MisApuntes />} />
+                <Route path="apuntes/nuevo" element={<NuevoApunte />} />
+                <Route path="apuntes/:id" element={<DetalleApunte />} />
                 <Route path="mis-recursos" element={<MisRecursos />} />
               </Route>
               <Route path="*" element={<NotFound />} />
