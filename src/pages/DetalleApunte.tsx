@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import InputBlock from "@/components/Blocks/InputBlock";
+import { Database } from "@/integrations/supabase/types";
+
+type Block = Database['public']['Tables']['blocks']['Row'];
 
 const DetalleApunte = () => {
   const { id } = useParams();
@@ -36,10 +39,10 @@ const DetalleApunte = () => {
       <div className="space-y-4">
         {blocks?.map((block) => (
           <div key={block.id}>
-            {block.type === "text" ? (
+            {block.type === "text" && block.content && typeof block.content === 'object' && 'text' in block.content ? (
               <InputBlock
                 id={block.id}
-                content={block.content}
+                content={block.content as { text: string }}
                 noteId={id!}
                 position={block.position}
               />
