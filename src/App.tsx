@@ -10,6 +10,10 @@ import NotificacionesOposicion from "./pages/NotificacionesOposicion";
 import NotFound from "./pages/NotFound";
 import IniciaSesion from "./pages/IniciaSesion";
 import Dashboard from "./pages/Dashboard";
+import NuevoTest from "./pages/NuevoTest";
+import ChatJuridico from "./pages/ChatJuridico";
+import MisApuntes from "./pages/MisApuntes";
+import MisRecursos from "./pages/MisRecursos";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -33,6 +37,38 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/nuevo-test" 
+                element={
+                  <ProtectedRoute>
+                    <NuevoTest />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/chat-juridico" 
+                element={
+                  <ProtectedRoute>
+                    <ChatJuridico />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mis-apuntes" 
+                element={
+                  <ProtectedRoute>
+                    <MisApuntes />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mis-recursos" 
+                element={
+                  <ProtectedRoute>
+                    <MisRecursos />
                   </ProtectedRoute>
                 } 
               />

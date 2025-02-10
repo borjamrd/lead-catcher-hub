@@ -1,16 +1,26 @@
 
 import { useAuth } from '@/contexts/AuthContext';
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 const Dashboard = () => {
   const { user } = useAuth();
 
   return (
-    <div className="flex-1 p-8">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-      <p className="text-gray-600">
-        Bienvenido {user?.email}
-      </p>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <main className="flex-1 p-8">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+            <SidebarTrigger />
+          </div>
+          <p className="text-gray-600">
+            Bienvenido {user?.email}
+          </p>
+        </main>
+      </div>
+    </SidebarProvider>
   );
 };
 
