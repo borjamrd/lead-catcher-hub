@@ -2,6 +2,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import InputBlock from "@/components/Blocks/InputBlock";
 
 const DetalleApunte = () => {
   const { id } = useParams();
@@ -32,12 +33,26 @@ const DetalleApunte = () => {
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Detalle del apunte</h1>
-      <pre className="bg-gray-100 p-4 rounded-lg overflow-auto">
-        {JSON.stringify(blocks, null, 2)}
-      </pre>
+      <div className="space-y-4">
+        {blocks?.map((block) => (
+          <div key={block.id}>
+            {block.type === "text" ? (
+              <InputBlock
+                id={block.id}
+                content={block.content}
+                noteId={id!}
+                position={block.position}
+              />
+            ) : (
+              <pre className="bg-gray-100 p-4 rounded-lg overflow-auto">
+                {JSON.stringify(block, null, 2)}
+              </pre>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
 export default DetalleApunte;
-
