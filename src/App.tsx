@@ -16,7 +16,6 @@ import MisApuntes from "./pages/MisApuntes";
 import MisRecursos from "./pages/MisRecursos";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 const queryClient = new QueryClient();
 
@@ -24,34 +23,32 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <SidebarProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <div className="min-h-screen flex flex-col">
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/notificaciones-oposicion" element={<NotificacionesOposicion />} />
-                <Route path="/inicia-sesion" element={<IniciaSesion />} />
-                <Route 
-                  path="/dashboard/*" 
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } 
-                >
-                  <Route path="nuevo-test" element={<NuevoTest />} />
-                  <Route path="chat-juridico" element={<ChatJuridico />} />
-                  <Route path="mis-apuntes" element={<MisApuntes />} />
-                  <Route path="mis-recursos" element={<MisRecursos />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-          </BrowserRouter>
-        </SidebarProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/notificaciones-oposicion" element={<NotificacionesOposicion />} />
+              <Route path="/inicia-sesion" element={<IniciaSesion />} />
+              <Route 
+                path="/dashboard/*" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              >
+                <Route path="nuevo-test" element={<NuevoTest />} />
+                <Route path="chat-juridico" element={<ChatJuridico />} />
+                <Route path="mis-apuntes" element={<MisApuntes />} />
+                <Route path="mis-recursos" element={<MisRecursos />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
