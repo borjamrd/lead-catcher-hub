@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Bell, Link } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface URL {
   id: string;
@@ -16,6 +17,7 @@ interface Subscription {
 }
 
 const MisNotificaciones = () => {
+  const { user } = useAuth();
   const { data: urls, isLoading: isLoadingUrls } = useQuery({
     queryKey: ['urls'],
     queryFn: async () => {
@@ -49,19 +51,28 @@ const MisNotificaciones = () => {
   const subscribedUrlIds = subscriptions?.map(sub => sub.urls.id) || [];
 
   const handleSubscriptionToggle = async (urlId: string, isCurrentlySubscribed: boolean) => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para suscribirte');
+      return;
+    }
+
     try {
       if (isCurrentlySubscribed) {
         const { error } = await supabase
           .from('user_url_subscriptions')
           .delete()
-          .eq('url_id', urlId);
+          .eq('url_id', urlId)
+          .eq('user_id', user.id);
 
         if (error) throw error;
         toast.success('Te has dado de baja correctamente');
       } else {
         const { error } = await supabase
           .from('user_url_subscriptions')
-          .insert({ url_id: urlId });
+          .insert({ 
+            url_id: urlId,
+            user_id: user.id 
+          });
 
         if (error) throw error;
         toast.success('Te has suscrito correctamente');
