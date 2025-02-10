@@ -16,6 +16,7 @@ const NuevoApunte = () => {
   const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [noteId, setNoteId] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   // Query to fetch blocks for the current note
   const { data: blocks, refetch: refetchBlocks } = useQuery({
@@ -28,15 +29,24 @@ const NuevoApunte = () => {
         .eq("note_id", noteId)
         .order("position", { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching blocks:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudieron cargar los bloques. Por favor, inténtalo de nuevo.",
+        });
+        return [];
+      }
       return data;
     },
     enabled: !!noteId,
   });
 
   const createInitialNote = async () => {
-    if (!user) return;
+    if (!user || isCreating) return null;
 
+    setIsCreating(true);
     try {
       const { data: note, error: noteError } = await supabase
         .from("notes")
@@ -49,7 +59,15 @@ const NuevoApunte = () => {
         .select()
         .single();
 
-      if (noteError) throw noteError;
+      if (noteError) {
+        console.error("Error creating note:", noteError);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Ha ocurrido un error al crear el apunte. Por favor, inténtalo de nuevo.",
+        });
+        return null;
+      }
 
       setNoteId(note.id);
       return note.id;
@@ -61,6 +79,8 @@ const NuevoApunte = () => {
         description: "Ha ocurrido un error al crear el apunte. Por favor, inténtalo de nuevo.",
       });
       return null;
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -83,7 +103,15 @@ const NuevoApunte = () => {
           },
         ]);
 
-      if (blockError) throw blockError;
+      if (blockError) {
+        console.error("Error creating block:", blockError);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Ha ocurrido un error al crear el bloque. Por favor, inténtalo de nuevo.",
+        });
+        return;
+      }
 
       // Update the note's updated_at timestamp
       const { error: updateError } = await supabase
@@ -91,12 +119,14 @@ const NuevoApunte = () => {
         .update({ updated_at: new Date().toISOString() })
         .eq("id", currentNoteId);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Error updating note timestamp:", updateError);
+      }
 
       refetchBlocks();
 
     } catch (error) {
-      console.error("Error creating block:", error);
+      console.error("Error in createNewBlock:", error);
       toast({
         variant: "destructive",
         title: "Error",
