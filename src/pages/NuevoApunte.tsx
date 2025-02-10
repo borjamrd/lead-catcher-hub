@@ -69,10 +69,10 @@ const NuevoApunte = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-8">
+    <div className="max-w-2xl mx-auto p-12">
       <h1 className="text-2xl font-bold mb-6">Crear nuevo apunte</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
+        <div className="space-y-2 w-full">
           <Label htmlFor="title">Título</Label>
           <Input
             id="title"
@@ -80,16 +80,16 @@ const NuevoApunte = () => {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Introduce el título del apunte"
             required
+            className="w-full"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="content">Contenido</Label>
+        <div className="w-full">
           <Textarea
             id="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Escribe el contenido de tu apunte..."
-            className="min-h-[200px]"
+            className="min-h-[200px] w-full border-0"
             required
           />
         </div>
