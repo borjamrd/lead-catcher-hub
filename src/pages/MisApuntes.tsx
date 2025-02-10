@@ -1,9 +1,10 @@
 
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -22,6 +23,7 @@ interface Note {
 
 const MisApuntes = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: notes, isLoading } = useQuery({
     queryKey: ["notes"],
@@ -44,6 +46,27 @@ const MisApuntes = () => {
     navigate(`/dashboard/mis-apuntes/${noteId}`);
   };
 
+  const handleDeleteNote = async (e: React.MouseEvent, noteId: string) => {
+    e.stopPropagation(); // Prevent row click event
+
+    try {
+      const { error } = await supabase
+        .from("notes")
+        .delete()
+        .eq("id", noteId);
+
+      if (error) throw error;
+
+      // Invalidate and refetch notes
+      await queryClient.invalidateQueries({ queryKey: ["notes"] });
+      
+      toast.success("Apunte eliminado correctamente");
+    } catch (error) {
+      console.error("Error deleting note:", error);
+      toast.error("Error al eliminar el apunte");
+    }
+  };
+
   if (isLoading) {
     return <div className="p-8">Cargando...</div>;
   }
@@ -64,6 +87,7 @@ const MisApuntes = () => {
             <TableHead>Título</TableHead>
             <TableHead>Última modificación</TableHead>
             <TableHead>Fecha de creación</TableHead>
+            <TableHead className="w-[100px]">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -79,6 +103,16 @@ const MisApuntes = () => {
               </TableCell>
               <TableCell>
                 {new Date(note.created_at).toLocaleDateString()}
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => handleDeleteNote(e, note.id)}
+                >
+                  <Trash2 className="h-4 w-4 text-red-500 hover:text-red-700" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}
