@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Table,
   TableBody,
@@ -24,6 +25,7 @@ interface Note {
 const MisApuntes = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const { data: notes, isLoading } = useQuery({
     queryKey: ["notes"],
@@ -38,8 +40,29 @@ const MisApuntes = () => {
     },
   });
 
-  const handleCreateNote = () => {
-    navigate("/dashboard/mis-apuntes/nuevo");
+  const handleCreateNote = async () => {
+    if (!user) return;
+
+    try {
+      const { data: note, error } = await supabase
+        .from("notes")
+        .insert([
+          {
+            title: "Sin título",
+            user_id: user.id,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Redirigimos al detalle de la nota recién creada
+      navigate(`/dashboard/mis-apuntes/${note.id}`);
+    } catch (error) {
+      console.error("Error creating note:", error);
+      toast.error("Ha ocurrido un error al crear el apunte");
+    }
   };
 
   const handleNoteClick = (noteId: string) => {
@@ -47,7 +70,7 @@ const MisApuntes = () => {
   };
 
   const handleDeleteNote = async (e: React.MouseEvent, noteId: string) => {
-    e.stopPropagation(); // Prevent row click event
+    e.stopPropagation();
 
     try {
       const { error } = await supabase
@@ -57,7 +80,6 @@ const MisApuntes = () => {
 
       if (error) throw error;
 
-      // Invalidate and refetch notes
       await queryClient.invalidateQueries({ queryKey: ["notes"] });
       
       toast.success("Apunte eliminado correctamente");

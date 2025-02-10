@@ -13,9 +13,9 @@ const NoteTitleInput = ({ title, onChange }: NoteTitleInputProps) => {
       <Label htmlFor="title">Título</Label>
       <Input
         id="title"
-        value={title}
+        value={title || "Sin título"}
         onChange={onChange}
-        placeholder="Introduce el título del apunte"
+        placeholder="Sin título"
         className="w-full"
       />
     </div>
