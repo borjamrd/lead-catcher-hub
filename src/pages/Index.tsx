@@ -69,8 +69,53 @@ const Index = () => {
           </p>
         </div>
 
+        <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm mb-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+            ¿Te interesa?
+          </h2>
+          <p className="text-gray-600 mb-6 text-center">
+            Sé el primero en enterarte cuando lancemos
+          </p>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <Input
+                type="email"
+                placeholder="Tu correo electrónico"
+                className="pl-10"
+                {...register('email', {
+                  required: 'El email es requerido',
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: 'Email inválido',
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                "Enviando..."
+              ) : (
+                <>
+                  Mantenerme informado
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </form>
+        </div>
+
         <div className="max-w-3xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 title: "Avisos INAP",
@@ -95,51 +140,6 @@ const Index = () => {
                 <p className="text-gray-600">{feature.description}</p>
               </div>
             ))}
-          </div>
-
-          <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
-              ¿Te interesa?
-            </h2>
-            <p className="text-gray-600 mb-6 text-center">
-              Sé el primero en enterarte cuando lancemos
-            </p>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input
-                  type="email"
-                  placeholder="Tu correo electrónico"
-                  className="pl-10"
-                  {...register('email', {
-                    required: 'El email es requerido',
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Email inválido',
-                    },
-                  })}
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  "Enviando..."
-                ) : (
-                  <>
-                    Mantenerme informado
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </form>
           </div>
         </div>
       </div>
