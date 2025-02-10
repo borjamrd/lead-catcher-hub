@@ -119,14 +119,14 @@ const DetalleApunte = () => {
         {showSuccess && <Check className="h-5 w-5 text-green-500" />}
       </div>
       
-      <div className="mb-6">
+      <div className="mb-4">
         <NoteTitleInput
           title={title}
           onChange={handleTitleChange}
         />
       </div>
 
-      <Separator className="my-8" />
+      <Separator className="my-4" />
 
       <div className="space-y-4 mt-8">
         {blocks.map((block) => (
