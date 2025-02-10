@@ -1,7 +1,9 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { AppSidebar } from "@/components/app-sidebar";
-import { Outlet, useLocation, Link } from 'react-router-dom';
+import { Outlet, useLocation, Link, useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Breadcrumb,
   BreadcrumbList,
@@ -15,12 +17,42 @@ const Dashboard = () => {
   const { user } = useAuth();
   const location = useLocation();
   const isRootDashboard = location.pathname === '/dashboard';
+  const paths = location.pathname.split('/').filter(Boolean);
+  const isNotePage = paths[1] === 'mis-apuntes' && paths.length === 3;
+  const noteId = isNotePage ? paths[2] : null;
+
+  const { data: note } = useQuery({
+    queryKey: ['note', noteId],
+    queryFn: async () => {
+      if (!noteId) return null;
+      const { data, error } = await supabase
+        .from('notes')
+        .select('title')
+        .eq('id', noteId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!noteId
+  });
 
   const getBreadcrumbs = () => {
     const paths = location.pathname.split('/').filter(Boolean);
     const breadcrumbs = paths.map((path, index) => {
       const url = `/${paths.slice(0, index + 1).join('/')}`;
       const isLast = index === paths.length - 1;
+      
+      // Si es la última parte y estamos en una página de nota, usar el título de la nota
+      if (isLast && isNotePage && note) {
+        return {
+          path: note.title || 'Sin título',
+          url,
+          isLast
+        };
+      }
+
+      // Para otros casos, mantener la lógica original
       const formattedPath = path.split('-').map(word => 
         word.charAt(0).toUpperCase() + word.slice(1)
       ).join(' ');
