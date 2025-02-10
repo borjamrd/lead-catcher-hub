@@ -63,6 +63,7 @@ const InputBlock = ({ id, content, noteId, position, onSaveStart, onSaveEnd }: I
           }
         }}
         autoFocus
+        className="focus:ring-0 focus:ring-offset-0 border-none focus-visible:ring-0 focus-visible:ring-offset-0"
       />
     );
   }
