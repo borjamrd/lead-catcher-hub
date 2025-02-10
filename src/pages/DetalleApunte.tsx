@@ -1,7 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader, Check, Plus } from "lucide-react";
 import { useBlockManagement } from "@/hooks/useBlockManagement";
 import InputBlock from "@/components/Blocks/InputBlock";
@@ -18,6 +18,30 @@ const DetalleApunte = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [title, setTitle] = useState("");
   const { blocks, createNewBlock, refetchBlocks } = useBlockManagement(id);
+
+  useEffect(() => {
+    const fetchNoteTitle = async () => {
+      if (!id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from("notes")
+          .select("title")
+          .eq("id", id)
+          .single();
+
+        if (error) throw error;
+        if (data) {
+          setTitle(data.title);
+        }
+      } catch (error) {
+        console.error("Error fetching note title:", error);
+        toast.error("Error al cargar el título del apunte");
+      }
+    };
+
+    fetchNoteTitle();
+  }, [id]);
 
   const handleSaveStart = () => {
     setIsSaving(true);
