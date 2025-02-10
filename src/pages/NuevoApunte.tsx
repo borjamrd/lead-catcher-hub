@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,12 @@ const NuevoApunte = () => {
     }
   };
 
+  const handleContentBlockEnter = async (position: number) => {
+    if (noteId) {
+      await createNewBlock(position + 1, noteId);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-12">
       <h1 className="text-2xl font-bold mb-6">Crear nuevo apunte</h1>
@@ -68,6 +75,7 @@ const NuevoApunte = () => {
                   onSaveStart={handleSaveStart}
                   onSaveEnd={handleSaveEnd}
                   onEmptyBlockEnter={() => handleEmptyBlockEnter(block.position)}
+                  onContentBlockEnter={handleContentBlockEnter}
                 />
               ) : null}
             </div>

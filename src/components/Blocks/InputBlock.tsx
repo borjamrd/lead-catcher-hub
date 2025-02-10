@@ -11,6 +11,7 @@ interface InputBlockProps {
   onSaveStart: () => void;
   onSaveEnd: () => void;
   onEmptyBlockEnter?: () => void;
+  onContentBlockEnter?: (position: number) => void;
 }
 
 const InputBlock = ({ 
@@ -20,7 +21,8 @@ const InputBlock = ({
   position, 
   onSaveStart, 
   onSaveEnd,
-  onEmptyBlockEnter 
+  onEmptyBlockEnter,
+  onContentBlockEnter 
 }: InputBlockProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(content.text);
@@ -71,8 +73,14 @@ const InputBlock = ({
         onEmptyBlockEnter();
         return;
       }
+
+      // Primero guardar el contenido actual
+      await handleSave();
       
-      handleSave();
+      // Si hay contenido y existe la función onContentBlockEnter, crear nuevo bloque
+      if (value.trim() !== "" && onContentBlockEnter) {
+        onContentBlockEnter(position);
+      }
     }
     // Si se presiona Shift + Enter, permitir nueva línea (comportamiento por defecto)
   };
