@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import confetti from 'canvas-confetti';
 
 interface URL {
   id: string;
@@ -28,7 +29,7 @@ const NotificacionesOposicion = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>();
 
   useEffect(() => {
     fetchUrls();
@@ -73,6 +74,14 @@ const NotificacionesOposicion = () => {
     });
   };
 
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
+
   const onSubmit = async (data: FormData) => {
     if (selectedUrls.length === 0) {
       toast({
@@ -111,6 +120,7 @@ const NotificacionesOposicion = () => {
           description: 'Tus suscripciones se han actualizado correctamente.',
         });
         
+        triggerConfetti();
         navigate('/dashboard/mis-notificaciones');
       } else {
         // Para usuarios no autenticados, almacenar en la tabla leads y lead_url_subscriptions
@@ -139,10 +149,15 @@ const NotificacionesOposicion = () => {
 
         if (subsError) throw subsError;
 
+        triggerConfetti();
         toast({
           title: '¡Gracias!',
           description: 'Te avisaremos cuando haya actualizaciones.',
         });
+
+        // Mantener los valores en el formulario
+        setValue('email', data.email);
+        setValue('name', data.name);
       }
     } catch (error) {
       console.error('Error submitting:', error);
