@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Mail, ArrowRight } from 'lucide-react';
+import { Mail, ArrowRight, StickyNote } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -115,7 +115,7 @@ const Index = () => {
         </div>
 
         <div className="max-w-3xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[
               {
                 title: "Avisos INAP",
@@ -128,6 +128,10 @@ const Index = () => {
               {
                 title: "Chat Jurídico",
                 description: "Chat jurídico actualizado con la normativa vigente",
+              },
+              {
+                title: "Notas y apuntes",
+                description: "Crea tus mejores apuntes, agrega información basándote en la ley. Guárdalos en el formato que prefieras.",
               },
             ].map((feature, index) => (
               <div
