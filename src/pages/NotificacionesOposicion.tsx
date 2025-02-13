@@ -1,13 +1,13 @@
+
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
+import UrlList from '@/components/notifications/UrlList';
+import SubscriptionForm from '@/components/notifications/SubscriptionForm';
 
 interface URL {
   id: string;
@@ -54,7 +54,6 @@ const NotificacionesOposicion = () => {
       console.log('URLs fetched:', urlsData);
       setUrls(urlsData || []);
 
-      // Si el usuario está logueado, obtener sus suscripciones
       if (user) {
         console.log('Fetching user subscriptions...');
         const { data: subscriptions, error: subError } = await supabase
@@ -113,7 +112,6 @@ const NotificacionesOposicion = () => {
     setIsLoading(true);
     try {
       if (user) {
-        // Eliminar suscripciones existentes primero
         const { error: deleteError } = await supabase
           .from('user_url_subscriptions')
           .delete()
@@ -121,7 +119,6 @@ const NotificacionesOposicion = () => {
 
         if (deleteError) throw deleteError;
 
-        // Insertar nuevas suscripciones
         const { error: insertError } = await supabase
           .from('user_url_subscriptions')
           .insert(
@@ -141,7 +138,6 @@ const NotificacionesOposicion = () => {
         triggerConfetti();
         navigate('/dashboard/mis-notificaciones');
       } else {
-        // Para usuarios no autenticados, almacenar en la tabla leads y lead_url_subscriptions
         const { data: lead, error: leadError } = await supabase
           .from('leads')
           .insert([
@@ -155,7 +151,6 @@ const NotificacionesOposicion = () => {
 
         if (leadError) throw leadError;
 
-        // Insertar las suscripciones del lead
         const { error: subsError } = await supabase
           .from('lead_url_subscriptions')
           .insert(
@@ -173,7 +168,6 @@ const NotificacionesOposicion = () => {
           description: 'Te avisaremos cuando haya actualizaciones.',
         });
 
-        // Mantener los valores en el formulario
         setValue('email', data.email);
         setValue('name', data.name);
       }
@@ -217,66 +211,15 @@ const NotificacionesOposicion = () => {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
-          {!user && (
-            <div className="flex gap-4">
-              <div className="w-1/4">
-                <Input
-                  type="text"
-                  placeholder="Nombre"
-                  {...register('name', {
-                    required: 'El nombre es obligatorio',
-                  })}
-                  className={errors.name ? 'border-red-500' : ''}
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                )}
-              </div>
-              <div className="w-3/4">
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  {...register('email', {
-                    required: 'El email es obligatorio',
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Email inválido',
-                    },
-                  })}
-                  className={errors.email ? 'border-red-500' : ''}
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                )}
-              </div>
-            </div>
-          )}
+          {!user && <SubscriptionForm register={register} errors={errors} />}
 
           <div className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
-            {isLoading ? (
-              <div className="flex justify-center items-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
-            ) : urls.length === 0 ? (
-              <p className="text-center text-gray-500 py-4">No hay URLs disponibles en este momento.</p>
-            ) : (
-              urls.map((url) => (
-                <div key={url.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
-                  <Checkbox
-                    id={url.id}
-                    checked={selectedUrls.includes(url.id)}
-                    onCheckedChange={() => handleUrlToggle(url.id)}
-                  />
-                  <label htmlFor={url.id} className="flex items-center space-x-3 cursor-pointer flex-1">
-                    <Link className="h-4 w-4 text-gray-500" />
-                    <div>
-                      <p className="font-medium text-gray-900">{url.name}</p>
-                      <p className="text-sm text-gray-500">{url.url}</p>
-                    </div>
-                  </label>
-                </div>
-              ))
-            )}
+            <UrlList
+              urls={urls}
+              selectedUrls={selectedUrls}
+              isLoading={isLoading}
+              onUrlToggle={handleUrlToggle}
+            />
           </div>
 
           <button
