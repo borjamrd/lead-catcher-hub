@@ -17,6 +17,7 @@ interface URL {
 
 interface FormData {
   email: string;
+  name: string;
 }
 
 const NotificacionesOposicion = () => {
@@ -117,6 +118,7 @@ const NotificacionesOposicion = () => {
           .insert([
             {
               email: data.email,
+              name: data.name,
               selected_urls: selectedUrls,
             },
           ]);
@@ -152,22 +154,37 @@ const NotificacionesOposicion = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
           {!user && (
-            <div className="rounded-md">
-              <Input
-                type="email"
-                placeholder="Introduce tu email"
-                {...register('email', {
-                  required: 'El email es obligatorio',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Email inválido',
-                  },
-                })}
-                className={`w-full ${errors.email ? 'border-red-500' : ''}`}
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-              )}
+            <div className="space-y-4">
+              <div>
+                <Input
+                  type="text"
+                  placeholder="Introduce tu nombre"
+                  {...register('name', {
+                    required: 'El nombre es obligatorio',
+                  })}
+                  className={errors.name ? 'border-red-500' : ''}
+                />
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                )}
+              </div>
+              <div>
+                <Input
+                  type="email"
+                  placeholder="Introduce tu email"
+                  {...register('email', {
+                    required: 'El email es obligatorio',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Email inválido',
+                    },
+                  })}
+                  className={errors.email ? 'border-red-500' : ''}
+                />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                )}
+              </div>
             </div>
           )}
 
