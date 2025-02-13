@@ -124,18 +124,21 @@ export type Database = {
       }
       urls: {
         Row: {
+          active: boolean | null
           created_at: string
           id: string
           name: string
           url: string
         }
         Insert: {
+          active?: boolean | null
           created_at?: string
           id?: string
           name: string
           url: string
         }
         Update: {
+          active?: boolean | null
           created_at?: string
           id?: string
           name?: string
