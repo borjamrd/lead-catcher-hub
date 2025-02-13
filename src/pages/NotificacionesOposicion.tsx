@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'lucide-react';
@@ -24,7 +23,8 @@ interface FormData {
 const NotificacionesOposicion = () => {
   const [urls, setUrls] = useState<URL[]>([]);
   const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -37,31 +37,49 @@ const NotificacionesOposicion = () => {
 
   const fetchUrls = async () => {
     try {
-      const { data, error } = await supabase
+      setIsLoading(true);
+      setError(null);
+      console.log('Fetching URLs...');
+      
+      const { data: urlsData, error: urlsError } = await supabase
         .from('urls')
         .select('*')
         .eq('active', true);
 
-      if (error) throw error;
-      setUrls(data || []);
+      if (urlsError) {
+        console.error('Error fetching URLs:', urlsError);
+        throw urlsError;
+      }
+
+      console.log('URLs fetched:', urlsData);
+      setUrls(urlsData || []);
 
       // Si el usuario está logueado, obtener sus suscripciones
       if (user) {
+        console.log('Fetching user subscriptions...');
         const { data: subscriptions, error: subError } = await supabase
           .from('user_url_subscriptions')
           .select('url_id')
           .eq('user_id', user.id);
 
-        if (subError) throw subError;
+        if (subError) {
+          console.error('Error fetching subscriptions:', subError);
+          throw subError;
+        }
+
+        console.log('User subscriptions:', subscriptions);
         setSelectedUrls(subscriptions?.map(sub => sub.url_id) || []);
       }
-    } catch (error) {
-      console.error('Error fetching URLs:', error);
+    } catch (error: any) {
+      console.error('Error in fetchUrls:', error);
+      setError(error.message);
       toast({
         title: 'Error',
         description: 'No se pudieron cargar las URLs. Por favor, inténtalo de nuevo más tarde.',
         variant: 'destructive',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -171,6 +189,23 @@ const NotificacionesOposicion = () => {
     }
   };
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => fetchUrls()}
+            className="text-blue-600 hover:text-blue-800 font-medium"
+          >
+            Intentar de nuevo
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-8">
@@ -218,22 +253,30 @@ const NotificacionesOposicion = () => {
           )}
 
           <div className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
-            {urls.map((url) => (
-              <div key={url.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
-                <Checkbox
-                  id={url.id}
-                  checked={selectedUrls.includes(url.id)}
-                  onCheckedChange={() => handleUrlToggle(url.id)}
-                />
-                <label htmlFor={url.id} className="flex items-center space-x-3 cursor-pointer flex-1">
-                  <Link className="h-4 w-4 text-gray-500" />
-                  <div>
-                    <p className="font-medium text-gray-900">{url.name}</p>
-                    <p className="text-sm text-gray-500">{url.url}</p>
-                  </div>
-                </label>
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
-            ))}
+            ) : urls.length === 0 ? (
+              <p className="text-center text-gray-500 py-4">No hay URLs disponibles en este momento.</p>
+            ) : (
+              urls.map((url) => (
+                <div key={url.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+                  <Checkbox
+                    id={url.id}
+                    checked={selectedUrls.includes(url.id)}
+                    onCheckedChange={() => handleUrlToggle(url.id)}
+                  />
+                  <label htmlFor={url.id} className="flex items-center space-x-3 cursor-pointer flex-1">
+                    <Link className="h-4 w-4 text-gray-500" />
+                    <div>
+                      <p className="font-medium text-gray-900">{url.name}</p>
+                      <p className="text-sm text-gray-500">{url.url}</p>
+                    </div>
+                  </label>
+                </div>
+              ))
+            )}
           </div>
 
           <button
