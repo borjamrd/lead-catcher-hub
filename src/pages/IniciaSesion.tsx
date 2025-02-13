@@ -29,29 +29,53 @@ const IniciaSesion = () => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { error, data } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        if (error) throw error;
-        toast.success("Has iniciado sesión correctamente");
+        
+        if (error) {
+          if (error.message === "Email not confirmed") {
+            toast.error("Por favor, confirma tu email antes de iniciar sesión");
+          } else if (error.message === "Invalid login credentials") {
+            toast.error("Email o contraseña incorrectos");
+          } else {
+            toast.error(error.message);
+          }
+          return;
+        }
+
+        if (data?.user) {
+          toast.success("Has iniciado sesión correctamente");
+          navigate("/dashboard");
+        }
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: window.location.origin + "/dashboard",
+          },
         });
-        if (error) throw error;
+        
+        if (error) {
+          if (error.message.includes("Password should be")) {
+            toast.error("La contraseña debe tener al menos 6 caracteres");
+          } else if (error.message.includes("User already registered")) {
+            toast.error("Este email ya está registrado");
+          } else {
+            toast.error(error.message);
+          }
+          return;
+        }
+
         toast.success(
           "Te hemos enviado un correo de confirmación. Por favor, revisa tu bandeja de entrada"
         );
       }
-      navigate("/dashboard");
     } catch (error: any) {
-      toast.error(
-        error.message === "Invalid login credentials"
-          ? "Credenciales inválidas"
-          : error.message
-      );
+      console.error("Auth error:", error);
+      toast.error("Ha ocurrido un error. Por favor, inténtalo de nuevo");
     } finally {
       setIsLoading(false);
     }
