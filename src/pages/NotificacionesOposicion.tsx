@@ -38,12 +38,13 @@ const NotificacionesOposicion = () => {
     try {
       const { data, error } = await supabase
         .from('urls')
-        .select('*');
+        .select('*')
+        .eq('active', true);
 
       if (error) throw error;
       setUrls(data || []);
 
-      // If user is logged in, fetch their subscriptions
+      // Si el usuario está logueado, obtener sus suscripciones
       if (user) {
         const { data: subscriptions, error: subError } = await supabase
           .from('user_url_subscriptions')
@@ -85,7 +86,7 @@ const NotificacionesOposicion = () => {
     setIsLoading(true);
     try {
       if (user) {
-        // Delete existing subscriptions first
+        // Eliminar suscripciones existentes primero
         const { error: deleteError } = await supabase
           .from('user_url_subscriptions')
           .delete()
@@ -93,7 +94,7 @@ const NotificacionesOposicion = () => {
 
         if (deleteError) throw deleteError;
 
-        // Insert new subscriptions
+        // Insertar nuevas suscripciones
         const { error: insertError } = await supabase
           .from('user_url_subscriptions')
           .insert(
@@ -112,18 +113,31 @@ const NotificacionesOposicion = () => {
         
         navigate('/dashboard/mis-notificaciones');
       } else {
-        // For non-authenticated users, store in leads table
-        const { error } = await supabase
+        // Para usuarios no autenticados, almacenar en la tabla leads y lead_url_subscriptions
+        const { data: lead, error: leadError } = await supabase
           .from('leads')
           .insert([
             {
               email: data.email,
               name: data.name,
-              selected_urls: selectedUrls,
-            },
-          ]);
+            }
+          ])
+          .select()
+          .single();
 
-        if (error) throw error;
+        if (leadError) throw leadError;
+
+        // Insertar las suscripciones del lead
+        const { error: subsError } = await supabase
+          .from('lead_url_subscriptions')
+          .insert(
+            selectedUrls.map(urlId => ({
+              lead_id: lead.id,
+              url_id: urlId,
+            }))
+          );
+
+        if (subsError) throw subsError;
 
         toast({
           title: '¡Gracias!',

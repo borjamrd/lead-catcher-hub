@@ -47,27 +47,60 @@ export type Database = {
           },
         ]
       }
+      lead_url_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          lead_id: string
+          url_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lead_id: string
+          url_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lead_id?: string
+          url_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_url_subscriptions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_url_subscriptions_url_id_fkey"
+            columns: ["url_id"]
+            isOneToOne: false
+            referencedRelation: "urls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           created_at: string
           email: string
           id: string
           name: string
-          selected_urls: string[]
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
           name: string
-          selected_urls: string[]
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
           name?: string
-          selected_urls?: string[]
         }
         Relationships: []
       }
