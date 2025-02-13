@@ -154,11 +154,11 @@ const NotificacionesOposicion = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
           {!user && (
-            <div className="space-y-4">
-              <div>
+            <div className="flex gap-4">
+              <div className="w-1/4">
                 <Input
                   type="text"
-                  placeholder="Introduce tu nombre"
+                  placeholder="Nombre"
                   {...register('name', {
                     required: 'El nombre es obligatorio',
                   })}
@@ -168,10 +168,10 @@ const NotificacionesOposicion = () => {
                   <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
                 )}
               </div>
-              <div>
+              <div className="w-3/4">
                 <Input
                   type="email"
-                  placeholder="Introduce tu email"
+                  placeholder="Email"
                   {...register('email', {
                     required: 'El email es obligatorio',
                     pattern: {
