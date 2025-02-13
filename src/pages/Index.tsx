@@ -24,7 +24,7 @@ const Index = () => {
         .insert([
           {
             email: data.email,
-            selected_urls: [], // Empty array as this is just for early access
+            name: 'Early Access User', // Proporcionamos un nombre por defecto para early access
           },
         ]);
 
