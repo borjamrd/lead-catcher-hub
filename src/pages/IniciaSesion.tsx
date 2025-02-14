@@ -88,6 +88,7 @@ const IniciaSesion = () => {
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
             {isLogin ? "Inicia sesión" : "Regístrate"}
           </h2>
+          {/* Comentado temporalmente el botón de cambio entre login y registro
           <p className="mt-2 text-sm text-gray-600">
             {isLogin ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}{" "}
             <button
@@ -97,6 +98,7 @@ const IniciaSesion = () => {
               {isLogin ? "Regístrate" : "Inicia sesión"}
             </button>
           </p>
+          */}
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -126,13 +128,7 @@ const IniciaSesion = () => {
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              "Cargando..."
-            ) : isLogin ? (
-              "Iniciar sesión"
-            ) : (
-              "Registrarse"
-            )}
+            {isLoading ? "Cargando..." : "Iniciar sesión"}
           </Button>
         </form>
       </div>

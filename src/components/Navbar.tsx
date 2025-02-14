@@ -68,17 +68,17 @@ const Navbar = () => {
                 >
                   <Settings className="h-5 w-5" />
                 </Link>
+                <Button
+                  variant="ghost"
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Cerrar sesión
+                </Button>
               </>
             )}
-            {user ? (
-              <Button
-                variant="ghost"
-                onClick={handleLogout}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Cerrar sesión
-              </Button>
-            ) : (
+            {/* Comentado temporalmente el botón de inicio de sesión
+            {!user && (
               <Link
                 to="/inicia-sesion"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
@@ -86,6 +86,7 @@ const Navbar = () => {
                 Iniciar sesión
               </Link>
             )}
+            */}
           </div>
         </div>
       </div>
