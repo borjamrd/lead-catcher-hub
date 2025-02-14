@@ -1,19 +1,12 @@
 
-import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocation } from 'react-router-dom';
-import confetti from 'canvas-confetti';
 import UrlList from '@/components/notifications/UrlList';
 import SubscriptionForm from '@/components/notifications/SubscriptionForm';
-
-interface URL {
-  id: string;
-  name: string;
-  url: string;
-}
+import ErrorDisplay from '@/components/notifications/ErrorDisplay';
+import { useUrlSubscriptions } from '@/hooks/use-url-subscriptions';
+import { useSubscriptionHandler } from '@/hooks/use-subscription-handler';
 
 interface FormData {
   email: string;
@@ -21,167 +14,29 @@ interface FormData {
 }
 
 const NotificacionesOposicion = () => {
-  const [urls, setUrls] = useState<URL[]>([]);
-  const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
-  const { user } = useAuth();
   const location = useLocation();
   const isStandalonePage = location.pathname === '/notificaciones-oposicion';
+  const { user } = useAuth();
   
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>();
+  const {
+    urls,
+    selectedUrls,
+    isLoading,
+    error,
+    handleUrlToggle,
+    fetchUrls,
+    setSelectedUrls
+  } = useUrlSubscriptions();
 
-  useEffect(() => {
-    fetchUrls();
-  }, []);
+  const {
+    isLoading: isSubmitting,
+    handleSubscription
+  } = useSubscriptionHandler(selectedUrls, setSelectedUrls);
 
-  const fetchUrls = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      console.log('Fetching URLs...');
-      
-      const { data: urlsData, error: urlsError } = await supabase
-        .from('urls')
-        .select('*')
-        .eq('active', true);
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
 
-      if (urlsError) {
-        console.error('Error fetching URLs:', urlsError);
-        throw urlsError;
-      }
-
-      console.log('URLs fetched:', urlsData);
-      setUrls(urlsData || []);
-
-      if (user) {
-        console.log('Fetching user subscriptions...');
-        const { data: subscriptions, error: subError } = await supabase
-          .from('user_url_subscriptions')
-          .select('url_id')
-          .eq('user_id', user.id);
-
-        if (subError) {
-          console.error('Error fetching subscriptions:', subError);
-          throw subError;
-        }
-
-        console.log('User subscriptions:', subscriptions);
-        setSelectedUrls(subscriptions?.map(sub => sub.url_id) || []);
-      }
-    } catch (error: any) {
-      console.error('Error in fetchUrls:', error);
-      setError(error.message);
-      toast({
-        title: 'Error',
-        description: 'No se pudieron cargar las URLs. Por favor, inténtalo de nuevo más tarde.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleUrlToggle = (urlId: string) => {
-    setSelectedUrls(prev => {
-      if (prev.includes(urlId)) {
-        return prev.filter(id => id !== urlId);
-      }
-      return [...prev, urlId];
-    });
-  };
-
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-  };
-
-  const onSubmit = async (data: FormData) => {
-    if (selectedUrls.length === 0) {
-      toast({
-        title: 'Error',
-        description: 'Por favor, selecciona al menos una URL',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      if (user) {
-        const { error: deleteError } = await supabase
-          .from('user_url_subscriptions')
-          .delete()
-          .eq('user_id', user.id);
-
-        if (deleteError) throw deleteError;
-
-        const { error: insertError } = await supabase
-          .from('user_url_subscriptions')
-          .insert(
-            selectedUrls.map(urlId => ({
-              user_id: user.id,
-              url_id: urlId,
-            }))
-          );
-
-        if (insertError) throw insertError;
-
-        toast({
-          title: '¡Éxito!',
-          description: 'Tus suscripciones se han actualizado correctamente.',
-        });
-        
-        triggerConfetti();
-      } else {
-        const { data: lead, error: leadError } = await supabase
-          .from('leads')
-          .insert([
-            {
-              email: data.email,
-              name: data.name,
-            }
-          ])
-          .select()
-          .single();
-
-        if (leadError) throw leadError;
-
-        const { error: subsError } = await supabase
-          .from('lead_url_subscriptions')
-          .insert(
-            selectedUrls.map(urlId => ({
-              lead_id: lead.id,
-              url_id: urlId,
-            }))
-          );
-
-        if (subsError) throw subsError;
-
-        triggerConfetti();
-        toast({
-          title: '¡Gracias!',
-          description: 'Te avisaremos cuando haya actualizaciones.',
-        });
-
-        setValue('email', '');
-        setValue('name', '');
-        setSelectedUrls([]);
-      }
-    } catch (error) {
-      console.error('Error submitting:', error);
-      toast({
-        title: 'Error',
-        description: 'No se pudo completar la operación. Por favor, inténtalo de nuevo.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (data: FormData) => {
+    handleSubscription(data, reset);
   };
 
   const containerClass = isStandalonePage 
@@ -194,18 +49,11 @@ const NotificacionesOposicion = () => {
 
   if (error) {
     return (
-      <div className={containerClass}>
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => fetchUrls()}
-            className="text-blue-600 hover:text-blue-800 font-medium"
-          >
-            Intentar de nuevo
-          </button>
-        </div>
-      </div>
+      <ErrorDisplay
+        error={error}
+        onRetry={fetchUrls}
+        className={containerClass}
+      />
     );
   }
 
@@ -235,10 +83,10 @@ const NotificacionesOposicion = () => {
 
           <button
             type="submit"
-            disabled={isLoading || selectedUrls.length === 0}
+            disabled={isSubmitting || selectedUrls.length === 0}
             className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isLoading ? 'Guardando...' : user ? 'Guardar suscripciones' : 'Suscribirse'}
+            {isSubmitting ? 'Guardando...' : user ? 'Guardar suscripciones' : 'Suscribirse'}
           </button>
         </form>
       </div>
