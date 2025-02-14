@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Mail, ArrowRight, StickyNote } from 'lucide-react';
+import { Mail, ArrowRight, Bell, BookOpen, MessageSquare, FileEdit } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,12 +24,11 @@ const Index = () => {
         .insert([
           {
             email: data.email,
-            name: 'Early Access User', // Proporcionamos un nombre por defecto para early access
+            name: 'Early Access User',
           },
         ]);
 
       if (error) {
-        // Check if it's a unique violation error
         if (error.code === '23505') {
           toast({
             title: "Ya estás registrado",
@@ -114,30 +113,36 @@ const Index = () => {
           </form>
         </div>
 
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-6xl mx-auto space-y-24">
+          {/* Sección de Features Principales */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[
               {
+                icon: <Bell className="h-6 w-6 mb-4 text-primary" />,
                 title: "Avisos INAP",
                 description: "Recibe y configura los avisos sobre principales cambios en el INAP",
               },
               {
+                icon: <BookOpen className="h-6 w-6 mb-4 text-primary" />,
                 title: "Tests Gratuitos",
                 description: "Realiza test 100% gratuitos sobre tu oposición",
               },
               {
+                icon: <MessageSquare className="h-6 w-6 mb-4 text-primary" />,
                 title: "Chat Jurídico",
                 description: "Chat jurídico actualizado con la normativa vigente",
               },
               {
+                icon: <FileEdit className="h-6 w-6 mb-4 text-primary" />,
                 title: "Notas y apuntes",
                 description: "Crea tus mejores apuntes, agrega información basándote en la ley. Guárdalos en el formato que prefieras.",
               },
             ].map((feature, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center"
               >
+                <div className="flex justify-center">{feature.icon}</div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {feature.title}
                 </h3>
@@ -145,6 +150,138 @@ const Index = () => {
               </div>
             ))}
           </div>
+
+          {/* Sección detallada de Avisos INAP */}
+          <section className="py-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold text-gray-900">Avisos INAP Personalizados</h2>
+                <p className="text-lg text-gray-600">
+                  Mantente al día con todos los cambios relevantes del INAP para tu oposición:
+                </p>
+                <ul className="space-y-4">
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Notificaciones instantáneas sobre nuevas convocatorias</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Alertas sobre cambios en el temario</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Seguimiento de plazos y fechas importantes</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Filtros personalizados por tipo de oposición</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-gray-100 p-8 rounded-lg">
+                <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
+              </div>
+            </div>
+          </section>
+
+          {/* Sección detallada de Tests Gratuitos */}
+          <section className="py-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="bg-gray-100 p-8 rounded-lg order-2 md:order-1">
+                <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
+              </div>
+              <div className="space-y-6 order-1 md:order-2">
+                <h2 className="text-3xl font-bold text-gray-900">Tests de Preparación</h2>
+                <p className="text-lg text-gray-600">
+                  Practica y evalúa tus conocimientos con nuestra amplia biblioteca de tests:
+                </p>
+                <ul className="space-y-4">
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Tests específicos por tema y bloque</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Preguntas actualizadas según la última normativa</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Explicaciones detalladas de cada respuesta</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Seguimiento de tu progreso y áreas de mejora</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* Sección detallada de Chat Jurídico */}
+          <section className="py-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold text-gray-900">Chat Jurídico Inteligente</h2>
+                <p className="text-lg text-gray-600">
+                  Resuelve tus dudas jurídicas al instante con nuestro asistente especializado:
+                </p>
+                <ul className="space-y-4">
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Base de conocimiento actualizada con la última legislación</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Respuestas precisas con referencias a la normativa</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Disponible 24/7 para consultas</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Ejemplos prácticos y casos de estudio</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-gray-100 p-8 rounded-lg">
+                <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
+              </div>
+            </div>
+          </section>
+
+          {/* Sección detallada de Notas y Apuntes */}
+          <section className="py-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="bg-gray-100 p-8 rounded-lg order-2 md:order-1">
+                <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
+              </div>
+              <div className="space-y-6 order-1 md:order-2">
+                <h2 className="text-3xl font-bold text-gray-900">Sistema de Notas Inteligente</h2>
+                <p className="text-lg text-gray-600">
+                  Organiza y mejora tus apuntes con nuestras herramientas avanzadas:
+                </p>
+                <ul className="space-y-4">
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Editor de texto enriquecido con formato legal</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Referencias automáticas a la legislación</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Organización por temas y subtemas</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
+                    <span>Exportación a múltiples formatos (PDF, Word, HTML)</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
