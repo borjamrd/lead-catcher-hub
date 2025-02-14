@@ -238,7 +238,18 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      url_subscriptions_with_emails: {
+        Row: {
+          email: string | null
+          subscription_date: string | null
+          subscription_type: string | null
+          url: string | null
+          url_id: string | null
+          url_name: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
