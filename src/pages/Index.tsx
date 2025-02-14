@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Mail, ArrowRight, Bell, BookOpen, MessageSquare, FileEdit } from 'lucide-react';
+import { Mail, ArrowRight, Bell, BookOpen, MessageSquare, FileEdit, Trophy, Target, Sparkles, Crown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -339,6 +339,148 @@ const Index = () => {
                     <span>Exportación a múltiples formatos (PDF, Word, HTML)</span>
                   </li>
                 </ul>
+              </div>
+            </div>
+          </motion.section>
+
+          <motion.section 
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            className="py-24 bg-gradient-to-b from-platinum to-white"
+          >
+            <div className="max-w-6xl mx-auto px-4">
+              <h2 className="text-4xl font-bold text-center mb-16 text-oxford_blue">
+                Haz tu estudio ameno
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="p-3 bg-yinmn_blue/10 rounded-lg">
+                      <Trophy className="h-8 w-8 text-yinmn_blue" />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-oxford_blue">Misiones semanales</h3>
+                  </div>
+                  <p className="text-gray-600 mb-6">
+                    Enfrenta nuevos desafíos cada semana: desde casos prácticos hasta competiciones por el mejor tiempo en tests.
+                  </p>
+                  <div className="flex items-center space-x-3 text-sm text-yinmn_blue">
+                    <Target className="h-5 w-5" />
+                    <span>Supera tus mejores marcas</span>
+                  </div>
+                </div>
+                
+                <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="p-3 bg-yinmn_blue/10 rounded-lg">
+                      <Sparkles className="h-8 w-8 text-yinmn_blue" />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-oxford_blue">Gana LexPoints 😉</h3>
+                  </div>
+                  <p className="text-gray-600 mb-6">
+                    Acumula puntos mientras avanzas en tu estudio. Los LexPoints te ayudarán a seguir tu progreso y desbloquear nuevo contenido.
+                  </p>
+                  <div className="flex items-center space-x-3 text-sm text-yinmn_blue">
+                    <Crown className="h-5 w-5" />
+                    <span>Compite en el ranking semanal</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.section>
+
+          <motion.section
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            className="py-24"
+          >
+            <div className="max-w-6xl mx-auto px-4">
+              <h2 className="text-4xl font-bold text-center mb-4 text-oxford_blue">
+                Planes y Precios
+              </h2>
+              <p className="text-lg text-center text-gray-600 mb-16">
+                Elige el plan que mejor se adapte a tu preparación
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Free Plan */}
+                <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+                  <h3 className="text-xl font-semibold text-oxford_blue mb-4">Gratuito</h3>
+                  <p className="text-4xl font-bold text-yinmn_blue mb-6">€0<span className="text-lg font-normal text-gray-500">/mes</span></p>
+                  <ul className="space-y-4 mb-8">
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Acceso a tests básicos</span>
+                    </li>
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Avisos INAP limitados</span>
+                    </li>
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Chat jurídico básico</span>
+                    </li>
+                  </ul>
+                  <Button variant="outline" className="w-full">Empezar gratis</Button>
+                </div>
+
+                {/* Premium Plan */}
+                <div className="bg-oxford_blue p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow transform scale-105">
+                  <div className="bg-yinmn_blue/20 text-yinmn_blue text-sm font-medium px-3 py-1 rounded-full w-fit mb-4">
+                    Más popular
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">Premium</h3>
+                  <p className="text-4xl font-bold text-white mb-6">€9.99<span className="text-lg font-normal text-gray-300">/mes</span></p>
+                  <ul className="space-y-4 mb-8 text-gray-200">
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Tests ilimitados</span>
+                    </li>
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Todos los avisos INAP</span>
+                    </li>
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Chat jurídico avanzado</span>
+                    </li>
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Sistema de notas completo</span>
+                    </li>
+                  </ul>
+                  <Button className="w-full bg-yinmn_blue hover:bg-yinmn_blue-600 text-white">
+                    Comenzar ahora
+                  </Button>
+                </div>
+
+                {/* Pro Plan */}
+                <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+                  <h3 className="text-xl font-semibold text-oxford_blue mb-4">Pro</h3>
+                  <p className="text-4xl font-bold text-yinmn_blue mb-6">€19.99<span className="text-lg font-normal text-gray-500">/mes</span></p>
+                  <ul className="space-y-4 mb-8">
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Todo lo de Premium</span>
+                    </li>
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Tutorías personalizadas</span>
+                    </li>
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Recursos exclusivos</span>
+                    </li>
+                    <li className="flex items-start space-x-3">
+                      <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
+                      <span>Grupos de estudio</span>
+                    </li>
+                  </ul>
+                  <Button variant="outline" className="w-full">Contactar</Button>
+                </div>
               </div>
             </div>
           </motion.section>
