@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Mail, ArrowRight, Bell, BookOpen, MessageSquare, FileEdit } from 'lucide-react';
@@ -6,10 +5,34 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 interface FormData {
   email: string;
 }
+
+const fadeInUp = {
+  initial: {
+    y: 60,
+    opacity: 0
+  },
+  animate: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut"
+    }
+  }
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+};
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -59,16 +82,26 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-        <div className="text-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
             OpositaPlace
           </h1>
           <p className="text-xl sm:text-2xl text-gray-600 mb-12">
             Toda tu oposición, en un mismo lugar
           </p>
-        </div>
+        </motion.div>
 
-        <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm mb-16">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm mb-16"
+        >
           <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
             ¿Te interesa?
           </h2>
@@ -111,11 +144,16 @@ const Index = () => {
               )}
             </Button>
           </form>
-        </div>
+        </motion.div>
 
         <div className="max-w-6xl mx-auto space-y-24">
-          {/* Sección de Features Principales */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <motion.div 
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 md:grid-cols-4 gap-8"
+          >
             {[
               {
                 icon: <Bell className="h-6 w-6 mb-4 text-primary" />,
@@ -138,8 +176,9 @@ const Index = () => {
                 description: "Crea tus mejores apuntes, agrega información basándote en la ley. Guárdalos en el formato que prefieras.",
               },
             ].map((feature, index) => (
-              <div
+              <motion.div
                 key={index}
+                variants={fadeInUp}
                 className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center"
               >
                 <div className="flex justify-center">{feature.icon}</div>
@@ -147,12 +186,17 @@ const Index = () => {
                   {feature.title}
                 </h3>
                 <p className="text-gray-600">{feature.description}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-          {/* Sección detallada de Avisos INAP */}
-          <section className="py-12">
+          <motion.section 
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            className="py-12"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <h2 className="text-3xl font-bold text-gray-900">Avisos INAP Personalizados</h2>
@@ -182,10 +226,15 @@ const Index = () => {
                 <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
               </div>
             </div>
-          </section>
+          </motion.section>
 
-          {/* Sección detallada de Tests Gratuitos */}
-          <section className="py-12">
+          <motion.section 
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            className="py-12"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div className="bg-gray-100 p-8 rounded-lg order-2 md:order-1">
                 <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
@@ -215,10 +264,15 @@ const Index = () => {
                 </ul>
               </div>
             </div>
-          </section>
+          </motion.section>
 
-          {/* Sección detallada de Chat Jurídico */}
-          <section className="py-12">
+          <motion.section 
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            className="py-12"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <h2 className="text-3xl font-bold text-gray-900">Chat Jurídico Inteligente</h2>
@@ -248,10 +302,15 @@ const Index = () => {
                 <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
               </div>
             </div>
-          </section>
+          </motion.section>
 
-          {/* Sección detallada de Notas y Apuntes */}
-          <section className="py-12">
+          <motion.section 
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            className="py-12"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div className="bg-gray-100 p-8 rounded-lg order-2 md:order-1">
                 <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
@@ -281,7 +340,7 @@ const Index = () => {
                 </ul>
               </div>
             </div>
-          </section>
+          </motion.section>
         </div>
       </div>
     </div>
