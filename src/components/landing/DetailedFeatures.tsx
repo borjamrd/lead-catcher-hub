@@ -97,6 +97,7 @@ const DetailedFeatures = () => {
       </motion.section>
 
       <motion.section 
+        id="avisos-inap-personalizados"
         initial="initial"
         whileInView="animate"
         viewport={{ once: true, margin: "-100px" }}

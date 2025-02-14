@@ -53,7 +53,7 @@ const Navbar = () => {
           
           <div className="flex items-center space-x-6">
             <Link
-              to="/#avisos-inap"
+              to="/#avisos-inap-personalizados"
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Recibe tus avisos
