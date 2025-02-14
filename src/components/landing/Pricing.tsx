@@ -42,15 +42,15 @@ const Pricing = () => {
             <ul className="space-y-4 mb-8">
               <li className="flex items-start space-x-3">
                 <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
-                <span>Acceso a tests básicos</span>
+                <span>Acceso a todos los tests</span>
               </li>
               <li className="flex items-start space-x-3">
                 <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
-                <span>Avisos INAP limitados</span>
+                <span>Configura tus avisos</span>
               </li>
               <li className="flex items-start space-x-3">
                 <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
-                <span>Chat jurídico básico</span>
+                <span>Creación de apuntes y notas</span>
               </li>
             </ul>
             <Button variant="outline" className="w-full">Empezar gratis</Button>
@@ -62,23 +62,19 @@ const Pricing = () => {
               Más popular
             </div>
             <h3 className="text-xl font-semibold text-white mb-4">Premium</h3>
-            <p className="text-4xl font-bold text-white mb-6">€9.99<span className="text-lg font-normal text-gray-300">/mes</span></p>
+            <p className="text-4xl font-bold text-white mb-6">€20<span className="text-lg font-normal text-gray-300">/mes</span></p>
             <ul className="space-y-4 mb-8 text-gray-200">
               <li className="flex items-start space-x-3">
                 <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
-                <span>Tests ilimitados</span>
+                <span>Todos los tests</span>
               </li>
               <li className="flex items-start space-x-3">
                 <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
-                <span>Todos los avisos INAP</span>
+                <span>Chat jurídico</span>
               </li>
               <li className="flex items-start space-x-3">
                 <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
-                <span>Chat jurídico avanzado</span>
-              </li>
-              <li className="flex items-start space-x-3">
-                <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
-                <span>Sistema de notas completo</span>
+                <span>2 correcciones de casos prácticos</span>
               </li>
             </ul>
             <Button className="w-full bg-yinmn_blue hover:bg-yinmn_blue-600 text-white">
@@ -89,19 +85,15 @@ const Pricing = () => {
           {/* Pro Plan */}
           <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100">
             <h3 className="text-xl font-semibold text-oxford_blue mb-4">Pro</h3>
-            <p className="text-4xl font-bold text-yinmn_blue mb-6">€19.99<span className="text-lg font-normal text-gray-500">/mes</span></p>
+            <p className="text-4xl font-bold text-yinmn_blue mb-6">€39.99<span className="text-lg font-normal text-gray-500">/mes</span></p>
             <ul className="space-y-4 mb-8">
               <li className="flex items-start space-x-3">
                 <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
-                <span>Todo lo de Premium</span>
+                <span>Corrección de casos prácticos</span>
               </li>
               <li className="flex items-start space-x-3">
                 <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
                 <span>Tutorías personalizadas</span>
-              </li>
-              <li className="flex items-start space-x-3">
-                <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
-                <span>Recursos exclusivos</span>
               </li>
               <li className="flex items-start space-x-3">
                 <span className="flex-shrink-0 h-6 w-6 text-yinmn_blue">•</span>
