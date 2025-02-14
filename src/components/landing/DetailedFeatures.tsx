@@ -160,10 +160,6 @@ const DetailedFeatures = () => {
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Disponible 24/7 para consultas</span>
-              </li>
-              <li className="flex items-start">
-                <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
                 <span>Ejemplos prácticos y casos de estudio</span>
               </li>
             </ul>
