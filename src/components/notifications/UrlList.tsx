@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -19,6 +19,26 @@ interface UrlListProps {
 
 const UrlList = ({ urls, selectedUrls, isLoading, onUrlToggle }: UrlListProps) => {
   const [displayCount, setDisplayCount] = useState(4);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 50;
+    
+    if (isNearBottom && !isLoadingMore && displayCount < urls.length) {
+      loadMore();
+    }
+  };
+
+  const loadMore = () => {
+    setIsLoadingMore(true);
+    // Simulamos una carga con un pequeño delay para mostrar el spinner
+    setTimeout(() => {
+      setDisplayCount(prev => Math.min(prev + 4, urls.length));
+      setIsLoadingMore(false);
+    }, 500);
+  };
 
   if (isLoading) {
     return (
@@ -33,11 +53,13 @@ const UrlList = ({ urls, selectedUrls, isLoading, onUrlToggle }: UrlListProps) =
   }
 
   const displayedUrls = urls.slice(0, displayCount);
-  const hasMore = displayCount < urls.length;
 
   return (
     <div className="space-y-4">
-      <ScrollArea className="h-[250px] w-full rounded-md border p-4">
+      <ScrollArea 
+        className="h-[250px] w-full rounded-md border p-4"
+        onScrollCapture={handleScroll}
+      >
         {displayedUrls.map((url) => (
           <div key={url.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
             <Checkbox
@@ -54,16 +76,12 @@ const UrlList = ({ urls, selectedUrls, isLoading, onUrlToggle }: UrlListProps) =
             </label>
           </div>
         ))}
+        {isLoadingMore && (
+          <div className="flex justify-center items-center py-4">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+          </div>
+        )}
       </ScrollArea>
-      
-      {hasMore && (
-        <button
-          onClick={() => setDisplayCount(prev => prev + 4)}
-          className="w-full py-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
-        >
-          Cargar más URLs
-        </button>
-      )}
     </div>
   );
 };
