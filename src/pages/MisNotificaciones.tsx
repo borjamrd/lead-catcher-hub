@@ -5,7 +5,6 @@ import { Bell, Link } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
 
 interface URL {
   id: string;
@@ -85,29 +84,6 @@ const MisNotificaciones = () => {
     }
   };
 
-  const handleSendEmail = async () => {
-    if (!user || !subscriptions) {
-      toast.error('Debes iniciar sesión y tener suscripciones activas');
-      return;
-    }
-
-    try {
-      const response = await supabase.functions.invoke('send-notifications-email', {
-        body: {
-          email: user.email,
-          subscriptions: subscriptions
-        },
-      });
-
-      if (response.error) throw response.error;
-
-      toast.success('Email enviado correctamente');
-    } catch (error) {
-      console.error('Error sending email:', error);
-      toast.error('Error al enviar el email');
-    }
-  };
-
   if (isLoadingUrls || isLoadingSubscriptions) {
     return <div className="p-8">Cargando...</div>;
   }
@@ -127,22 +103,11 @@ const MisNotificaciones = () => {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Mis Notificaciones</h2>
-            <p className="text-gray-600">
-              Selecciona las URLs de las que quieres recibir notificaciones cuando haya cambios.
-            </p>
-          </div>
-          {subscriptions && subscriptions.length > 0 && (
-            <Button
-              onClick={handleSendEmail}
-              className="ml-4"
-            >
-              <Bell className="mr-2 h-4 w-4" />
-              Recibir resumen por email
-            </Button>
-          )}
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Mis Notificaciones</h2>
+          <p className="text-gray-600">
+            Selecciona las URLs de las que quieres recibir notificaciones cuando haya cambios.
+          </p>
         </div>
       </div>
 
