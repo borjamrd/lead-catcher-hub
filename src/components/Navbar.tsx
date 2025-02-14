@@ -52,12 +52,12 @@ const Navbar = () => {
           </div>
           
           <div className="flex items-center space-x-6">
-            <Link
-              to="/notificaciones-oposicion"
+            <a
+              href="/#avisos-inap"
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Recibe tus avisos
-            </Link>
+            </a>
             {user && (
               <>
                 <Link
