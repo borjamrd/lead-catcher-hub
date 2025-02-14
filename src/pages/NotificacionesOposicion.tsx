@@ -62,7 +62,7 @@ const NotificacionesOposicion = () => {
       <div className={formContainerClass}>
         {isStandalonePage && (
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Suscríbete a actualizaciones</h1>
+            <h1 className="text-3xl font-bold text-gray-900">¿List@ para recibir actualizaciones?</h1>
             <p className="mt-2 text-gray-600">
               Selecciona las URLs que te interesan y te avisaremos cuando haya cambios.
             </p>
