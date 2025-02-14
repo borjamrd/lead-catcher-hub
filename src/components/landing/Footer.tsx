@@ -64,7 +64,7 @@ const Footer = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="py-16 bg-oxford_blue rounded-2xl -mt-12 text-white mb-12"
+          className="py-16 rounded-2xl -mt-12 text-white mb-12"
         >
           <div className="max-w-3xl mx-auto text-center px-4">
             <h2 className="text-3xl font-bold mb-6">
