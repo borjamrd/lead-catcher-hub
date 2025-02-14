@@ -18,8 +18,16 @@ const fadeInUp = {
 };
 
 const Pricing = () => {
+  const scrollToCta = () => {
+    const ctaSection = document.getElementById('cta');
+    if (ctaSection) {
+      ctaSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <motion.section
+      id="pricing"
       initial="initial"
       whileInView="animate"
       viewport={{ once: true, margin: "-100px" }}
@@ -53,7 +61,9 @@ const Pricing = () => {
                 <span>Creación de apuntes y notas</span>
               </li>
             </ul>
-            <Button variant="outline" className="w-full">Empezar gratis</Button>
+            <Button variant="outline" className="w-full" onClick={scrollToCta}>
+              Empezar gratis
+            </Button>
           </div>
 
           {/* Premium Plan */}
@@ -74,7 +84,7 @@ const Pricing = () => {
                 <span>2 correcciones de casos prácticos</span>
               </li>
             </ul>
-            <Button className="w-full bg-yinmn_blue hover:bg-yinmn_blue-600 text-white">
+            <Button className="w-full bg-yinmn_blue hover:bg-yinmn_blue-600 text-white" onClick={scrollToCta}>
               Comenzar ahora
             </Button>
           </div>

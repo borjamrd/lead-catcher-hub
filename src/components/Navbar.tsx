@@ -38,6 +38,13 @@ const Navbar = () => {
     }
   };
 
+  const scrollToPricing = () => {
+    const pricingSection = document.getElementById('pricing');
+    if (pricingSection) {
+      pricingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -49,7 +56,19 @@ const Navbar = () => {
             </Link>
           </div>
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-6">
+            <button
+              onClick={scrollToPricing}
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Precios
+            </button>
+            <Link
+              to="/notificaciones-oposicion"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Recibe tus avisos
+            </Link>
             {user && (
               <>
                 <Link
@@ -77,16 +96,6 @@ const Navbar = () => {
                 </Button>
               </>
             )}
-            {/* Comentado temporalmente el botón de inicio de sesión
-            {!user && (
-              <Link
-                to="/inicia-sesion"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Iniciar sesión
-              </Link>
-            )}
-            */}
           </div>
         </div>
       </div>
