@@ -90,8 +90,8 @@ const Index = () => {
           className="text-center"
         >
           <h1 className="text-4xl sm:text-5xl font-bold mb-6">
-            <span className="text-blue_green">oposita</span>
-            <span className="text-prussian_blue">place</span>
+            <span className="text-yinmn_blue">oposita</span>
+            <span className="text-oxford_blue">place</span>
           </h1>
           <p className="text-xl sm:text-2xl text-gray-600 mb-12">
             Toda tu oposición, en un mismo lugar
