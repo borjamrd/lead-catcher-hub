@@ -1,5 +1,5 @@
 
-import { Home, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,31 +38,20 @@ const Navbar = () => {
     }
   };
 
-  const scrollToPricing = () => {
-    const pricingSection = document.getElementById('pricing');
-    if (pricingSection) {
-      pricingSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center space-x-4">
-            <Link to="/" className="flex items-center space-x-2">
-              <Home className="h-6 w-6" />
-              <span className="font-bold text-xl">OpositaPlace</span>
+            <Link to="/" className="flex items-center">
+              <span className="font-bold text-xl">
+                <span className="text-oxford_blue">oposita</span>
+                <span className="text-yinmn_blue">place</span>
+              </span>
             </Link>
           </div>
           
           <div className="flex items-center space-x-6">
-            <button
-              onClick={scrollToPricing}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Precios
-            </button>
             <Link
               to="/notificaciones-oposicion"
               className="text-gray-600 hover:text-gray-900 transition-colors"
