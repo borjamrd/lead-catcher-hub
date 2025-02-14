@@ -5,7 +5,6 @@ import Features from '@/components/landing/Features';
 import DetailedFeatures from '@/components/landing/DetailedFeatures';
 import Gamification from '@/components/landing/Gamification';
 import Pricing from '@/components/landing/Pricing';
-import CtaSection from '@/components/landing/CtaSection';
 import Footer from '@/components/landing/Footer';
 
 const Index = () => {
@@ -31,7 +30,6 @@ const Index = () => {
         </div>
       </div>
 
-      <CtaSection />
       <Footer />
     </div>
   );
