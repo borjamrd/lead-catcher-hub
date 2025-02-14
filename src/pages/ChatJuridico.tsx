@@ -22,7 +22,9 @@ const ChatJuridico = () => {
 
     try {
       setIsLoading(true);
-      const newMessages = [...messages, { role: 'user', content: input }];
+      // Especificamos explícitamente el tipo 'user' para role
+      const userMessage: Message = { role: 'user' as const, content: input };
+      const newMessages = [...messages, userMessage];
       setMessages(newMessages);
       setInput('');
 
@@ -33,7 +35,12 @@ const ChatJuridico = () => {
       if (error) throw error;
 
       if (data) {
-        setMessages([...newMessages, data as Message]);
+        // Aseguramos que data tenga el tipo correcto antes de añadirlo
+        const assistantMessage: Message = {
+          role: 'assistant' as const,
+          content: (data as Message).content
+        };
+        setMessages([...newMessages, assistantMessage]);
       }
     } catch (error) {
       console.error('Error:', error);
