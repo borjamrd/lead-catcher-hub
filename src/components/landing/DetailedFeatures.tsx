@@ -1,5 +1,5 @@
-
 import { motion } from 'framer-motion';
+import NotificacionesOposicion from '@/pages/NotificacionesOposicion';
 
 const fadeInUp = {
   initial: {
@@ -127,8 +127,8 @@ const DetailedFeatures = () => {
               </li>
             </ul>
           </div>
-          <div className="bg-gray-100 p-8 rounded-lg">
-            <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+            <NotificacionesOposicion />
           </div>
         </div>
       </motion.section>

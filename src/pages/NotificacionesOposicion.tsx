@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import UrlList from '@/components/notifications/UrlList';
 import SubscriptionForm from '@/components/notifications/SubscriptionForm';
@@ -27,7 +27,8 @@ const NotificacionesOposicion = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const location = useLocation();
+  const isStandalonePage = location.pathname === '/notificaciones-oposicion';
   
   const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>();
 
@@ -136,7 +137,6 @@ const NotificacionesOposicion = () => {
         });
         
         triggerConfetti();
-        navigate('/dashboard/mis-notificaciones');
       } else {
         const { data: lead, error: leadError } = await supabase
           .from('leads')
@@ -168,8 +168,9 @@ const NotificacionesOposicion = () => {
           description: 'Te avisaremos cuando haya actualizaciones.',
         });
 
-        setValue('email', data.email);
-        setValue('name', data.name);
+        setValue('email', '');
+        setValue('name', '');
+        setSelectedUrls([]);
       }
     } catch (error) {
       console.error('Error submitting:', error);
@@ -183,9 +184,17 @@ const NotificacionesOposicion = () => {
     }
   };
 
+  const containerClass = isStandalonePage 
+    ? "min-h-screen bg-gray-50 flex items-center justify-center px-4"
+    : "";
+
+  const formContainerClass = isStandalonePage
+    ? "max-w-md w-full space-y-8"
+    : "w-full space-y-6";
+
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className={containerClass}>
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
           <p className="text-gray-600 mb-4">{error}</p>
@@ -201,19 +210,21 @@ const NotificacionesOposicion = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Suscríbete a actualizaciones</h1>
-          <p className="mt-2 text-gray-600">
-            Selecciona las URLs que te interesan y te avisaremos cuando haya cambios.
-          </p>
-        </div>
+    <div className={containerClass}>
+      <div className={formContainerClass}>
+        {isStandalonePage && (
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900">Suscríbete a actualizaciones</h1>
+            <p className="mt-2 text-gray-600">
+              Selecciona las URLs que te interesan y te avisaremos cuando haya cambios.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
           {!user && <SubscriptionForm register={register} errors={errors} />}
 
-          <div className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
+          <div className="space-y-4 bg-white rounded-lg">
             <UrlList
               urls={urls}
               selectedUrls={selectedUrls}
