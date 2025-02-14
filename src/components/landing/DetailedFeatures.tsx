@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import NotificacionesOposicion from '@/pages/NotificacionesOposicion';
+import { Badge } from "@/components/ui/badge";
 
 const fadeInUp = {
   initial: {
@@ -145,7 +146,10 @@ const DetailedFeatures = () => {
             <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
           </div>
           <div className="space-y-6 order-1 md:order-2">
-            <h2 className="text-3xl font-bold text-gray-900">Chat Jurídico Inteligente</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-3xl font-bold text-gray-900">Chat Jurídico Inteligente</h2>
+              <Badge variant="secondary" className="text-xs">Próximamente</Badge>
+            </div>
             <p className="text-lg text-gray-600">
               Resuelve tus dudas jurídicas al instante con nuestro asistente especializado:
             </p>
