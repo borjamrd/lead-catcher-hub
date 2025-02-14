@@ -48,12 +48,15 @@ const Gamification = () => {
           </div>
           
           <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center space-x-4 mb-6">
+            <div className="flex items-center space-x-4 mb-2">
               <div className="p-3 bg-yinmn_blue/10 rounded-lg">
                 <Sparkles className="h-8 w-8 text-yinmn_blue" />
               </div>
               <h3 className="text-2xl font-semibold text-oxford_blue">Gana LexPoints 😉</h3>
             </div>
+            <p className="text-sm italic text-gray-500 mb-4 ml-[60px]">
+              en latín: lex, legis
+            </p>
             <p className="text-gray-600 mb-6">
               Acumula puntos mientras avanzas en tu estudio. Los LexPoints te ayudarán a seguir tu progreso y desbloquear nuevo contenido.
             </p>
