@@ -27,9 +27,9 @@ const staggerContainer = {
 
 const features = [
   {
-    icon: <Bell className="h-6 w-6 mb-4 text-primary" />,
-    title: "Avisos INAP",
-    description: "Recibe y configura los avisos sobre principales cambios en el INAP",
+    icon: <FileEdit className="h-6 w-6 mb-4 text-primary" />,
+    title: "Notas y apuntes",
+    description: "Crea tus mejores apuntes, agrega información basándote en la ley. Guárdalos en el formato que prefieras.",
   },
   {
     icon: <BookOpen className="h-6 w-6 mb-4 text-primary" />,
@@ -37,14 +37,14 @@ const features = [
     description: "Realiza test 100% gratuitos sobre tu oposición",
   },
   {
+    icon: <Bell className="h-6 w-6 mb-4 text-primary" />,
+    title: "Avisos INAP",
+    description: "Recibe y configura los avisos sobre principales cambios en el INAP",
+  },
+  {
     icon: <MessageSquare className="h-6 w-6 mb-4 text-primary" />,
     title: "Chat Jurídico",
     description: "Chat jurídico actualizado con la normativa vigente",
-  },
-  {
-    icon: <FileEdit className="h-6 w-6 mb-4 text-primary" />,
-    title: "Notas y apuntes",
-    description: "Crea tus mejores apuntes, agrega información basándote en la ley. Guárdalos en el formato que prefieras.",
   },
 ];
 

@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 
 const fadeInUp = {
@@ -27,26 +28,26 @@ const DetailedFeatures = () => {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-gray-900">Avisos INAP Personalizados</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Sistema de Notas Inteligente</h2>
             <p className="text-lg text-gray-600">
-              Mantente al día con todos los cambios relevantes del INAP para tu oposición:
+              Organiza y mejora tus apuntes con nuestras herramientas avanzadas:
             </p>
             <ul className="space-y-4">
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Notificaciones instantáneas sobre nuevas convocatorias</span>
+                <span>Editor de texto enriquecido con formato legal</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Alertas sobre cambios en el temario</span>
+                <span>Referencias automáticas a la legislación</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Seguimiento de plazos y fechas importantes</span>
+                <span>Organización por temas y subtemas</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Filtros personalizados por tipo de oposición</span>
+                <span>Exportación a múltiples formatos (PDF, Word, HTML)</span>
               </li>
             </ul>
           </div>
@@ -103,26 +104,26 @@ const DetailedFeatures = () => {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-gray-900">Chat Jurídico Inteligente</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Avisos INAP Personalizados</h2>
             <p className="text-lg text-gray-600">
-              Resuelve tus dudas jurídicas al instante con nuestro asistente especializado:
+              Mantente al día con todos los cambios relevantes del INAP para tu oposición:
             </p>
             <ul className="space-y-4">
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Base de conocimiento actualizada con la última legislación</span>
+                <span>Notificaciones instantáneas sobre nuevas convocatorias</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Respuestas precisas con referencias a la normativa</span>
+                <span>Alertas sobre cambios en el temario</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Disponible 24/7 para consultas</span>
+                <span>Seguimiento de plazos y fechas importantes</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Ejemplos prácticos y casos de estudio</span>
+                <span>Filtros personalizados por tipo de oposición</span>
               </li>
             </ul>
           </div>
@@ -144,26 +145,26 @@ const DetailedFeatures = () => {
             <div className="aspect-video bg-white rounded-lg shadow-sm"></div>
           </div>
           <div className="space-y-6 order-1 md:order-2">
-            <h2 className="text-3xl font-bold text-gray-900">Sistema de Notas Inteligente</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Chat Jurídico Inteligente</h2>
             <p className="text-lg text-gray-600">
-              Organiza y mejora tus apuntes con nuestras herramientas avanzadas:
+              Resuelve tus dudas jurídicas al instante con nuestro asistente especializado:
             </p>
             <ul className="space-y-4">
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Editor de texto enriquecido con formato legal</span>
+                <span>Base de conocimiento actualizada con la última legislación</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Referencias automáticas a la legislación</span>
+                <span>Respuestas precisas con referencias a la normativa</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Organización por temas y subtemas</span>
+                <span>Disponible 24/7 para consultas</span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 h-6 w-6 text-primary">•</span>
-                <span>Exportación a múltiples formatos (PDF, Word, HTML)</span>
+                <span>Ejemplos prácticos y casos de estudio</span>
               </li>
             </ul>
           </div>
