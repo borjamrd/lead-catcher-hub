@@ -227,6 +227,13 @@ export type Database = {
             referencedRelation: "urls"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_url_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
