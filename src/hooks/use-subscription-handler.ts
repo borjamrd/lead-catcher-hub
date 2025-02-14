@@ -27,6 +27,20 @@ export const useSubscriptionHandler = (
     });
   };
 
+  const sendConfirmationEmail = async (email: string, subscriptions: any[]) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('send-notifications-email', {
+        body: { email, subscriptions }
+      });
+
+      if (error) throw error;
+      console.log('Confirmation email sent:', data);
+    } catch (error) {
+      console.error('Error sending confirmation email:', error);
+      // No mostramos error al usuario ya que es una funcionalidad secundaria
+    }
+  };
+
   const handleSubscription = async (data: FormData, reset: UseFormReset<FormData>) => {
     if (selectedUrls.length === 0) {
       toast({
@@ -58,6 +72,15 @@ export const useSubscriptionHandler = (
 
         if (insertError) throw insertError;
 
+        // Obtener los detalles de las URLs seleccionadas
+        const { data: urlDetails } = await supabase
+          .from('urls')
+          .select('*')
+          .in('id', selectedUrls);
+
+        // Enviar correo de confirmación
+        await sendConfirmationEmail(user.email!, urlDetails);
+
         toast({
           title: '¡Éxito!',
           description: 'Tus suscripciones se han actualizado correctamente.',
@@ -88,6 +111,15 @@ export const useSubscriptionHandler = (
           );
 
         if (subsError) throw subsError;
+
+        // Obtener los detalles de las URLs seleccionadas
+        const { data: urlDetails } = await supabase
+          .from('urls')
+          .select('*')
+          .in('id', selectedUrls);
+
+        // Enviar correo de confirmación
+        await sendConfirmationEmail(data.email, urlDetails);
 
         triggerConfetti();
         toast({
