@@ -10,14 +10,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-interface Subscription {
-  urls: {
-    id: string;
-    name: string;
-    url: string;
-  };
-}
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -30,8 +22,8 @@ serve(async (req) => {
     console.log("Received request with email:", email);
     console.log("Subscriptions:", JSON.stringify(subscriptions, null, 2));
 
-    const subscriptionsList = (subscriptions as Subscription[])
-      .map((sub) => `<li><a href="${sub.urls.url}">${sub.urls.name}</a></li>`)
+    const subscriptionsList = subscriptions
+      .map((sub) => `<li><a href="${sub.url}">${sub.name}</a></li>`)
       .join("");
 
     const emailResponse = await resend.emails.send({
