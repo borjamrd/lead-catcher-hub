@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Link } from 'react-router-dom';
 
 export function DashboardContent() {
   // Mock data
@@ -50,16 +51,10 @@ export function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      {/* Top Button */}
-      <div className="flex justify-end mb-6">
-        <Button className="bg-primary font-semibold" size="lg">
-          <Rocket className="mr-2 h-5 w-5" /> Empezar sesión de estudio
-        </Button>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Resumen del Progreso */}
-        <Card className="col-span-1 md:col-span-2 lg:col-span-1 shadow-md">
+      {/* Grid layout for the dashboard */}
+      <div className="grid grid-cols-12 gap-6">
+        {/* Resumen del Progreso - 5 columns, spans 2 rows */}
+        <Card className="col-span-5 row-span-2 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               <LineChart className="mr-2 h-6 w-6 text-primary" />
@@ -101,8 +96,8 @@ export function DashboardContent() {
           </CardContent>
         </Card>
 
-        {/* Revisión Inteligente */}
-        <Card className="shadow-md">
+        {/* Revisión Inteligente - 3 columns, spans 2 rows */}
+        <Card className="col-span-3 row-span-2 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               <MessageSquare className="mr-2 h-6 w-6 text-primary" />
@@ -149,8 +144,21 @@ export function DashboardContent() {
           </CardContent>
         </Card>
 
-        {/* Motivación */}
-        <Card className="shadow-md">
+        {/* Botón empezar sesión de estudio - 1 column, spans 1 row */}
+        <Card className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer">
+          <Link to="/dashboard/nuevo-test" className="block h-full">
+            <CardContent className="flex h-full items-center justify-center p-6">
+              <div className="flex flex-col items-center text-center">
+                <Rocket className="h-12 w-12 text-primary mb-2" />
+                <h3 className="text-xl font-semibold">Empezar sesión de estudio</h3>
+                <p className="text-sm text-muted-foreground mt-2">Comienza ahora a preparar tu oposición</p>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
+
+        {/* Motivación - 4 columns, spans 1 row */}
+        <Card className="col-span-4 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               <Award className="mr-2 h-6 w-6 text-primary" />
@@ -181,8 +189,8 @@ export function DashboardContent() {
           </CardContent>
         </Card>
 
-        {/* Atajos útiles */}
-        <Card className="col-span-1 md:col-span-2 lg:col-span-1 shadow-md">
+        {/* Atajos útiles - ocupa las columnas restantes */}
+        <Card className="col-span-3 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               <Settings className="mr-2 h-6 w-6 text-primary" />
@@ -190,8 +198,8 @@ export function DashboardContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" className="flex items-center justify-start h-16">
+            <div className="space-y-3">
+              <Button variant="outline" className="w-full flex items-center justify-start h-16">
                 <Calendar className="mr-2 h-5 w-5" />
                 <div className="text-left">
                   <div className="font-medium">Modo examen</div>
@@ -199,7 +207,7 @@ export function DashboardContent() {
                 </div>
               </Button>
               
-              <Button variant="outline" className="flex items-center justify-start h-16">
+              <Button variant="outline" className="w-full flex items-center justify-start h-16">
                 <Search className="mr-2 h-5 w-5" />
                 <div className="text-left">
                   <div className="font-medium">Buscar un tema</div>
