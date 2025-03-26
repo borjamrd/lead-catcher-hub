@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import NotificacionesOposicion from '@/pages/NotificacionesOposicion';
 import { Badge } from "@/components/ui/badge";
@@ -104,9 +105,9 @@ const DetailedFeatures = () => {
         variants={fadeInUp}
         className="py-12"
       >
+        <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Avisos INAP Personalizados</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-gray-900">Avisos INAP Personalizados</h2>
             <p className="text-lg text-gray-600">
               Mantente al día con todos los cambios relevantes del INAP para tu oposición:
             </p>
