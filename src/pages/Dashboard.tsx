@@ -12,6 +12,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { DashboardContent } from '@/components/dashboard/dashboard-content';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -94,7 +95,7 @@ const Dashboard = () => {
             </BreadcrumbList>
           </Breadcrumb>
         )}
-        <Outlet />
+        {isRootDashboard ? <DashboardContent /> : <Outlet />}
       </main>
     </div>
   );

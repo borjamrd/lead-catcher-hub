@@ -1,6 +1,6 @@
 
 import { FileText, MessageSquare, CheckSquare, Database, Bell, LayoutDashboard } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const items = [
   {
@@ -36,22 +36,33 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const location = useLocation();
+  
   return (
-    <aside className="w-64 bg-white border-r border-gray-200">
+    <aside className="w-64 bg-sidebar border-r border-sidebar-border">
       <div className="p-4">
         <nav>
           <ul className="space-y-2">
-            {items.map((item) => (
-              <li key={item.title}>
-                <Link
-                  to={item.url}
-                  className="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.title}</span>
-                </Link>
-              </li>
-            ))}
+            {items.map((item) => {
+              const isActive = location.pathname === item.url || 
+                              (item.url !== "/dashboard" && location.pathname.startsWith(item.url));
+              
+              return (
+                <li key={item.title}>
+                  <Link
+                    to={item.url}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      isActive 
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" 
+                        : "text-sidebar-foreground hover:bg-sidebar-accent/10"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </div>
