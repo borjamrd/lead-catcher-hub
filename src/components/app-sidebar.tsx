@@ -1,8 +1,13 @@
 
-import { FileText, MessageSquare, CheckSquare, Database, Bell } from "lucide-react";
+import { FileText, MessageSquare, CheckSquare, Database, Bell, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const items = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+  },
   {
     title: "Hacer test",
     url: "/dashboard/nuevo-test",
