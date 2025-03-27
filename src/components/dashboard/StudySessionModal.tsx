@@ -31,14 +31,14 @@ export function StudySessionModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="sm:max-w-md md:max-w-lg lg:max-w-xl bg-primary text-white border-primary"
-        style={{ maxWidth: "500px" }}
+        className="sm:max-w-md md:max-w-lg lg:max-w-xl bg-primary text-white border-primary rounded-2xl"
+        style={{ maxWidth: "540px", padding: "2rem" }}
       >
         <DialogHeader className="flex items-center justify-center">
           <DialogTitle className="text-2xl font-bold text-center text-white">
             Sesión de estudio
           </DialogTitle>
-          <DialogDescription className="text-lg pt-6 text-center text-white/90">
+          <DialogDescription className="text-lg pt-8 pb-2 text-center text-white/90">
             Si haces click en "Comenzar" activarás un temporizador y el tiempo quedará registrado en tu historial.
             <p className="mt-4">
               Relájate, tómate un té o una tila, activa el modo focus... ¡y a por ello!
@@ -46,26 +46,30 @@ export function StudySessionModal({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-4">
-          <label className="block text-lg text-center mb-2 text-white/90">
+        <div className="py-6">
+          <label className="block text-lg text-center mb-3 text-white/90">
             Sonido ambiente
           </label>
           <Select defaultValue="none">
-            <SelectTrigger className="w-full bg-primary text-white border-white/20 h-12 text-base">
+            <SelectTrigger className="w-full bg-primary text-white border-white/20 h-12 text-base rounded-xl">
               <SelectValue placeholder="Selecciona un sonido" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-xl">
               <SelectItem value="none">Sin sonido</SelectItem>
               <SelectItem value="waves">Olas del atlántico</SelectItem>
               <SelectItem value="cabin">Cabaña en Cazorla</SelectItem>
+              <SelectItem value="caves">Grutas de las maravillas</SelectItem>
+              <SelectItem value="granvia">Ajetreo en Gran Vía</SelectItem>
+              <SelectItem value="born">Café en el Born</SelectItem>
+              <SelectItem value="barceloneta">Noche en la Barceloneta</SelectItem>
             </SelectContent>
           </Select>
         </div>
         
-        <DialogFooter className="sm:justify-center mt-6">
+        <DialogFooter className="sm:justify-center mt-8">
           <Button 
             onClick={onStart} 
-            className="w-full sm:w-auto h-12 text-lg bg-white text-primary hover:bg-white/90 hover:text-primary"
+            className="w-full sm:w-auto h-12 text-lg bg-white text-primary hover:bg-white/90 hover:text-primary rounded-xl"
           >
             <Brain className="mr-2 h-5 w-5" />
             Comenzar
