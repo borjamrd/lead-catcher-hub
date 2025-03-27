@@ -11,7 +11,7 @@ const NuevoTest = () => {
   const [startTime, setStartTime] = useState<Date | null>(null);
 
   useEffect(() => {
-    let interval: number | undefined;
+    let interval: NodeJS.Timeout | undefined;
     
     if (isRunning) {
       interval = setInterval(() => {
