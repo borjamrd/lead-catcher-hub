@@ -1,21 +1,20 @@
-
-import { useAuth } from '@/contexts/AuthContext';
 import { AppSidebar } from "@/components/app-sidebar";
-import { Outlet, useLocation, Link, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from "@/integrations/supabase/client";
-import { 
+import { DashboardContent } from '@/components/dashboard/dashboard-content';
+import {
   Breadcrumb,
-  BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
+  BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { DashboardContent } from '@/components/dashboard/dashboard-content';
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from '@tanstack/react-query';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+
 
 const Dashboard = () => {
-  const { user } = useAuth();
+
   const location = useLocation();
   const isRootDashboard = location.pathname === '/dashboard';
   const paths = location.pathname.split('/').filter(Boolean);
@@ -35,33 +34,33 @@ const Dashboard = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!noteId
+    enabled: !!noteId,
   });
+
 
   const getBreadcrumbs = () => {
     const paths = location.pathname.split('/').filter(Boolean);
     const breadcrumbs = paths.map((path, index) => {
       const url = `/${paths.slice(0, index + 1).join('/')}`;
       const isLast = index === paths.length - 1;
-      
-      // Si es la última parte y estamos en una página de nota, usar el título de la nota
+
       if (isLast && isNotePage && note) {
         return {
           path: note.title || 'Sin título',
           url,
-          isLast
+          isLast,
         };
       }
 
-      // Para otros casos, mantener la lógica original
-      const formattedPath = path.split('-').map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' ');
+      const formattedPath = path
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
 
       return {
         path: formattedPath,
         url,
-        isLast
+        isLast,
       };
     });
 
@@ -72,6 +71,8 @@ const Dashboard = () => {
     <div className="min-h-screen flex w-full">
       <AppSidebar />
       <main className="flex-1 p-8">
+       
+
         {!isRootDashboard && (
           <Breadcrumb className="mb-8">
             <BreadcrumbList>
@@ -80,7 +81,7 @@ const Dashboard = () => {
                   <Link to="/dashboard">Dashboard</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              {getBreadcrumbs().slice(1).map((breadcrumb, index) => (
+              {getBreadcrumbs().slice(1).map((breadcrumb) => (
                 <BreadcrumbItem key={breadcrumb.url}>
                   <BreadcrumbSeparator />
                   {breadcrumb.isLast ? (

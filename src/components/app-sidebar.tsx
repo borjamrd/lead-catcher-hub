@@ -1,5 +1,21 @@
-
-import { FileText, MessageSquare, CheckSquare, Database, Bell, LayoutDashboard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useActiveOpposition } from "@/hooks/use-active-opposition";
+import {
+  Bell,
+  CheckSquare,
+  Database,
+  FileText,
+  LayoutDashboard,
+  MessageSquare,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const items = [
@@ -37,23 +53,52 @@ const items = [
 
 export function AppSidebar() {
   const location = useLocation();
-  
+  const { data: opposition } = useActiveOpposition();
+
+  const [selectedOppositionId, setSelectedOppositionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (opposition?.id) {
+      setSelectedOppositionId(opposition.id);
+    }
+  }, [opposition]);
+
   return (
     <aside className="w-64 bg-sidebar border-r border-sidebar-border">
       <div className="p-4">
+        {/* Oppositions Selector */}
+        <div className="mb-6">
+          {opposition ? (
+            <Select value={selectedOppositionId ?? ""} disabled>
+              <SelectTrigger className="w-full sm:w-auto bg-muted border-muted-foreground/10 text-foreground h-11 text-base rounded-lg">
+                <SelectValue placeholder="Selecciona una oposición" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem key={opposition.id} value={opposition.id}>
+                  {opposition.name}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          ) : (
+            <Button variant="outline">Agrega tu primera oposición</Button>
+          )}
+        </div>
+
         <nav>
           <ul className="space-y-2">
             {items.map((item) => {
-              const isActive = location.pathname === item.url || 
-                              (item.url !== "/dashboard" && location.pathname.startsWith(item.url));
-              
+              const isActive =
+                location.pathname === item.url ||
+                (item.url !== "/dashboard" &&
+                  location.pathname.startsWith(item.url));
+
               return (
                 <li key={item.title}>
                   <Link
                     to={item.url}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      isActive 
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" 
+                      isActive
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                         : "text-sidebar-foreground hover:bg-sidebar-accent/10"
                     }`}
                   >

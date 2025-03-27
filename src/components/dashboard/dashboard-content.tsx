@@ -9,24 +9,65 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 import {
   Award,
   Calendar,
   Clock,
   FlameIcon,
+  PauseCircle,
+  PlayCircle,
   Rocket,
   Search,
-  Settings
+  Settings,
+  StopCircle
 } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { AnkiCard } from "./AnkiCard";
 import { StudySessionModal } from "./StudySessionModal";
-import { useToast } from "@/hooks/use-toast";
 
 export function DashboardContent() {
   const [showStudyModal, setShowStudyModal] = useState(false);
+  const [isStudyActive, setIsStudyActive] = useState(false);
+  const [studyTime, setStudyTime] = useState(0);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [studySessionStarted, setStudySessionStarted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
+  
+  
+  // Control audio playback based on isStudyActive state
+  useEffect(() => {
+    if (isStudyActive && audioRef.current) {
+      audioRef.current.play().catch(error => {
+        console.error("Error playing audio:", error);
+      });
+    } else if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  }, [isStudyActive]);
+  
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+    
+    if (isStudyActive) {
+      interval = setInterval(() => {
+        setStudyTime(prev => prev + 1);
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    
+    return () => clearInterval(interval);
+  }, [isStudyActive]);
+  
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Mock data
   const progressData = {
@@ -95,11 +136,41 @@ export function DashboardContent() {
   };
 
   const handleStartStudySession = () => {
+    setIsStudyActive(true);
+    setStudySessionStarted(true);
+    setStartTime(new Date());
     toast({
       title: "Sesión de estudio iniciada",
       description: "El temporizador está activo. ¡Buena suerte!",
     });
     setShowStudyModal(false);
+  };
+  
+  const handlePauseStudy = () => {
+    setIsStudyActive(false);
+    toast({
+      title: "Sesión de estudio pausada",
+      description: "Puedes continuar cuando estés listo.",
+    });
+  };
+  
+  const handleResumeStudy = () => {
+    setIsStudyActive(true);
+    toast({
+      title: "Sesión de estudio reanudada",
+      description: "¡Continúa con tu estudio!",
+    });
+  };
+  
+  const handleFinishStudy = () => {
+    setIsStudyActive(false);
+    setStudySessionStarted(false);
+    setStudyTime(0);
+    setStartTime(null);
+    toast({
+      title: "Sesión de estudio finalizada",
+      description: "¡Buen trabajo! Has completado tu sesión de estudio.",
+    });
   };
 
   return (
@@ -163,23 +234,71 @@ export function DashboardContent() {
           </CardContent>
         </Card>
 
-        {/* Botón empezar sesión de estudio - 1 column, spans 1 row */}
-        <Card 
-          className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer"
-          onClick={() => setShowStudyModal(true)}
-        >
-          <CardContent className="flex h-full items-center justify-center p-6">
-            <div className="flex flex-col items-center text-center">
-              <Rocket className="h-12 w-12 text-primary mb-2" />
-              <h3 className="text-xl font-semibold">
-                Empezar sesión de estudio
-              </h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Activa el temportizador y concéntrate.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Botón empezar sesión de estudio o Temporizador de estudio */}
+        {!studySessionStarted ? (
+          <Card 
+            className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer"
+            onClick={() => setShowStudyModal(true)}
+          >
+            <CardContent className="flex h-full items-center justify-center p-6">
+              <div className="flex flex-col items-center text-center">
+                <Rocket className="h-12 w-12 text-primary mb-2" />
+                <h3 className="text-xl font-semibold">
+                  Empezar sesión de estudio
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Activa el temportizador y concéntrate.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="col-span-4 shadow-md">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center">
+                <Clock className="mr-2 h-6 w-6" />
+                Temporizador de estudio
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-center">
+                <div className="text-4xl font-bold tabular-nums">
+                  {formatTime(studyTime)}
+                </div>
+              </div>
+              
+              <div className="flex justify-center space-x-2">
+                {!isStudyActive ? (
+                  <Button onClick={handleResumeStudy} size="sm" className="px-4">
+                    <PlayCircle className="mr-2 h-4 w-4" />
+                    Continuar
+                  </Button>
+                ) : (
+                  <Button onClick={handlePauseStudy} size="sm" className="px-4" variant="outline">
+                    <PauseCircle className="mr-2 h-4 w-4" />
+                    Pausar
+                  </Button>
+                )}
+                
+                <Button 
+                  onClick={handleFinishStudy} 
+                  size="sm" 
+                  className="px-4" 
+                  variant="destructive"
+                >
+                  <StopCircle className="mr-2 h-4 w-4" />
+                  Finalizar
+                </Button>
+              </div>
+
+              {startTime && (
+                <div className="text-center text-xs text-muted-foreground">
+                  Sesión iniciada a las {startTime.toLocaleTimeString()}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Modal de sesión de estudio */}
         <StudySessionModal 
@@ -330,4 +449,3 @@ export function DashboardContent() {
     </div>
   );
 }
-
