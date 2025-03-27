@@ -1,11 +1,10 @@
-
-import { Settings } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from './ui/button';
-import { toast } from 'sonner';
-import { useQuery } from '@tanstack/react-query';
+import { Settings } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "./ui/button";
+import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const Navbar = () => {
@@ -13,13 +12,13 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const { data: profile } = useQuery({
-    queryKey: ['profile', user?.id],
+    queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       const { data, error } = await supabase
-        .from('profiles')
-        .select('username, avatar_url')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("username, avatar_url")
+        .eq("id", user.id)
         .single();
 
       if (error) throw error;
@@ -31,10 +30,10 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-      toast.success('Has cerrado sesión correctamente');
-      navigate('/');
+      toast.success("Has cerrado sesión correctamente");
+      navigate("/");
     } catch (error) {
-      toast.error('Error al cerrar sesión');
+      toast.error("Error al cerrar sesión");
     }
   };
 
@@ -50,14 +49,14 @@ const Navbar = () => {
               </span>
             </Link>
           </div>
-          
+
           <div className="flex items-center space-x-6">
-            <Link
+            {/* <Link
               to="/#avisos-inap-personalizados"
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Recibe tus avisos
-            </Link>
+            </Link> */}
             {user && (
               <>
                 <Link
@@ -65,8 +64,11 @@ const Navbar = () => {
                   className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={profile?.avatar_url || ''} />
-                    <AvatarFallback>{profile?.username?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}</AvatarFallback>
+                    <AvatarImage src={profile?.avatar_url || ""} />
+                    <AvatarFallback>
+                      {profile?.username?.[0]?.toUpperCase() ||
+                        user.email?.[0]?.toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <span>{profile?.username || user.email}</span>
                 </Link>
@@ -76,11 +78,7 @@ const Navbar = () => {
                 >
                   <Settings className="h-5 w-5" />
                 </Link>
-                <Button
-                  variant="ghost"
-                  onClick={handleLogout}
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
-                >
+                <Button variant="ghost" onClick={handleLogout}>
                   Cerrar sesión
                 </Button>
               </>

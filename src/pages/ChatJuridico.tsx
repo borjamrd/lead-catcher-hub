@@ -90,7 +90,7 @@ const ChatJuridico = () => {
         )}
       </div>
 
-      <form onSubmit={handleSendMessage} className="p-4 border-t">
+      <form onSubmit={handleSendMessage} className="px-10 py-3 border rounded-3xl shadow-lg ">
         <div className="flex gap-2">
           <Textarea
             value={input}
