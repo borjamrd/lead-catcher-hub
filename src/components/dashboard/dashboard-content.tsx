@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,10 +18,16 @@ import {
   Search,
   Settings
 } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AnkiCard } from "./AnkiCard";
+import { StudySessionModal } from "./StudySessionModal";
+import { useToast } from "@/hooks/use-toast";
 
 export function DashboardContent() {
+  const [showStudyModal, setShowStudyModal] = useState(false);
+  const { toast } = useToast();
+
   // Mock data
   const progressData = {
     temarioCompletado: 65,
@@ -87,6 +94,14 @@ export function DashboardContent() {
    
   };
 
+  const handleStartStudySession = () => {
+    toast({
+      title: "Sesión de estudio iniciada",
+      description: "El temporizador está activo. ¡Buena suerte!",
+    });
+    setShowStudyModal(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* Grid layout for the dashboard */}
@@ -149,21 +164,29 @@ export function DashboardContent() {
         </Card>
 
         {/* Botón empezar sesión de estudio - 1 column, spans 1 row */}
-        <Card className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer">
-          <Link to="/dashboard/nuevo-test" className="block h-full">
-            <CardContent className="flex h-full items-center justify-center p-6">
-              <div className="flex flex-col items-center text-center">
-                <Rocket className="h-12 w-12 text-primary mb-2" />
-                <h3 className="text-xl font-semibold">
-                  Empezar sesión de estudio
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Activa el temportizador y concéntrate.
-                </p>
-              </div>
-            </CardContent>
-          </Link>
+        <Card 
+          className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer"
+          onClick={() => setShowStudyModal(true)}
+        >
+          <CardContent className="flex h-full items-center justify-center p-6">
+            <div className="flex flex-col items-center text-center">
+              <Rocket className="h-12 w-12 text-primary mb-2" />
+              <h3 className="text-xl font-semibold">
+                Empezar sesión de estudio
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Activa el temportizador y concéntrate.
+              </p>
+            </div>
+          </CardContent>
         </Card>
+
+        {/* Modal de sesión de estudio */}
+        <StudySessionModal 
+          open={showStudyModal} 
+          onOpenChange={setShowStudyModal}
+          onStart={handleStartStudySession}
+        />
 
         {/* Motivación - 4 columns, spans 1 row */}
         <Card className="col-span-4 shadow-md">
@@ -307,3 +330,4 @@ export function DashboardContent() {
     </div>
   );
 }
+
