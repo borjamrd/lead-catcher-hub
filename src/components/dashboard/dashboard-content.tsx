@@ -18,6 +18,7 @@ import {
   Settings
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AnkiCard } from "./AnkiCard";
 
 export function DashboardContent() {
   // Mock data
@@ -164,8 +165,8 @@ export function DashboardContent() {
           </Link>
         </Card>
 
-           {/* Motivación - 4 columns, spans 1 row */}
-           <Card className="col-span-4 shadow-md">
+        {/* Motivación - 4 columns, spans 1 row */}
+        <Card className="col-span-4 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               🏆 ¡Menuda crack!
@@ -236,9 +237,8 @@ export function DashboardContent() {
           </CardContent>
         </Card>
 
-     
         {/* Atajos útiles - ocupa las columnas restantes */}
-        <Card className="col-span-6 shadow-md">
+        <Card className="col-span-4 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               <Settings className="mr-2 h-6 w-6 text-primary" />
@@ -275,7 +275,16 @@ export function DashboardContent() {
             </div>
           </CardContent>
         </Card>
-        <Card className="col-span-6">
+
+        {/* Nueva sección - Anki Card */}
+        <div className="col-span-4">
+          <AnkiCard 
+            front="🔹 El órgano de contratación en la Administración General del Estado es el __________."
+            back="🔹 Ministro del departamento correspondiente o el titular del organismo autónomo, salvo delegación."
+          />
+        </div>
+
+        <Card className="col-span-4">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               Preguntas falladas recientes
