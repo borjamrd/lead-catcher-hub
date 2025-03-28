@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -6,9 +7,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { useActiveOpposition } from "@/hooks/use-active-opposition";
 import {
   Bell,
+  BookOpen,
   CheckSquare,
   Database,
   FileText,
@@ -80,7 +83,9 @@ export function AppSidebar() {
               </SelectContent>
             </Select>
           ) : (
-            <Button variant="outline">Agrega tu primera oposición</Button>
+            <Button variant="outline" asChild>
+              <Link to="/dashboard/oposiciones">Agrega tu primera oposición</Link>
+            </Button>
           )}
         </div>
 
@@ -108,6 +113,24 @@ export function AppSidebar() {
                 </li>
               );
             })}
+            
+            <li>
+              <Separator className="my-2" />
+            </li>
+            
+            <li>
+              <Link
+                to="/dashboard/oposiciones"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === "/dashboard/oposiciones"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent/10"
+                }`}
+              >
+                <BookOpen className="h-4 w-4" />
+                <span>Oposiciones</span>
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>

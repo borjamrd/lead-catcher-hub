@@ -16,6 +16,7 @@ import MisApuntes from "./pages/MisApuntes";
 import DetalleApunte from "./pages/DetalleApunte";
 import MisRecursos from "./pages/MisRecursos";
 import MisNotificaciones from "./pages/MisNotificaciones";
+import Oposiciones from "./pages/Oposiciones";
 import Ajustes from "./pages/Ajustes";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -49,6 +50,7 @@ const App = () => (
                 <Route path="mis-apuntes/:id" element={<DetalleApunte />} />
                 <Route path="mis-recursos" element={<MisRecursos />} />
                 <Route path="mis-notificaciones" element={<MisNotificaciones />} />
+                <Route path="oposiciones" element={<Oposiciones />} />
                 <Route path="ajustes" element={<Ajustes />} />
               </Route>
               <Route path="*" element={<NotFound />} />

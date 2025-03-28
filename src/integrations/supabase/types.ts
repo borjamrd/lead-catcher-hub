@@ -128,6 +128,27 @@ export type Database = {
         }
         Relationships: []
       }
+      oppositions: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -155,10 +176,35 @@ export type Database = {
         }
         Relationships: []
       }
+      study_sounds: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          url: string
+          value: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          url: string
+          value: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          url?: string
+          value?: string
+        }
+        Relationships: []
+      }
       urls: {
         Row: {
           active: boolean | null
           created_at: string
+          description: string
           id: string
           name: string
           url: string
@@ -166,6 +212,7 @@ export type Database = {
         Insert: {
           active?: boolean | null
           created_at?: string
+          description?: string
           id?: string
           name: string
           url: string
@@ -173,11 +220,51 @@ export type Database = {
         Update: {
           active?: boolean | null
           created_at?: string
+          description?: string
           id?: string
           name?: string
           url?: string
         }
         Relationships: []
+      }
+      user_oppositions: {
+        Row: {
+          active: boolean | null
+          enrolled_at: string | null
+          id: string
+          opposition_id: string | null
+          profile_id: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          enrolled_at?: string | null
+          id?: string
+          opposition_id?: string | null
+          profile_id?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          enrolled_at?: string | null
+          id?: string
+          opposition_id?: string | null
+          profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_oppositions_opposition_id_fkey"
+            columns: ["opposition_id"]
+            isOneToOne: false
+            referencedRelation: "oppositions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_oppositions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
