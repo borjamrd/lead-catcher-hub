@@ -346,6 +346,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_user_oppositions: {
+        Args: {
+          profile_id: string
+        }
+        Returns: {
+          id: string
+          name: string
+          is_assigned: boolean
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
