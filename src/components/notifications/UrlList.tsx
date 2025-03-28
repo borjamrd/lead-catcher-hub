@@ -1,8 +1,8 @@
 
-import { useState, useEffect, useRef } from 'react';
-import { Link } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Link } from 'lucide-react';
+import { useState } from 'react';
 
 interface URL {
   id: string;
@@ -20,7 +20,6 @@ interface UrlListProps {
 const UrlList = ({ urls, selectedUrls, isLoading, onUrlToggle }: UrlListProps) => {
   const [displayCount, setDisplayCount] = useState(4);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.target as HTMLDivElement;
@@ -33,7 +32,6 @@ const UrlList = ({ urls, selectedUrls, isLoading, onUrlToggle }: UrlListProps) =
 
   const loadMore = () => {
     setIsLoadingMore(true);
-    // Simulamos una carga con un pequeño delay para mostrar el spinner
     setTimeout(() => {
       setDisplayCount(prev => Math.min(prev + 4, urls.length));
       setIsLoadingMore(false);

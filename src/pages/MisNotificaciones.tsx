@@ -39,6 +39,7 @@ const MisNotificaciones = () => {
           urls (
             id,
             name,
+            description,
             url
           )
         `);
@@ -121,15 +122,17 @@ const MisNotificaciones = () => {
               className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200"
             >
               <div className="flex items-start space-x-3">
-                <Link className="h-5 w-5 text-gray-400 mt-0.5" />
+              
                 <div>
                   <h3 className="font-medium text-gray-900">{url.name}</h3>
+                  <span>{url.description}</span>
                   <a
                     href={url.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-sm text-blue-600 hover:underline flex gap-1 align-middle mt-1"
                   >
+                      <Link className="h-4 w-4 text-gray-400" />
                     {url.url}
                   </a>
                 </div>

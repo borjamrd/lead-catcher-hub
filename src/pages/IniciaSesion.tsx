@@ -46,7 +46,6 @@ const IniciaSesion = () => {
         }
 
         if (data?.user) {
-          toast.success("Has iniciado sesión correctamente");
           navigate("/dashboard");
         }
       } else {

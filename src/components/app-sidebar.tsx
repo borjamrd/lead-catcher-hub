@@ -56,38 +56,44 @@ const items = [
 
 export function AppSidebar() {
   const location = useLocation();
-  const { data: opposition } = useActiveOpposition();
-
+  const { data: oppositionList = [] } = useActiveOpposition();
+  
   const [selectedOppositionId, setSelectedOppositionId] = useState<string | null>(null);
-
+  
   useEffect(() => {
-    if (opposition?.id) {
-      setSelectedOppositionId(opposition.id);
+    if (oppositionList.length > 0) {
+      setSelectedOppositionId(oppositionList[0].id); // Seleccionamos la primera por defecto
     }
-  }, [opposition]);
+  }, [oppositionList]);
+
 
   return (
     <aside className="w-64 bg-sidebar border-r border-sidebar-border">
       <div className="p-4">
         {/* Oppositions Selector */}
         <div className="mb-6">
-          {opposition ? (
-            <Select value={selectedOppositionId ?? ""} disabled>
-              <SelectTrigger className="w-full sm:w-auto bg-muted border-muted-foreground/10 text-foreground h-11 text-base rounded-lg">
-                <SelectValue placeholder="Selecciona una oposición" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem key={opposition.id} value={opposition.id}>
-                  {opposition.name}
+        {oppositionList.length > 0 ? (
+          <Select
+            value={selectedOppositionId ?? ""}
+            onValueChange={setSelectedOppositionId}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecciona una oposición" />
+            </SelectTrigger>
+            <SelectContent>
+              {oppositionList.map((oppo) => (
+                <SelectItem key={oppo.id} value={oppo.id}>
+                  {oppo.name}
                 </SelectItem>
-              </SelectContent>
-            </Select>
-          ) : (
-            <Button variant="outline" asChild>
-              <Link to="/dashboard/oposiciones">Agrega tu primera oposición</Link>
-            </Button>
-          )}
-        </div>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <Button variant="outline" asChild>
+            <Link to="/dashboard/oposiciones">Agrega tu primera oposición</Link>
+          </Button>
+        )}
+      </div>
 
         <nav>
           <ul className="space-y-2">

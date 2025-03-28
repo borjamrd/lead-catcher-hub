@@ -8,20 +8,20 @@ export function useActiveOpposition() {
   return useQuery({
     queryKey: ["active_opposition", user?.id],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!user?.id) return [];
 
       const { data, error } = await supabase
         .from("user_oppositions")
-        .select("id, opposition_id, active, oppositions(id, name)")
+        .select("oppositions(id, name)")
         .eq("profile_id", user.id)
-        .eq("active", true)
-        .single();
+        .eq("active", true);
 
       if (error) throw error;
 
-      return data?.oppositions;
+      // Devuelve un array de oposiciones
+      return data.map((row) => row.oppositions);
     },
     enabled: !!user?.id,
-    staleTime: 1000 * 60 * 5, // opcional: cachea durante 5 min
+    staleTime: 1000 * 60 * 5,
   });
 }

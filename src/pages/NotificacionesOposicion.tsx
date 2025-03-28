@@ -24,7 +24,7 @@ const NotificacionesOposicion = () => {
     isLoading,
     error,
     handleUrlToggle,
-    fetchUrls,
+    refetchUrls,
     setSelectedUrls
   } = useUrlSubscriptions();
 
@@ -51,7 +51,7 @@ const NotificacionesOposicion = () => {
     return (
       <ErrorDisplay
         error={error}
-        onRetry={fetchUrls}
+        onRetry={refetchUrls}
         className={containerClass}
       />
     );

@@ -27,6 +27,7 @@ const Ajustes = () => {
       return data;
     },
     enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5,
   });
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {

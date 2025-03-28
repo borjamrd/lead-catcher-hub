@@ -51,6 +51,7 @@ export function StudySessionModal({
         })),
       ];
     },
+    staleTime: 100000 * 60 * 5,
   });
 
   useEffect(() => {
