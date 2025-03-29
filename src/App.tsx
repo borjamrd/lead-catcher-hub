@@ -10,7 +10,7 @@ import NotificacionesOposicion from "./pages/NotificacionesOposicion";
 import NotFound from "./pages/NotFound";
 import IniciaSesion from "./pages/IniciaSesion";
 import Dashboard from "./pages/Dashboard";
-import NuevoTest from "./pages/NuevoTest";
+import Tests from "./pages/Tests";
 import ChatJuridico from "./pages/ChatJuridico";
 import MisApuntes from "./pages/MisApuntes";
 import DetalleApunte from "./pages/DetalleApunte";
@@ -44,7 +44,7 @@ const App = () => (
                   </ProtectedRoute>
                 } 
               >
-                <Route path="nuevo-test" element={<NuevoTest />} />
+                <Route path="tests" element={<Tests />} />
                 <Route path="chat-juridico" element={<ChatJuridico />} />
                 <Route path="mis-apuntes" element={<MisApuntes />} />
                 <Route path="mis-apuntes/:id" element={<DetalleApunte />} />

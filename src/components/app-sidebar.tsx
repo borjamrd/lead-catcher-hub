@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -29,8 +28,8 @@ const items = [
     icon: LayoutDashboard,
   },
   {
-    title: "Hacer test",
-    url: "/dashboard/nuevo-test",
+    title: "Tests",
+    url: "/dashboard/tests",
     icon: CheckSquare,
   },
   {
@@ -63,7 +62,6 @@ export function AppSidebar() {
   
   useEffect(() => {
     if (oppositionList.length > 0 && !currentSelectedOppositionId) {
-      // Solo establecemos la primera oposición si aún no hay ninguna seleccionada
       setCurrentOppositionId(oppositionList[0].id);
     }
   }, [oppositionList, currentSelectedOppositionId, setCurrentOppositionId]);
@@ -71,30 +69,29 @@ export function AppSidebar() {
   return (
     <aside className="w-64 bg-sidebar border-r border-sidebar-border">
       <div className="p-4">
-        {/* Oppositions Selector */}
         <div className="mb-6">
-        {oppositionList.length > 0 ? (
-          <Select
-            value={currentSelectedOppositionId ?? ""}
-            onValueChange={setCurrentOppositionId}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecciona una oposición" />
-            </SelectTrigger>
-            <SelectContent>
-              {oppositionList.map((oppo) => (
-                <SelectItem key={oppo.id} value={oppo.id}>
-                  {oppo.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : (
-          <Button variant="outline" asChild>
-            <Link to="/dashboard/oposiciones">Agrega tu primera oposición</Link>
-          </Button>
-        )}
-      </div>
+          {oppositionList.length > 0 ? (
+            <Select
+              value={currentSelectedOppositionId ?? ""}
+              onValueChange={setCurrentOppositionId}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona una oposición" />
+              </SelectTrigger>
+              <SelectContent>
+                {oppositionList.map((oppo) => (
+                  <SelectItem key={oppo.id} value={oppo.id}>
+                    {oppo.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Button variant="outline" asChild>
+              <Link to="/dashboard/oposiciones">Agrega tu primera oposición</Link>
+            </Button>
+          )}
+        </div>
 
         <nav>
           <ul className="space-y-2">
