@@ -35,7 +35,6 @@ export function DashboardContent() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
   
-  
   // Control audio playback based on isStudyActive state
   useEffect(() => {
     if (isStudyActive && audioRef.current) {
@@ -148,6 +147,7 @@ export function DashboardContent() {
   
   const handlePauseStudy = () => {
     setIsStudyActive(false);
+    // Audio will be paused in the useEffect when isStudyActive changes
     toast({
       title: "Sesión de estudio pausada",
       description: "Puedes continuar cuando estés listo.",
@@ -167,11 +167,28 @@ export function DashboardContent() {
     setStudySessionStarted(false);
     setStudyTime(0);
     setStartTime(null);
+    
+    // Ensure audio is stopped when study session is finished
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    
     toast({
       title: "Sesión de estudio finalizada",
       description: "¡Buen trabajo! Has completado tu sesión de estudio.",
     });
   };
+
+  // Clean up on component unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div className="space-y-6">

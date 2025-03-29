@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ const NuevoTest = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
@@ -19,9 +20,21 @@ const NuevoTest = () => {
       }, 1000);
     } else {
       clearInterval(interval);
+      
+      // Stop audio when timer is paused
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
     }
     
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      // Clean up audio when component unmounts
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
   }, [isRunning]);
 
   const formatTime = (seconds: number) => {
@@ -35,16 +48,29 @@ const NuevoTest = () => {
   const handleStart = () => {
     setIsRunning(true);
     setStartTime(new Date());
+    
+    // Resume audio playback if there's an audio element
+    if (audioRef.current) {
+      audioRef.current.play().catch(error => {
+        console.error("Error playing audio:", error);
+      });
+    }
   };
 
   const handlePause = () => {
     setIsRunning(false);
+    // Audio will be paused in the useEffect
   };
 
   const handleReset = () => {
     setIsRunning(false);
     setTime(0);
     setStartTime(null);
+    
+    // Stop audio and reset reference
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
   };
 
   return (

@@ -1,3 +1,4 @@
+
 import { useRef, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -54,24 +55,64 @@ export function StudySessionModal({
     staleTime: 100000 * 60 * 5,
   });
 
+  // Handle audio playback when sound selection changes
   useEffect(() => {
+    // Stop any existing audio
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
 
-    const selected = sounds.find((s) => s.value === selectedSound);
-    if (selected?.url) {
-      const audio = new Audio(selected.url);
-      audio.loop = true;
-      audio.volume = 0.4;
-      audio.play();
-      audioRef.current = audio;
+    // Only play if modal is open and a sound is selected
+    if (open && selectedSound !== "none") {
+      const selected = sounds.find((s) => s.value === selectedSound);
+      if (selected?.url) {
+        const audio = new Audio(selected.url);
+        audio.loop = true;
+        audio.volume = 0.4;
+        audio.play().catch(error => {
+          console.error("Error playing audio:", error);
+        });
+        audioRef.current = audio;
+      }
     }
-  }, [selectedSound, sounds]);
+  }, [selectedSound, sounds, open]);
+
+  // Clean up audio when modal closes
+  useEffect(() => {
+    if (!open && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+  }, [open]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  // Handle start button click
+  const handleStart = () => {
+    onStart();
+    // The audio cleanup will be handled by the useEffect when open changes
+  };
+
+  // Handle dialog close via escape key or clicking outside
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    onOpenChange(newOpen);
+  };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         className="sm:max-w-md md:max-w-lg lg:max-w-xl bg-primary text-white border-primary rounded-2xl"
         style={{ maxWidth: "540px", padding: "2rem" }}
@@ -114,7 +155,7 @@ export function StudySessionModal({
 
         <DialogFooter className="sm:justify-center mt-8">
           <Button
-            onClick={onStart}
+            onClick={handleStart}
             className="w-full sm:w-auto h-12 text-lg bg-white text-primary hover:bg-white/90 hover:text-primary rounded-xl"
           >
             <Brain className="mr-2 h-5 w-5" />

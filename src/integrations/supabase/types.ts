@@ -346,6 +346,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_oppositions_with_user_count: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          name: string
+          user_count: number
+        }[]
+      }
       list_user_oppositions: {
         Args: {
           profile_id: string
