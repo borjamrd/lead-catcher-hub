@@ -2,10 +2,19 @@
 import { useOppositionStore } from "@/stores/useOppositionStore";
 import { useTests } from "@/hooks/useTests";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckSquare, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const Tests = () => {
   const { currentSelectedOppositionId } = useOppositionStore();
@@ -32,65 +41,91 @@ const Tests = () => {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="overflow-hidden">
-              <CardHeader className="pb-3">
-                <Skeleton className="h-5 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/2" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-16 w-full" />
-              </CardContent>
-              <CardFooter>
-                <Skeleton className="h-9 w-full" />
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      ) : tests && tests.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tests.map((test) => (
-            <Card key={test.id} className="overflow-hidden">
-              <CardHeader className="pb-3">
-                <CardTitle>{test.title}</CardTitle>
-                <CardDescription>
-                  Tema: {test.topic_id || "General"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center text-muted-foreground py-6">
-                  <CheckSquare className="h-8 w-8" />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full" variant="outline" asChild>
-                  <Link to={`/dashboard/tests/${test.id}`}>
-                    Comenzar Test
-                  </Link>
+      <Tabs defaultValue="todos" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="todos">Todos los tests</TabsTrigger>
+          <TabsTrigger value="examen">Examen</TabsTrigger>
+          <TabsTrigger value="tema">Tema actual</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="todos">
+          {isLoading ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-12 w-full" />
+              ))}
+            </div>
+          ) : tests && tests.length > 0 ? (
+            <div className="border rounded-md">
+              <Table>
+                <TableCaption>Lista de todos los tests disponibles</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[50px]"></TableHead>
+                    <TableHead>Título</TableHead>
+                    <TableHead>Tema</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {tests.map((test) => (
+                    <TableRow key={test.id}>
+                      <TableCell>
+                        <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                      </TableCell>
+                      <TableCell className="font-medium">{test.title}</TableCell>
+                      <TableCell>{test.topic_id || "General"}</TableCell>
+                      <TableCell className="text-right">
+                        <Button size="sm" variant="outline" asChild>
+                          <Link to={`/dashboard/tests/${test.id}`}>
+                            Comenzar
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-card">
+              <CheckSquare className="h-12 w-12 mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium mb-2">No hay tests disponibles</h3>
+              <p className="text-muted-foreground mb-4">
+                {currentSelectedOppositionId 
+                  ? "No se encontraron tests para esta oposición. Crea uno nuevo para empezar." 
+                  : "Selecciona una oposición para ver sus tests."}
+              </p>
+              {currentSelectedOppositionId && (
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear nuevo test
                 </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-card">
-          <CheckSquare className="h-12 w-12 mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-medium mb-2">No hay tests disponibles</h3>
-          <p className="text-muted-foreground mb-4">
-            {currentSelectedOppositionId 
-              ? "No se encontraron tests para esta oposición. Crea uno nuevo para empezar." 
-              : "Selecciona una oposición para ver sus tests."}
-          </p>
-          {currentSelectedOppositionId && (
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Crear nuevo test
-            </Button>
+              )}
+            </div>
           )}
-        </div>
-      )}
+        </TabsContent>
+
+        <TabsContent value="examen">
+          <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-card">
+            <CheckSquare className="h-12 w-12 mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-medium mb-2">Próximamente</h3>
+            <p className="text-muted-foreground">
+              Los tests de examen estarán disponibles en breve.
+            </p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="tema">
+          <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-card">
+            <CheckSquare className="h-12 w-12 mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-medium mb-2">Próximamente</h3>
+            <p className="text-muted-foreground">
+              Los tests por tema estarán disponibles en breve.
+            </p>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
