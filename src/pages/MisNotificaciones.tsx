@@ -10,6 +10,7 @@ interface URL {
   id: string;
   name: string;
   url: string;
+  description: string; // Added this property to match the database schema
 }
 
 interface Subscription {

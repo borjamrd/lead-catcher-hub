@@ -84,7 +84,7 @@ export const useUrlSubscriptions = () => {
     isLoading,
     error,
     handleUrlToggle,
-    fetchUrls,
+    refetchUrls: fetchUrls, // Renamed to match what's expected in NotificacionesOposicion.tsx
     setSelectedUrls
   };
 };
