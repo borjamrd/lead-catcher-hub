@@ -1,3 +1,4 @@
+
 import { Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,10 +7,13 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useOppositionStore } from "@/stores/useOppositionStore";
+import { Badge } from "./ui/badge";
 
 const Navbar = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { currentSelectedOppositionId } = useOppositionStore();
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -48,15 +52,15 @@ const Navbar = () => {
                 <span className="text-yinmn_blue">place</span>
               </span>
             </Link>
+            
+            {currentSelectedOppositionId && (
+              <Badge variant="outline" className="ml-4">
+                Oposición seleccionada: {currentSelectedOppositionId}
+              </Badge>
+            )}
           </div>
 
           <div className="flex items-center space-x-6">
-            {/* <Link
-              to="/#avisos-inap-personalizados"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Recibe tus avisos
-            </Link> */}
             {user && (
               <>
                 <Link

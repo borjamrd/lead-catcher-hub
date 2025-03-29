@@ -9,40 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      blocks: {
+      answers: {
         Row: {
-          content: Json | null
-          created_at: string
           id: string
-          note_id: string
-          position: number
-          type: string
-          updated_at: string
+          is_correct: boolean | null
+          question_id: string | null
+          text: string
         }
         Insert: {
-          content?: Json | null
-          created_at?: string
           id?: string
-          note_id: string
-          position: number
-          type: string
-          updated_at?: string
+          is_correct?: boolean | null
+          question_id?: string | null
+          text: string
         }
         Update: {
-          content?: Json | null
-          created_at?: string
           id?: string
-          note_id?: string
-          position?: number
-          type?: string
-          updated_at?: string
+          is_correct?: boolean | null
+          question_id?: string | null
+          text?: string
         }
         Relationships: [
           {
-            foreignKeyName: "blocks_note_id_fkey"
-            columns: ["note_id"]
+            foreignKeyName: "answers_question_id_fkey"
+            columns: ["question_id"]
             isOneToOne: false
-            referencedRelation: "notes"
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blocks: {
+        Row: {
+          id: string
+          name: string
+          opposition_id: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          opposition_id?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          opposition_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocks_opposition_id_fkey"
+            columns: ["opposition_id"]
+            isOneToOne: false
+            referencedRelation: "oppositions"
             referencedColumns: ["id"]
           },
         ]
@@ -103,6 +120,44 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      note_blocks: {
+        Row: {
+          content: Json | null
+          created_at: string
+          id: string
+          note_id: string
+          position: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string
+          id?: string
+          note_id: string
+          position: number
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string
+          id?: string
+          note_id?: string
+          position?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocks_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notes: {
         Row: {
@@ -176,6 +231,32 @@ export type Database = {
         }
         Relationships: []
       }
+      questions: {
+        Row: {
+          id: string
+          test_id: string | null
+          text: string
+        }
+        Insert: {
+          id?: string
+          test_id?: string | null
+          text: string
+        }
+        Update: {
+          id?: string
+          test_id?: string | null
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       study_sounds: {
         Row: {
           created_at: string | null
@@ -199,6 +280,68 @@ export type Database = {
           value?: string
         }
         Relationships: []
+      }
+      tests: {
+        Row: {
+          id: string
+          opposition_id: string | null
+          title: string
+          topic_id: string | null
+        }
+        Insert: {
+          id?: string
+          opposition_id?: string | null
+          title: string
+          topic_id?: string | null
+        }
+        Update: {
+          id?: string
+          opposition_id?: string | null
+          title?: string
+          topic_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_opposition"
+            columns: ["opposition_id"]
+            isOneToOne: false
+            referencedRelation: "oppositions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tests_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topics: {
+        Row: {
+          block_id: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          block_id?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          block_id?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topics_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "blocks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       urls: {
         Row: {

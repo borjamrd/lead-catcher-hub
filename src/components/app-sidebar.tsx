@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useActiveOpposition } from "@/hooks/use-active-opposition";
+import { useOppositionStore } from "@/stores/useOppositionStore";
 import {
   Bell,
   BookOpen,
@@ -18,7 +19,7 @@ import {
   LayoutDashboard,
   MessageSquare,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const items = [
@@ -58,14 +59,14 @@ export function AppSidebar() {
   const location = useLocation();
   const { data: oppositionList = [] } = useActiveOpposition();
   
-  const [selectedOppositionId, setSelectedOppositionId] = useState<string | null>(null);
+  const { currentSelectedOppositionId, setCurrentOppositionId } = useOppositionStore();
   
   useEffect(() => {
-    if (oppositionList.length > 0) {
-      setSelectedOppositionId(oppositionList[0].id); // Seleccionamos la primera por defecto
+    if (oppositionList.length > 0 && !currentSelectedOppositionId) {
+      // Solo establecemos la primera oposición si aún no hay ninguna seleccionada
+      setCurrentOppositionId(oppositionList[0].id);
     }
-  }, [oppositionList]);
-
+  }, [oppositionList, currentSelectedOppositionId, setCurrentOppositionId]);
 
   return (
     <aside className="w-64 bg-sidebar border-r border-sidebar-border">
@@ -74,8 +75,8 @@ export function AppSidebar() {
         <div className="mb-6">
         {oppositionList.length > 0 ? (
           <Select
-            value={selectedOppositionId ?? ""}
-            onValueChange={setSelectedOppositionId}
+            value={currentSelectedOppositionId ?? ""}
+            onValueChange={setCurrentOppositionId}
           >
             <SelectTrigger>
               <SelectValue placeholder="Selecciona una oposición" />
