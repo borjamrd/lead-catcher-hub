@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -17,6 +18,7 @@ import {
   FileText,
   LayoutDashboard,
   MessageSquare,
+  Map,
 } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -26,6 +28,11 @@ const items = [
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Roadmap",
+    url: "/dashboard/roadmap",
+    icon: Map,
   },
   {
     title: "Tests",
