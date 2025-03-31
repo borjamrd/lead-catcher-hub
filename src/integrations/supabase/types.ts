@@ -183,6 +183,36 @@ export type Database = {
         }
         Relationships: []
       }
+      opposition_resources: {
+        Row: {
+          opposition_id: string
+          resource_id: string
+        }
+        Insert: {
+          opposition_id: string
+          resource_id: string
+        }
+        Update: {
+          opposition_id?: string
+          resource_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opposition_resources_opposition_id_fkey"
+            columns: ["opposition_id"]
+            isOneToOne: false
+            referencedRelation: "oppositions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opposition_resources_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       oppositions: {
         Row: {
           created_at: string | null
@@ -256,6 +286,126 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      resource_blocks: {
+        Row: {
+          block_id: string | null
+          id: string
+          resource_id: string | null
+        }
+        Insert: {
+          block_id?: string | null
+          id?: string
+          resource_id?: string | null
+        }
+        Update: {
+          block_id?: string | null
+          id?: string
+          resource_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_blocks_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "blocks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_blocks_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resource_oppositions: {
+        Row: {
+          id: string
+          opposition_id: string | null
+          resource_id: string | null
+        }
+        Insert: {
+          id?: string
+          opposition_id?: string | null
+          resource_id?: string | null
+        }
+        Update: {
+          id?: string
+          opposition_id?: string | null
+          resource_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_oppositions_opposition_id_fkey"
+            columns: ["opposition_id"]
+            isOneToOne: false
+            referencedRelation: "oppositions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_oppositions_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resource_topics: {
+        Row: {
+          id: string
+          resource_id: string | null
+          topic_id: string | null
+        }
+        Insert: {
+          id?: string
+          resource_id?: string | null
+          topic_id?: string | null
+        }
+        Update: {
+          id?: string
+          resource_id?: string | null
+          topic_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_topics_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          created_at: string | null
+          id: string
+          title: string
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          title: string
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          title?: string
+          url?: string
+        }
+        Relationships: []
       }
       study_sounds: {
         Row: {
