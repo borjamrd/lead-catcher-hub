@@ -13,7 +13,7 @@ export const useBlockManagement = (noteId: string | null) => {
     queryFn: async () => {
       if (!noteId) return [];
       const { data, error } = await supabase
-        .from("blocks")
+        .from("note_blocks")
         .select("*")
         .eq("note_id", noteId)
         .order("position", { ascending: true });
@@ -47,7 +47,7 @@ export const useBlockManagement = (noteId: string | null) => {
 
         for (const block of blocksToUpdate) {
           const { error } = await supabase
-            .from("blocks")
+            .from("note_blocks")
             .update({ position: block.position })
             .eq("id", block.id);
 
@@ -59,7 +59,7 @@ export const useBlockManagement = (noteId: string | null) => {
 
       // Luego creamos el nuevo bloque en la posición deseada
       const { error: blockError } = await supabase
-        .from("blocks")
+        .from("note_blocks")
         .insert([
           {
             note_id: currentNoteId,

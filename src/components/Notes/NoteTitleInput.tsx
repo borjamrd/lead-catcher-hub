@@ -1,14 +1,26 @@
-
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { useRef, useEffect } from "react";
 
 interface NoteTitleInputProps {
   title: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (text: string) => void;
   onEnter?: () => void;
 }
 
 const NoteTitleInput = ({ title, onChange, onEnter }: NoteTitleInputProps) => {
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (ref.current && title && ref.current.innerText !== title) {
+      ref.current.innerText = title;
+    }
+  }, [title]);
+
+  const handleInput = () => {
+    onChange(ref.current?.innerText || "");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
       onEnter?.();
@@ -16,12 +28,18 @@ const NoteTitleInput = ({ title, onChange, onEnter }: NoteTitleInputProps) => {
   };
 
   return (
-    <Input
-      value={title || "Sin título"}
-      onChange={onChange}
+    <div
+      ref={ref}
+      contentEditable
+      suppressContentEditableWarning
+      onInput={handleInput}
       onKeyDown={handleKeyDown}
+      className={cn(
+        "outline-none text-5xl font-bold mb-2 w-full",
+        "focus:ring-0 focus-visible:ring-0"
+      )}
       placeholder="Sin título"
-      className="w-full text-5xl font-bold border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+      data-placeholder="Sin título"
     />
   );
 };
