@@ -1,10 +1,11 @@
-
-import { useOppositionStore } from "@/stores/useOppositionStore";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
-import { Map } from "lucide-react";
+import { NodeSidebarContent } from "@/components/roadmap/NodeSidebarContent";
 import RoadmapFlow from "@/components/roadmap/RoadmapFlow";
-import { Node, Edge } from "@xyflow/react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useOppositionStore } from "@/stores/useOppositionStore";
+import { useQuery } from "@tanstack/react-query";
+import { Edge, Node } from "@xyflow/react";
+import { Map } from "lucide-react";
+import { useState } from "react";
 
 interface RoadmapData {
   nodes: Node[];
@@ -13,59 +14,115 @@ interface RoadmapData {
 
 const Roadmap = () => {
   const { currentSelectedOppositionId } = useOppositionStore();
-  
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+
   const { data: roadmapData, isLoading } = useQuery({
     queryKey: ["roadmap", currentSelectedOppositionId],
     queryFn: async () => {
       if (!currentSelectedOppositionId) return null;
-      
-      // This is the sample data from the user request
       return {
         nodes: [
           {
-            id: "1",
-            type: "default",
-            position: { x: 100, y: 50 },
-            data: { label: "Constitución Española" }
+            id: "oposicion",
+            type: "custom",
+            data: {
+              label: "Cuerpo de Gestión de la Administración Civil del Estado",
+              type: "oposition",
+              completed: false,
+            },
+            position: { x: 400, y: 50 },
           },
           {
-            id: "2",
-            type: "default",
-            position: { x: 300, y: 150 },
-            data: { label: "Título Preliminar" }
+            id: "bloque1",
+            type: "custom",
+            data: {
+              label: "Organización del Estado",
+              type: "block",
+              completed: true,
+            },
+            position: { x: 100, y: 200 },
           },
           {
-            id: "3",
-            type: "default",
-            position: { x: 300, y: 250 },
-            data: { label: "Título I: Derechos y Deberes" }
+            id: "bloque2",
+            type: "custom",
+            data: {
+              label: "Políticas Públicas",
+              type: "block",
+              completed: false,
+            },
+            position: { x: 400, y: 200 },
           },
           {
-            id: "4",
-            type: "default",
-            position: { x: 500, y: 250 },
-            data: { label: "Ley 39/2015" }
+            id: "bloque3",
+            type: "custom",
+            data: {
+              label: "Derecho Administrativo",
+              type: "block",
+              completed: false,
+            },
+            position: { x: 700, y: 200 },
           },
           {
-            id: "5",
-            type: "default",
-            position: { x: 700, y: 250 },
-            data: { label: "Ley 40/2015" }
+            id: "tema1",
+            type: "custom",
+            data: {
+              label: "Constitución Española",
+              type: "topic",
+              completed: true,
+            },
+            position: { x: 100, y: 350 },
           },
           {
-            id: "6",
-            type: "default",
-            position: { x: 500, y: 100 },
-            data: { label: "Ley de Contratos del Sector Público" }
-          }
+            id: "tema2",
+            type: "custom",
+            data: {
+              label: "Ley del Gobierno (50/1997)",
+              type: "topic",
+              completed: false,
+            },
+            position: { x: 100, y: 400 },
+          },
+          {
+            id: "tema3",
+            type: "custom",
+            data: {
+              label: "Evaluación de Políticas Públicas",
+              type: "topic",
+              completed: false,
+            },
+            position: { x: 400, y: 350 },
+          },
+          {
+            id: "contenido1",
+            type: "custom",
+            data: {
+              label: "Guía sobre Evaluación de Políticas",
+              type: "content",
+              completed: true,
+            },
+            position: { x: 400, y: 450 },
+          },
+          {
+            id: "tema5",
+            type: "custom",
+            data: {
+              label: "Ley 39/2015 - Procedimiento Administrativo",
+              type: "topic",
+              completed: false,
+            },
+            position: { x: 700, y: 350 },
+          },
         ],
         edges: [
-          { id: "e1-2", source: "1", target: "2" },
-          { id: "e1-3", source: "1", target: "3" },
-          { id: "e3-4", source: "3", target: "4" },
-          { id: "e3-5", source: "3", target: "5" },
-          { id: "e2-6", source: "2", target: "6" }
-        ]
+          { id: "e1", source: "oposicion", target: "bloque1"},
+          { id: "e2", source: "oposicion", target: "bloque2"},
+          { id: "e3", source: "oposicion", target: "bloque3"},
+          { id: "e4", source: "bloque1", target: "tema1" },
+          { id: "e5", source: "bloque1", target: "tema2" },
+          { id: "e6", source: "bloque2", target: "tema3" },
+          { id: "e7", source: "tema3", target: "contenido1" },
+          { id: "e8", source: "bloque3", target: "tema5" },
+        ],
       } as RoadmapData;
     },
     enabled: !!currentSelectedOppositionId,
@@ -92,7 +149,9 @@ const Roadmap = () => {
         <h1 className="text-2xl font-bold">Roadmap</h1>
         <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-card">
           <Map className="h-12 w-12 mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-medium mb-2">No hay oposición seleccionada</h3>
+          <h3 className="text-lg font-medium mb-2">
+            No hay oposición seleccionada
+          </h3>
           <p className="text-muted-foreground">
             Selecciona una oposición para ver tu roadmap personalizado.
           </p>
@@ -117,11 +176,21 @@ const Roadmap = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Roadmap de Estudio</h1>
+    <div>
+      <h1 className="text-2xl font-bold mb-6">Roadmap de Estudio</h1>
       <div className="border rounded-lg bg-card overflow-hidden">
-        <RoadmapFlow initialNodes={roadmapData.nodes} initialEdges={roadmapData.edges} />
+        <RoadmapFlow
+          initialNodes={roadmapData.nodes}
+          initialEdges={roadmapData.edges}
+          onNodeClick={(id) => setSelectedNodeId(id)}
+        />
       </div>
+      {selectedNodeId && (
+      <aside className="fixed top-0 right-0 w-2/5 h-full bg-white border-l shadow-lg z-50 p-6 overflow-y-auto">
+        <NodeSidebarContent onClose={() => setSelectedNodeId(null)} nodeId={selectedNodeId} />
+        
+      </aside>
+    )}
     </div>
   );
 };

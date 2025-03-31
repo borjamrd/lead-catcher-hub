@@ -1,29 +1,34 @@
-
-import { useCallback, useEffect } from 'react';
 import {
-  ReactFlow,
-  Node,
-  Edge,
-  Controls,
   Background,
-  useNodesState,
-  useEdgesState,
-  Panel,
   ConnectionLineType,
-} from '@xyflow/react';
-import dagre from 'dagre';
-import '@xyflow/react/dist/style.css';
+  Controls,
+  Edge,
+  Node,
+  Panel,
+  ReactFlow,
+  useEdgesState,
+  useNodesState
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import dagre from "dagre";
+import { useCallback, useEffect } from "react";
+import { OpositionNode } from "./OpositionNode";
 
 interface RoadmapFlowProps {
   initialNodes: Node[];
   initialEdges: Edge[];
+  onNodeClick?: (nodeId: string) => void;
 }
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
-  const isHorizontal = direction === 'LR';
+const getLayoutedElements = (
+  nodes: Node[],
+  edges: Edge[],
+  direction = "TB"
+) => {
+  const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
   // Set nodes
@@ -54,7 +59,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   return { nodes: layoutedNodes, edges };
 };
 
-const RoadmapFlow = ({ initialNodes, initialEdges }: RoadmapFlowProps) => {
+const RoadmapFlow = ({ initialNodes, initialEdges, onNodeClick }: RoadmapFlowProps) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -62,19 +67,16 @@ const RoadmapFlow = ({ initialNodes, initialEdges }: RoadmapFlowProps) => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
       initialNodes,
       initialEdges,
-      'TB'
+      "TB"
     );
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
   }, [initialNodes, initialEdges]);
 
   const onLayout = useCallback(
-    (direction: 'TB' | 'LR') => {
-      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-        nodes,
-        edges,
-        direction
-      );
+    (direction: "TB" | "LR") => {
+      const { nodes: layoutedNodes, edges: layoutedEdges } =
+        getLayoutedElements(nodes, edges, direction);
       setNodes([...layoutedNodes]);
       setEdges([...layoutedEdges]);
     },
@@ -82,33 +84,41 @@ const RoadmapFlow = ({ initialNodes, initialEdges }: RoadmapFlowProps) => {
   );
 
   return (
-    <div style={{ width: '100%', height: '600px' }}>
+    <div style={{ width: "100%", height: "600px" }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        nodeTypes={{
+          custom: OpositionNode,
+        }}
         className="bg-white"
         connectionLineType={ConnectionLineType.Bezier}
         defaultEdgeOptions={{
-          animated: true,
-          style: { stroke: '#334155', strokeWidth: 2 },
+          animated: false,
+          type: "smoothstep",
+          style: { stroke: "#334155", strokeWidth: 2 },
         }}
         nodeOrigin={[0.5, 0.5]}
+        onNodeClick={(_, node) => onNodeClick?.(node.id)}
+   
         fitView
+        zoomOnPinch={false}
+
       >
         <Controls />
         <Background />
         <Panel position="top-right">
           <div className="flex gap-2">
             <button
-              onClick={() => onLayout('TB')}
+              onClick={() => onLayout("TB")}
               className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
             >
               Vertical
             </button>
             <button
-              onClick={() => onLayout('LR')}
+              onClick={() => onLayout("LR")}
               className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
             >
               Horizontal
