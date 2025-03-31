@@ -3,18 +3,12 @@ import { useOppositionStore } from "@/stores/useOppositionStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { Map } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import RoadmapMindMap from "@/components/roadmap/RoadmapMindMap";
-
-interface RoadmapNode {
-  title: string;
-  items: string[];
-  completed?: boolean;
-}
+import RoadmapFlow from "@/components/roadmap/RoadmapFlow";
+import { Node, Edge } from "@xyflow/react";
 
 interface RoadmapData {
-  title: string;
-  nodes: RoadmapNode[];
+  nodes: Node[];
+  edges: Edge[];
 }
 
 const Roadmap = () => {
@@ -25,75 +19,52 @@ const Roadmap = () => {
     queryFn: async () => {
       if (!currentSelectedOppositionId) return null;
       
-      // In a real application, you would fetch the roadmap data from Supabase
-      // For now, we'll return demo data
+      // This is the sample data from the user request
       return {
-        title: "Oposiciones - Administración General del Estado",
         nodes: [
           {
-            title: "Constitución Española",
-            items: [
-              "Título Preliminar",
-              "Título I: Derechos y Deberes Fundamentales",
-              "Título II: Corona",
-              "Título III: Cortes Generales",
-              "Título IV: Gobierno",
-              "Título VIII: Organización Territorial del Estado"
-            ],
-            completed: true
+            id: "1",
+            type: "default",
+            position: { x: 100, y: 50 },
+            data: { label: "Constitución Española" }
           },
           {
-            title: "Ley 39/2015 del Procedimiento Administrativo Común",
-            items: [
-              "Ámbito de aplicación",
-              "Términos y plazos",
-              "Iniciación del procedimiento",
-              "Instrucción",
-              "Terminación",
-              "Revisión de actos administrativos"
-            ],
-            completed: false
+            id: "2",
+            type: "default",
+            position: { x: 300, y: 150 },
+            data: { label: "Título Preliminar" }
           },
           {
-            title: "Ley 40/2015 del Régimen Jurídico del Sector Público",
-            items: [
-              "Principios de actuación",
-              "Órganos de las Administraciones Públicas",
-              "Funcionamiento electrónico",
-              "Responsabilidad patrimonial"
-            ],
-            completed: false
+            id: "3",
+            type: "default",
+            position: { x: 300, y: 250 },
+            data: { label: "Título I: Derechos y Deberes" }
           },
           {
-            title: "Ley 9/2017 de Contratos del Sector Público",
-            items: [
-              "Objeto y ámbito",
-              "Tipos de contratos",
-              "Procedimientos de adjudicación",
-              "Ejecución y efectos de los contratos"
-            ],
-            completed: false
+            id: "4",
+            type: "default",
+            position: { x: 500, y: 250 },
+            data: { label: "Ley 39/2015" }
           },
           {
-            title: "Unión Europea",
-            items: [
-              "Instituciones",
-              "Tratados y fuentes del Derecho",
-              "Competencias",
-              "Funcionamiento institucional"
-            ],
-            completed: false
+            id: "5",
+            type: "default",
+            position: { x: 700, y: 250 },
+            data: { label: "Ley 40/2015" }
           },
           {
-            title: "Función Pública",
-            items: [
-              "Estatuto Básico del Empleado Público",
-              "Derechos y deberes",
-              "Régimen disciplinario",
-              "Selección y acceso"
-            ],
-            completed: false
+            id: "6",
+            type: "default",
+            position: { x: 500, y: 100 },
+            data: { label: "Ley de Contratos del Sector Público" }
           }
+        ],
+        edges: [
+          { id: "e1-2", source: "1", target: "2" },
+          { id: "e1-3", source: "1", target: "3" },
+          { id: "e3-4", source: "3", target: "4" },
+          { id: "e3-5", source: "3", target: "5" },
+          { id: "e2-6", source: "2", target: "6" }
         ]
       } as RoadmapData;
     },
@@ -147,9 +118,9 @@ const Roadmap = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{roadmapData.title}</h1>
-      <div className="overflow-auto">
-        <RoadmapMindMap data={roadmapData} />
+      <h1 className="text-2xl font-bold">Roadmap de Estudio</h1>
+      <div className="border rounded-lg bg-card overflow-hidden">
+        <RoadmapFlow initialNodes={roadmapData.nodes} initialEdges={roadmapData.edges} />
       </div>
     </div>
   );
