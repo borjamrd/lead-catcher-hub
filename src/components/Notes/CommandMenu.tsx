@@ -1,6 +1,5 @@
 // components/CommandMenu.tsx
 import { useEffect, useRef } from "react";
-import { cn } from "@/lib/utils"; // Utilidad para combinar clases, si la usas
 
 interface CommandMenuProps {
   onSelect: (type: string) => void;

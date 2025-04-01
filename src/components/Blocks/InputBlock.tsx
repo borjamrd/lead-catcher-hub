@@ -21,13 +21,32 @@ interface InputBlockProps {
 
 const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(
   (props, ref) => {
-    const { id, content, noteId, position, type, onSaveStart, onSaveEnd, onEmptyBlockEnter, onContentBlockEnter, onDelete, onFocusNavigate,  autoFocus, } = props;
+    const {
+      id,
+      content,
+      noteId,
+      position,
+      type,
+      onSaveStart,
+      onSaveEnd,
+      onEmptyBlockEnter,
+      onContentBlockEnter,
+      onDelete,
+      onFocusNavigate,
+      autoFocus,
+    } = props;
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState(content?.text || "");
     const [caretPosition, setCaretPosition] = useState<number | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [showMenu, setShowMenu] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+
+    useEffect(() => {
+      if (!isEditing) {
+        setValue(content?.text || "");
+      }
+    }, [content.text, isEditing]);
 
     useEffect(() => {
       if (autoFocus && !isEditing) {
@@ -37,6 +56,30 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(
         }, 0);
       }
     }, [autoFocus, isEditing]);
+
+    // Efecto para mostrar el CommandMenu si value comienza con "/"
+    useEffect(() => {
+      if (!value.startsWith("/")) {
+        setShowMenu(false);
+        return;
+      }
+      const textarea = textareaRef.current;
+      const wrapper = document.querySelector("#editor-wrapper");
+      if (!textarea || !wrapper) return;
+      const { top, bottom, left, height } = textarea.getBoundingClientRect();
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const menuHeight = 240;
+      const spaceBelow = viewportHeight - bottom;
+      const shouldRenderAbove = spaceBelow < menuHeight;
+      setMenuPosition({
+        x: left - wrapperRect.left + 24,
+        y: shouldRenderAbove
+          ? top - wrapperRect.top - menuHeight - 8
+          : top - wrapperRect.top + height + 8,
+      });
+      setShowMenu(true);
+    }, [value]);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
       let offset = 0;
@@ -67,7 +110,9 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(
       }
     };
 
-    const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const handleKeyDown = async (
+      e: React.KeyboardEvent<HTMLTextAreaElement>
+    ) => {
       if (e.altKey && e.key === "ArrowDown") {
         e.preventDefault();
         onFocusNavigate?.(position + 1);
@@ -135,4 +180,3 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(
 
 InputBlock.displayName = "InputBlock";
 export default InputBlock;
-
