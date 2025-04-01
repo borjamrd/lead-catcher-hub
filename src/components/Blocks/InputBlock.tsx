@@ -1,68 +1,64 @@
-import { useState, useRef, forwardRef } from "react";
-import { Textarea } from "@/components/ui/textarea";
+import { useState, useRef, useEffect, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { cn } from "@/lib/utils";
+import CommandMenu from "@/components/Notes/CommandMenu";
+import BlockEditor from "@/components/Blocks/BlockEditor";
+import BlockViewer from "@/components/Blocks/BlockViewer";
 
 interface InputBlockProps {
   id: string;
-  content: { text: string; checked?: boolean };
-  type: string;
+  content: { text: string };
   noteId: string;
   position: number;
+  type: string;
   onSaveStart: () => void;
   onSaveEnd: () => void;
   onEmptyBlockEnter?: () => void;
   onContentBlockEnter?: (position: number) => void;
   onDelete?: () => void;
+  onFocusNavigate?: (position: number) => void;
+  autoFocus?: boolean;
 }
 
 const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(
-  (
-    {
-      id,
-      content,
-      type,
-      noteId,
-      position,
-      onSaveStart,
-      onSaveEnd,
-      onEmptyBlockEnter,
-      onContentBlockEnter,
-      onDelete,
-    },
-    ref
-  ) => {
+  (props, ref) => {
+    const { id, content, noteId, position, type, onSaveStart, onSaveEnd, onEmptyBlockEnter, onContentBlockEnter, onDelete, onFocusNavigate,  autoFocus, } = props;
     const [isEditing, setIsEditing] = useState(false);
-    const [value, setValue] = useState(content?.text);
+    const [value, setValue] = useState(content?.text || "");
+    const [caretPosition, setCaretPosition] = useState<number | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    
-    
+    const [showMenu, setShowMenu] = useState(false);
+    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+
+    useEffect(() => {
+      if (autoFocus && !isEditing) {
+        setIsEditing(true);
+        setTimeout(() => {
+          textareaRef.current?.focus();
+        }, 0);
+      }
+    }, [autoFocus, isEditing]);
+
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      let offset = 0;
+      if (document.caretRangeFromPoint) {
+        const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+        offset = range ? range.startOffset : 0;
+      } else if (document.caretPositionFromPoint) {
+        const pos = document.caretPositionFromPoint(e.clientX, e.clientY);
+        offset = pos ? pos.offset : 0;
+      }
+      setCaretPosition(offset);
+      setIsEditing(true);
+    };
 
     const handleSave = async () => {
       if (value === content?.text) {
         setIsEditing(false);
         return;
       }
-
       onSaveStart();
       try {
-        const { error } = await supabase
-          .from("note_blocks")
-          .update({
-            content: { text: value },
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", id);
-
-        if (error) throw error;
-
-        const { error: updateError } = await supabase
-          .from("notes")
-          .update({ updated_at: new Date().toISOString() })
-          .eq("id", noteId);
-
-        if (updateError) throw updateError;
-
+        // Guardado omitido temporalmente (mock)
         setIsEditing(false);
         onSaveEnd();
       } catch (error) {
@@ -71,9 +67,17 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(
       }
     };
 
-    const handleKeyDown = async (
-      e: React.KeyboardEvent<HTMLTextAreaElement>
-    ) => {
+    const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.altKey && e.key === "ArrowDown") {
+        e.preventDefault();
+        onFocusNavigate?.(position + 1);
+        return;
+      }
+      if (e.altKey && e.key === "ArrowUp") {
+        e.preventDefault();
+        onFocusNavigate?.(position - 1);
+        return;
+      }
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         if (value.trim() === "" && onEmptyBlockEnter) {
@@ -86,81 +90,44 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(
         }
       } else if (e.key === "Delete" && value.trim() === "") {
         e.preventDefault();
-        try {
-          const { error } = await supabase
-            .from("note_blocks")
-            .delete()
-            .eq("id", id);
-
-          if (error) throw error;
-          if (onDelete) onDelete();
-        } catch (error) {
-          console.error("Error deleting block:", error);
-        }
+        // Eliminación omitida temporalmente
       }
     };
 
-    const handleClick = () => {
-      setIsEditing(true);
-    };
-    const baseStyles = "p-2 rounded-md hover:bg-gray-100 whitespace-pre-wrap break-words min-h-[42px] overflow-visible";
-    const typeStyles = {
-      heading_1: "text-4xl font-bold",
-      heading_2: "text-3xl font-semibold",
-      heading_3: "text-2xl font-medium",
-      paragraph: "text-base",
-    };
-    
-    const sharedStyles = `${baseStyles} ${type ? typeStyles[type] ?? "" : ""}`;
-    
-
-    if (isEditing) {
-      return (
-        <Textarea
-          ref={(element) => {
-            textareaRef.current = element!;
-            if (typeof ref === "function") ref(element);
-            else if (ref) ref.current = element;
-          }}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onBlur={handleSave}
-          onKeyDown={handleKeyDown}
-          autoFocus
-          rows={1}
-          className={cn(
-            sharedStyles,
-            "p-2 rounded-md border-none focus:ring-0 focus-visible:ring-0 resize-none cursor-text",
-            type === "heading_1" && "text-4xl font-bold",
-            type === "heading_2" && "text-3xl font-semibold",
-            type === "heading_3" && "text-2xl font-medium"
-          )}
-        />
-      );
-    }
-
-    if (type === "to_do") {
-      return (
-        <div className={cn(sharedStyles, "flex items-center gap-2")}>
-          <input type="checkbox" checked={content?.checked} readOnly />
-          <div onClick={handleClick} className="cursor-text">
-            {value || <span className="text-gray-400">Tarea...</span>}
-          </div>
-        </div>
-      );
-    }
-
     return (
-      <div
-        onClick={handleClick}
-        className={cn(sharedStyles, "cursor-text")}
-      >
-        {value ||
-          (isEditing && (
-            <span className="text-gray-400">
-              Presiona '/' para ver comandos
-            </span>
-          ))}
+      <div data-block-position={position} className="relative">
+        {/* <span>{position}</span> */}
+        {isEditing ? (
+          <BlockEditor
+            value={value}
+            setValue={setValue}
+            textareaRef={textareaRef}
+            refProp={ref}
+            onBlur={handleSave}
+            onKeyDown={handleKeyDown}
+            type={type}
+            caretPosition={caretPosition || 0}
+          />
+        ) : (
+          <BlockViewer value={value} type={type} onClick={handleClick} />
+        )}
+
+        {showMenu && (
+          <CommandMenu
+            position={menuPosition}
+            onSelect={(newType) => {
+              onSaveStart();
+              try {
+                // Actualización del tipo omitida temporalmente
+                onSaveEnd();
+              } catch (error) {
+                console.error("Error changing block type:", error);
+                onSaveEnd();
+              }
+            }}
+            close={() => setShowMenu(false)}
+          />
+        )}
       </div>
     );
   }
@@ -168,3 +135,4 @@ const InputBlock = forwardRef<HTMLTextAreaElement, InputBlockProps>(
 
 InputBlock.displayName = "InputBlock";
 export default InputBlock;
+

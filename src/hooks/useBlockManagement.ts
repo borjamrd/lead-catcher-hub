@@ -1,5 +1,4 @@
-
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export const useBlockManagement = (noteId: string | null) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: blocks, refetch: refetchBlocks } = useQuery({
     queryKey: ["blocks", noteId],
@@ -23,7 +23,8 @@ export const useBlockManagement = (noteId: string | null) => {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "No se pudieron cargar los bloques. Por favor, inténtalo de nuevo.",
+          description:
+            "No se pudieron cargar los bloques. Por favor, inténtalo de nuevo.",
         });
         return [];
       }
@@ -35,68 +36,33 @@ export const useBlockManagement = (noteId: string | null) => {
   const createNewBlock = async (position: number, currentNoteId: string) => {
     if (!user) return;
 
-    try {
-      // Primero actualizamos las posiciones de los bloques existentes
-      if (blocks) {
-        const blocksToUpdate = blocks
-          .filter(block => block.position >= position)
-          .map(block => ({
-            id: block.id,
-            position: block.position + 1
-          }));
+    // Actualización optimista: agregamos el bloque nuevo al caché local
+    queryClient.setQueryData(["blocks", currentNoteId], (oldData: any) => {
+      const currentBlocks: any[] = oldData || [];
 
-        for (const block of blocksToUpdate) {
-          const { error } = await supabase
-            .from("note_blocks")
-            .update({ position: block.position })
-            .eq("id", block.id);
+      // Creamos un bloque temporal con un id provisional
+      const temporaryBlock = {
+        id: `temp-${Date.now()}`,
+        note_id: currentNoteId,
+        type: "text",
+        content: { text: "" },
+        position,
+      };
 
-          if (error) {
-            console.error("Error updating block positions:", error);
-          }
+      // Actualizamos las posiciones de los bloques que tienen posición >= la del nuevo
+      const updatedBlocks = currentBlocks.map((block) => {
+        if (block.position >= position) {
+          return { ...block, position: block.position + 1 };
         }
-      }
-
-      // Luego creamos el nuevo bloque en la posición deseada
-      const { error: blockError } = await supabase
-        .from("note_blocks")
-        .insert([
-          {
-            note_id: currentNoteId,
-            type: "text",
-            content: { text: "" },
-            position,
-          },
-        ]);
-
-      if (blockError) {
-        console.error("Error creating block:", blockError);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Ha ocurrido un error al crear el bloque. Por favor, inténtalo de nuevo.",
-        });
-        return;
-      }
-
-      const { error: updateError } = await supabase
-        .from("notes")
-        .update({ updated_at: new Date().toISOString() })
-        .eq("id", currentNoteId);
-
-      if (updateError) {
-        console.error("Error updating note timestamp:", updateError);
-      }
-
-      refetchBlocks();
-    } catch (error) {
-      console.error("Error in createNewBlock:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Ha ocurrido un error al crear el bloque. Por favor, inténtalo de nuevo.",
+        return block;
       });
-    }
+
+      // Agregamos el nuevo bloque y ordenamos por posición
+      return [...updatedBlocks, temporaryBlock].sort(
+        (a, b) => a.position - b.position
+      );
+    });
+
   };
 
   return {

@@ -18,6 +18,10 @@ const DetalleApunte = () => {
   const { blocks, createNewBlock, refetchBlocks } = useBlockManagement(id);
   const firstBlockRef = useRef<HTMLTextAreaElement>(null);
 
+  const [focusBlockPosition, setFocusBlockPosition] = useState<number | null>(
+    null
+  );
+
   useEffect(() => {
     const fetchNoteTitle = async () => {
       if (!id) return;
@@ -52,6 +56,16 @@ const DetalleApunte = () => {
     setIsSaving(true);
   };
 
+  const blockRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
+
+  const handleFocusNavigate = (position: number) => {
+    const blockToFocus = document.querySelector(
+      `[data-block-position="${position}"] textarea`
+    ) as HTMLTextAreaElement | null;
+
+    blockToFocus?.focus();
+  };
+
   const handleSaveEnd = () => {
     setIsSaving(false);
     setShowSuccess(true);
@@ -83,14 +97,12 @@ const DetalleApunte = () => {
     if (!id || !blocks?.length) return;
 
     try {
-      const { error } = await supabase
-        .from("note_blocks")
-        .delete()
-        .eq("id", blocks[blocks.length - 1].id);
-
-      if (error) throw error;
-
-      await refetchBlocks();
+      // const { error } = await supabase
+      //   .from("note_blocks")
+      //   .delete()
+      //   .eq("id", blocks[blocks.length - 1].id);
+      // if (error) throw error;
+      // await refetchBlocks();
     } catch (error) {
       console.error("Error deleting empty block:", error);
       toast.error("Error al eliminar el bloque");
@@ -99,7 +111,9 @@ const DetalleApunte = () => {
 
   const handleContentBlockEnter = async (position: number) => {
     if (!id) return;
+
     await createNewBlock(position + 1, id);
+    setFocusBlockPosition(position + 1);
   };
 
   const handleBlockDelete = async () => {
@@ -121,7 +135,7 @@ const DetalleApunte = () => {
   }
 
   return (
-    <div className="relative max-w-4xl mx-auto">
+    <div id="editor-wrapper" className="relative max-w-4xl mx-auto">
       <div className="absolute top-4 right-4 flex items-center gap-2">
         {isSaving && <Loader className="h-5 w-5 animate-spin" />}
         {showSuccess && <Check className="h-5 w-5 text-green-500" />}
@@ -136,25 +150,23 @@ const DetalleApunte = () => {
       </div>
 
       <Separator className="my-4" />
-
-      <div className="space-y-4 mt-8">
-        <div className="space-y-4 mt-8">
-          {blocks.map((block, index) => (
-            <div key={block.id}>
-              <BlockRenderer
-                block={block}
-                noteId={id!}
-                onSaveStart={handleSaveStart}
-                onSaveEnd={handleSaveEnd}
-                onEmptyBlockEnter={handleEmptyBlockEnter}
-                onContentBlockEnter={handleContentBlockEnter}
-                onDelete={handleBlockDelete}
-                refProp={index === 0 ? firstBlockRef : undefined}
-              />
-            </div>
-          ))}
+      {blocks.map((block, index) => (
+        <div key={block.id}>
+          <BlockRenderer
+            key={block.id}
+            block={block}
+            noteId={id!}
+            onSaveStart={handleSaveStart}
+            onSaveEnd={handleSaveEnd}
+            onEmptyBlockEnter={handleEmptyBlockEnter}
+            onContentBlockEnter={handleContentBlockEnter}
+            onDelete={handleBlockDelete}
+            refProp={(el) => (blockRefs.current[block.position] = el)}
+            onFocusNavigate={handleFocusNavigate}
+            autoFocus={block.position === focusBlockPosition}
+          />
         </div>
-      </div>
+      ))}
     </div>
   );
 };
