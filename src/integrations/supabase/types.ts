@@ -40,19 +40,25 @@ export type Database = {
       }
       blocks: {
         Row: {
+          description: string | null
           id: string
           name: string
           opposition_id: string | null
+          position: number
         }
         Insert: {
+          description?: string | null
           id?: string
           name: string
           opposition_id?: string | null
+          position?: number
         }
         Update: {
+          description?: string | null
           id?: string
           name?: string
           opposition_id?: string | null
+          position?: number
         }
         Relationships: [
           {
@@ -127,6 +133,7 @@ export type Database = {
           created_at: string
           id: string
           note_id: string
+          parent_id: string | null
           position: number
           type: string
           updated_at: string
@@ -136,6 +143,7 @@ export type Database = {
           created_at?: string
           id?: string
           note_id: string
+          parent_id?: string | null
           position: number
           type: string
           updated_at?: string
@@ -145,6 +153,7 @@ export type Database = {
           created_at?: string
           id?: string
           note_id?: string
+          parent_id?: string | null
           position?: number
           type?: string
           updated_at?: string
@@ -155,6 +164,13 @@ export type Database = {
             columns: ["note_id"]
             isOneToOne: false
             referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "note_blocks_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "note_blocks"
             referencedColumns: ["id"]
           },
         ]
@@ -179,6 +195,33 @@ export type Database = {
           id?: string
           title?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      onboarding_info: {
+        Row: {
+          available_hours: number
+          created_at: string | null
+          id: string
+          objectives: Json | null
+          study_days: number
+          user_id: string
+        }
+        Insert: {
+          available_hours: number
+          created_at?: string | null
+          id?: string
+          objectives?: Json | null
+          study_days: number
+          user_id: string
+        }
+        Update: {
+          available_hours?: number
+          created_at?: string | null
+          id?: string
+          objectives?: Json | null
+          study_days?: number
           user_id?: string
         }
         Relationships: []
@@ -470,18 +513,27 @@ export type Database = {
       topics: {
         Row: {
           block_id: string | null
+          created_at: string | null
+          description: string | null
           id: string
           name: string
+          position: number
         }
         Insert: {
           block_id?: string | null
+          created_at?: string | null
+          description?: string | null
           id?: string
           name: string
+          position?: number
         }
         Update: {
           block_id?: string | null
+          created_at?: string | null
+          description?: string | null
           id?: string
           name?: string
+          position?: number
         }
         Relationships: [
           {

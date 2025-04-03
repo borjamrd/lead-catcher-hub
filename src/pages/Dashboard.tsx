@@ -1,3 +1,4 @@
+
 import { AppSidebar } from "@/components/app-sidebar";
 import { DashboardContent } from '@/components/dashboard/dashboard-content';
 import {
@@ -11,10 +12,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from '@tanstack/react-query';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-
+import OnboardingModal from "@/components/onboarding/OnboardingModal";
 
 const Dashboard = () => {
-
   const location = useLocation();
   const isRootDashboard = location.pathname === '/dashboard';
   const paths = location.pathname.split('/').filter(Boolean);
@@ -36,7 +36,6 @@ const Dashboard = () => {
     },
     enabled: !!noteId,
   });
-
 
   const getBreadcrumbs = () => {
     const paths = location.pathname.split('/').filter(Boolean);
@@ -71,8 +70,6 @@ const Dashboard = () => {
     <div className="min-h-screen flex w-full">
       <AppSidebar />
       <main className="flex-1 p-8">
-       
-
         {!isRootDashboard && (
           <Breadcrumb className="mb-8">
             <BreadcrumbList>
@@ -98,6 +95,9 @@ const Dashboard = () => {
         )}
         {isRootDashboard ? <DashboardContent /> : <Outlet />}
       </main>
+      
+      {/* Add the OnboardingModal component */}
+      <OnboardingModal />
     </div>
   );
 };
