@@ -256,39 +256,6 @@ export type Database = {
           },
         ]
       }
-      opposition_tests: {
-        Row: {
-          id: string
-          opposition_id: string
-          test_id: string
-        }
-        Insert: {
-          id?: string
-          opposition_id: string
-          test_id: string
-        }
-        Update: {
-          id?: string
-          opposition_id?: string
-          test_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "opposition_tests_opposition_id_fkey"
-            columns: ["opposition_id"]
-            isOneToOne: false
-            referencedRelation: "oppositions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "opposition_tests_test_id_fkey"
-            columns: ["test_id"]
-            isOneToOne: false
-            referencedRelation: "tests"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       oppositions: {
         Row: {
           created_at: string | null
@@ -510,19 +477,19 @@ export type Database = {
       tests: {
         Row: {
           id: string
-          opposition_id: string | null
+          opposition_id: string
           title: string
           topic_id: string | null
         }
         Insert: {
           id?: string
-          opposition_id?: string | null
+          opposition_id: string
           title: string
           topic_id?: string | null
         }
         Update: {
           id?: string
-          opposition_id?: string | null
+          opposition_id?: string
           title?: string
           topic_id?: string | null
         }

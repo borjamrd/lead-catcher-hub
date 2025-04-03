@@ -16,8 +16,8 @@ export function useTests(oppositionId: string | null) {
       if (!oppositionId) return [];
 
       const { data, error } = await supabase
-        .from("opposition_tests")
-        .select("test_id, tests(*)")
+        .from("tests")
+        .select("*")
         .eq("opposition_id", oppositionId);
 
       if (error) {
@@ -25,15 +25,7 @@ export function useTests(oppositionId: string | null) {
         throw error;
       }
 
-      // Transform the data to match the expected Test interface
-      const transformedData = data.map((item) => ({
-        id: item.tests.id,
-        title: item.tests.title,
-        opposition_id: oppositionId,
-        topic_id: item.tests.topic_id
-      }));
-
-      return transformedData || [];
+      return data || [];
     },
     enabled: !!oppositionId,
   });
