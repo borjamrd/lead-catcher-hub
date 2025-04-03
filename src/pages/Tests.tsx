@@ -3,7 +3,7 @@ import { useOppositionStore } from "@/stores/useOppositionStore";
 import { useTests } from "@/hooks/useTests";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckSquare, Plus } from "lucide-react";
+import { CheckSquare, Plus, Shuffle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -36,8 +36,8 @@ const Tests = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Tests</h1>
         <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Crear nuevo test
+          <Shuffle className="h-4 w-4 mr-2" />
+          Test aleatorio
         </Button>
       </div>
 
@@ -98,8 +98,8 @@ const Tests = () => {
               </p>
               {currentSelectedOppositionId && (
                 <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Crear nuevo test
+                  <Shuffle className="h-4 w-4 mr-2" />
+                  Test aleatorio
                 </Button>
               )}
             </div>
