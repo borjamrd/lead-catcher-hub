@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useStudySessionStore } from "@/stores/useStudySessionStore";
 
 interface StudySessionModalProps {
   open: boolean;
@@ -33,6 +34,7 @@ export function StudySessionModal({
 }: StudySessionModalProps) {
   const [selectedSound, setSelectedSound] = useState("none");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const startSession = useStudySessionStore((state) => state.startSession);
 
   const { data: sounds = [], isLoading } = useQuery({
     queryKey: ["study_sounds"],
@@ -98,7 +100,12 @@ export function StudySessionModal({
 
   // Handle start button click
   const handleStart = () => {
+    // Almacenar el estado de la sesión en el store global
+    startSession(selectedSound);
+    
+    // Llamar al callback de inicio
     onStart();
+    
     // The audio cleanup will be handled by the useEffect when open changes
   };
 

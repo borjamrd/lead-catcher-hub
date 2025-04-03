@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +9,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Award,
   Calendar,
@@ -25,40 +25,82 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { AnkiCard } from "./AnkiCard";
 import { StudySessionModal } from "./StudySessionModal";
+import { useStudySessionStore } from "@/stores/useStudySessionStore";
 
 export function DashboardContent() {
   const [showStudyModal, setShowStudyModal] = useState(false);
-  const [isStudyActive, setIsStudyActive] = useState(false);
-  const [studyTime, setStudyTime] = useState(0);
-  const [startTime, setStartTime] = useState<Date | null>(null);
-  const [studySessionStarted, setStudySessionStarted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
-  // Control audio playback based on isStudyActive state
+  // Obtenemos estado y acciones del store
+  const {
+    isActive: studySessionActive,
+    isPaused: studySessionPaused,
+    startTime,
+    elapsedSeconds,
+    selectedSound,
+    pauseSession,
+    resumeSession,
+    endSession,
+    updateElapsedTime
+  } = useStudySessionStore();
+  
+  // Control audio playback based on session state
   useEffect(() => {
-    if (isStudyActive && audioRef.current) {
-      audioRef.current.play().catch(error => {
-        console.error("Error playing audio:", error);
-      });
+    if (studySessionActive && !studySessionPaused && selectedSound !== "none") {
+      // Buscar la URL del sonido seleccionado y reproducirlo
+      // En una aplicación real, esto podría requerir una consulta a la base de datos
+      // para obtener la URL correcta basada en selectedSound
+      
+      const loadAndPlayAudio = async () => {
+        try {
+          // Aquí deberíamos obtener la URL real del sonido desde la base de datos
+          // Por ahora, simularemos tener la URL
+          const { data } = await supabase
+            .from("study_sounds")
+            .select("url")
+            .eq("value", selectedSound)
+            .single();
+          
+          if (data?.url) {
+            if (audioRef.current) {
+              audioRef.current.pause();
+            }
+            
+            const audio = new Audio(data.url);
+            audio.loop = true;
+            audio.volume = 0.4;
+            audio.play().catch(error => {
+              console.error("Error playing audio:", error);
+            });
+            audioRef.current = audio;
+          }
+        } catch (error) {
+          console.error("Error fetching sound URL:", error);
+        }
+      };
+      
+      if (selectedSound !== "none") {
+        loadAndPlayAudio();
+      }
     } else if (audioRef.current) {
       audioRef.current.pause();
     }
-  }, [isStudyActive]);
+  }, [studySessionActive, studySessionPaused, selectedSound]);
   
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
     
-    if (isStudyActive) {
+    if (studySessionActive && !studySessionPaused) {
       interval = setInterval(() => {
-        setStudyTime(prev => prev + 1);
+        updateElapsedTime(elapsedSeconds + 1);
       }, 1000);
     } else {
       clearInterval(interval);
     }
     
     return () => clearInterval(interval);
-  }, [isStudyActive]);
+  }, [studySessionActive, studySessionPaused, elapsedSeconds, updateElapsedTime]);
   
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -67,6 +109,58 @@ export function DashboardContent() {
     
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const handleStartStudySession = () => {
+    // La lógica de inicio ahora está en el componente modal
+    // Este método ahora solo se usa para configurar el UI
+    toast({
+      title: "Sesión de estudio iniciada",
+      description: "El temporizador está activo. ¡Buena suerte!",
+    });
+    setShowStudyModal(false);
+  };
+  
+  const handlePauseStudy = () => {
+    pauseSession();
+    // Audio will be paused in the useEffect when state changes
+    toast({
+      title: "Sesión de estudio pausada",
+      description: "Puedes continuar cuando estés listo.",
+    });
+  };
+  
+  const handleResumeStudy = () => {
+    resumeSession();
+    toast({
+      title: "Sesión de estudio reanudada",
+      description: "¡Continúa con tu estudio!",
+    });
+  };
+  
+  const handleFinishStudy = () => {
+    endSession();
+    
+    // Ensure audio is stopped when study session is finished
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    
+    toast({
+      title: "Sesión de estudio finalizada",
+      description: "¡Buen trabajo! Has completado tu sesión de estudio.",
+    });
+  };
+
+  // Clean up on component unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   // Mock data
   const progressData = {
@@ -134,62 +228,6 @@ export function DashboardContent() {
    
   };
 
-  const handleStartStudySession = () => {
-    setIsStudyActive(true);
-    setStudySessionStarted(true);
-    setStartTime(new Date());
-    toast({
-      title: "Sesión de estudio iniciada",
-      description: "El temporizador está activo. ¡Buena suerte!",
-    });
-    setShowStudyModal(false);
-  };
-  
-  const handlePauseStudy = () => {
-    setIsStudyActive(false);
-    // Audio will be paused in the useEffect when isStudyActive changes
-    toast({
-      title: "Sesión de estudio pausada",
-      description: "Puedes continuar cuando estés listo.",
-    });
-  };
-  
-  const handleResumeStudy = () => {
-    setIsStudyActive(true);
-    toast({
-      title: "Sesión de estudio reanudada",
-      description: "¡Continúa con tu estudio!",
-    });
-  };
-  
-  const handleFinishStudy = () => {
-    setIsStudyActive(false);
-    setStudySessionStarted(false);
-    setStudyTime(0);
-    setStartTime(null);
-    
-    // Ensure audio is stopped when study session is finished
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-    
-    toast({
-      title: "Sesión de estudio finalizada",
-      description: "¡Buen trabajo! Has completado tu sesión de estudio.",
-    });
-  };
-
-  // Clean up on component unmount
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
-
   return (
     <div className="space-y-6">
       {/* Grid layout for the dashboard */}
@@ -252,7 +290,7 @@ export function DashboardContent() {
         </Card>
 
         {/* Botón empezar sesión de estudio o Temporizador de estudio */}
-        {!studySessionStarted ? (
+        {!studySessionActive ? (
           <Card 
             className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer"
             onClick={() => setShowStudyModal(true)}
@@ -280,12 +318,12 @@ export function DashboardContent() {
             <CardContent className="space-y-4">
               <div className="flex justify-center">
                 <div className="text-4xl font-bold tabular-nums">
-                  {formatTime(studyTime)}
+                  {formatTime(elapsedSeconds)}
                 </div>
               </div>
               
               <div className="flex justify-center space-x-2">
-                {!isStudyActive ? (
+                {studySessionPaused ? (
                   <Button onClick={handleResumeStudy} size="sm" className="px-4">
                     <PlayCircle className="mr-2 h-4 w-4" />
                     Continuar
@@ -311,6 +349,12 @@ export function DashboardContent() {
               {startTime && (
                 <div className="text-center text-xs text-muted-foreground">
                   Sesión iniciada a las {startTime.toLocaleTimeString()}
+                </div>
+              )}
+              
+              {selectedSound !== "none" && (
+                <div className="text-center text-xs text-muted-foreground">
+                  Sonido: {selectedSound.replace(/-/g, ' ')}
                 </div>
               )}
             </CardContent>
