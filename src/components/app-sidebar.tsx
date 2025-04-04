@@ -44,11 +44,11 @@ const items = [
     url: "/dashboard/chat-juridico",
     icon: MessageSquare,
   },
-  {
-    title: "Mis apuntes",
-    url: "/dashboard/mis-apuntes",
-    icon: FileText,
-  },
+  // {
+  //   title: "Mis apuntes",
+  //   url: "/dashboard/mis-apuntes",
+  //   icon: FileText,
+  // },
   {
     title: "Recursos",
     url: "/dashboard/mis-recursos",

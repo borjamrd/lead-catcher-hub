@@ -5,6 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { ArrowUp } from "lucide-react";
+import OnboardingSummary from "./OnboardingSummary";
 
 // Define the chat message structure
 interface ChatMessage {
@@ -51,7 +53,8 @@ const MOCK_RESPONSES: ChatMessage[] = [
   }
 ];
 
-const OnboardingChat = () => {
+const OnboardingChat = (
+) => {
   const [messages, setMessages] = useState<ChatMessage[]>(MOCK_CONVERSATION);
   const [currentMessage, setCurrentMessage] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
@@ -159,6 +162,18 @@ const OnboardingChat = () => {
     }
   };
 
+
+  if (isCompleted) {
+    return (
+      <OnboardingSummary
+        availableHours={availableHours}
+        studyDays={studyDays}
+        onConfirm={() => {}} 
+        
+      />
+    );
+  }
+  
   return (
     <div className="flex flex-col h-full max-h-[70vh]">
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 rounded-t-md">
@@ -170,8 +185,8 @@ const OnboardingChat = () => {
             <div
               className={`max-w-[80%] p-3 rounded-lg ${
                 message.role === 'user' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-muted'
+                  ? 'bg-indigo-100' 
+                  : 'bg-none'
               }`}
             >
               {message.content}
@@ -188,14 +203,15 @@ const OnboardingChat = () => {
             onChange={(e) => setCurrentMessage(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Escribe tu mensaje..."
-            className="flex-1 resize-none"
+            className="flex-1 resize-none  focus-visible:ring-0 focus-visible:outline-none focus-visible:border-none"
             disabled={inputDisabled || isCompleted}
           />
           <Button 
             onClick={handleSend} 
+            className="rounded-full p-2 h-10 w-10 flex items-center justify-center mt-auto"
             disabled={!currentMessage.trim() || inputDisabled || isCompleted}
           >
-            Enviar
+            <ArrowUp className="w-4 h-4" />
           </Button>
         </div>
       </div>
