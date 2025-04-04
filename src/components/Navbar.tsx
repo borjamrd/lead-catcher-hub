@@ -1,8 +1,7 @@
-
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Settings } from "lucide-react";
+import { FolderKanban, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -73,6 +72,13 @@ const Navbar = () => {
                 >
                   <Settings className="h-5 w-5" />
                 </Link>
+                <Link
+                  className="text-gray-600 hover:text-gray-900 transition-colors"
+                  to="/dashboard/perfil-opositor"
+                >
+                  <FolderKanban className="h-5 w-5" />
+                </Link>
+
                 <Button variant="ghost" onClick={handleLogout}>
                   Cerrar sesión
                 </Button>

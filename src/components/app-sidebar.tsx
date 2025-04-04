@@ -59,12 +59,7 @@ const items = [
     title: "Mis notificaciones",
     url: "/dashboard/mis-notificaciones",
     icon: Bell,
-  },
-  {
-    title: "Perfil Opositor",
-    url: "/dashboard/perfil-opositor",
-    icon: FolderKanban,
-  },
+  }
 ];
 
 export function AppSidebar() {
