@@ -15,14 +15,13 @@ import {
   BookOpen,
   CheckSquare,
   Database,
-  FileText,
-  FolderKanban,
   LayoutDashboard,
   Map,
-  MessageSquare,
+  MessageSquare
 } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import StudyCycleSelector from "./StudyCycleSelector";
 
 const items = [
   {
@@ -79,6 +78,7 @@ export function AppSidebar() {
       <div className="p-4">
         <div className="mb-6">
           {oppositionList.length > 0 ? (
+            <div>
             <Select
               value={currentSelectedOppositionId ?? ""}
               onValueChange={setCurrentOppositionId}
@@ -94,11 +94,14 @@ export function AppSidebar() {
                 ))}
               </SelectContent>
             </Select>
+              <StudyCycleSelector oppositionId={currentSelectedOppositionId}  />
+              </div>
           ) : (
             <Button variant="outline" asChild>
               <Link to="/dashboard/oposiciones">Agrega tu primera oposición</Link>
             </Button>
           )}
+        
         </div>
 
         <nav>
