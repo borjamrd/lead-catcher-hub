@@ -96,7 +96,6 @@ const Dashboard = () => {
         {isRootDashboard ? <DashboardContent /> : <Outlet />}
       </main>
       
-      {/* Add the OnboardingModal component */}
       <OnboardingModal />
     </div>
   );

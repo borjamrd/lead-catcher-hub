@@ -19,7 +19,7 @@ const OnboardingModal = () => {
   const [showChat, setShowChat] = useState(false);
   const { user } = useAuth();
   const { setOnboardingInfo } = useOnboardingStore();
-  const { setOnboardingOppositionId } = useOppositionStore();
+  const { onboardingSelectedOppositionId, setOnboardingOppositionId } = useOppositionStore();
 
   useEffect(() => {
     if (!user) return;
@@ -41,6 +41,11 @@ const OnboardingModal = () => {
         // If data exists, store it in global state
         if (data) {
           setOnboardingInfo(data);
+          
+          // If there's an opposition_id, also set it in the opposition store
+          if (data.opposition_id) {
+            setOnboardingOppositionId(data.opposition_id);
+          }
         }
 
         // If no data exists, the user needs onboarding
@@ -53,7 +58,7 @@ const OnboardingModal = () => {
     };
 
     checkOnboardingStatus();
-  }, [user, setOnboardingInfo]);
+  }, [user, setOnboardingInfo, setOnboardingOppositionId]);
 
   // Function to handle opposition selection
   const handleOppositionSelect = (oppositionId: string) => {
@@ -84,7 +89,6 @@ const OnboardingModal = () => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        closeIcon={null} // Remove the close icon
         className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] h-[50vh]"
       >
         <DialogHeader>

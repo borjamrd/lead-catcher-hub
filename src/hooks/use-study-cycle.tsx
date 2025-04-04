@@ -1,13 +1,23 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+
+interface StudyCycle {
+  id: string;
+  cycle_number: number;
+  started_at: string;
+  completed_at: string | null;
+  opposition_id: string;
+  user_id: string;
+}
 
 export const useStudyCycles = (oppositionId: string) => {
   const { user } = useAuth();
 
   return useQuery({
     queryKey: ["study-cycles", user?.id, oppositionId],
-    queryFn: async () => {
+    queryFn: async (): Promise<StudyCycle[]> => {
       if (!user?.id || !oppositionId) return [];
 
       const { data, error } = await supabase
@@ -18,7 +28,7 @@ export const useStudyCycles = (oppositionId: string) => {
         .order("cycle_number", { ascending: true });
 
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: !!user?.id && !!oppositionId,
   });
