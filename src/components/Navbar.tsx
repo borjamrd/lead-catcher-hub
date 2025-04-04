@@ -1,7 +1,9 @@
+
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useStudySessionStore } from "@/stores/useStudySessionStore";
 import { useQuery } from "@tanstack/react-query";
-import { FolderKanban, Settings } from "lucide-react";
+import { FolderKanban, Play, Pause, Settings, StopCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -10,6 +12,17 @@ import { Button } from "./ui/button";
 const Navbar = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  
+  // Study session state
+  const {
+    isActive: studySessionActive,
+    isPaused: studySessionPaused,
+    startTime,
+    elapsedSeconds,
+    pauseSession,
+    resumeSession,
+    endSession,
+  } = useStudySessionStore();
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -36,6 +49,41 @@ const Navbar = () => {
       toast.error("Error al cerrar sesión");
     }
   };
+  
+  // Format elapsed time as HH:MM:SS
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  // Handle study session controls
+  const handlePauseStudy = () => {
+    pauseSession();
+    toast.success("Sesión de estudio pausada");
+  };
+  
+  const handleResumeStudy = () => {
+    resumeSession();
+    toast.success("Sesión de estudio reanudada");
+  };
+  
+  const handleFinishStudy = () => {
+    endSession();
+    toast.success("Sesión de estudio finalizada");
+  };
+  
+  // Open study session modal
+  const openStudyModal = () => {
+    // We'll navigate to the dashboard which has the modal
+    navigate("/dashboard");
+    // The modal will be opened in the dashboard component
+    setTimeout(() => {
+      document.dispatchEvent(new CustomEvent('open-study-modal'));
+    }, 100);
+  };
 
   return (
     <nav className="bg-white border-b">
@@ -53,6 +101,37 @@ const Navbar = () => {
           <div className="flex items-center space-x-6">
             {user && (
               <>
+                {/* Study Timer */}
+                {studySessionActive ? (
+                  <div className="flex items-center space-x-3">
+                    {/* Timer display */}
+                    <div className="font-mono text-sm font-medium">
+                      {formatTime(elapsedSeconds)}
+                    </div>
+                    
+                    {/* Control buttons */}
+                    <div className="flex space-x-1">
+                      {studySessionPaused ? (
+                        <Button size="icon" variant="ghost" onClick={handleResumeStudy} title="Reanudar sesión">
+                          <Play className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <Button size="icon" variant="ghost" onClick={handlePauseStudy} title="Pausar sesión">
+                          <Pause className="h-4 w-4" />
+                        </Button>
+                      )}
+                      
+                      <Button size="icon" variant="ghost" onClick={handleFinishStudy} title="Finalizar sesión" className="text-destructive hover:text-destructive">
+                        <StopCircle className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button size="icon" variant="ghost" onClick={openStudyModal} title="Iniciar sesión de estudio">
+                    <Play className="h-4 w-4" />
+                  </Button>
+                )}
+                
                 <Link
                   to="/dashboard"
                   className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"

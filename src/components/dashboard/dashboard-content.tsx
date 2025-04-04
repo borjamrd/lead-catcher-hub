@@ -36,13 +36,12 @@ export function DashboardContent() {
   const {
     isActive: studySessionActive,
     isPaused: studySessionPaused,
-    startTime,
-    elapsedSeconds,
     selectedSound,
     pauseSession,
     resumeSession,
     endSession,
-    updateElapsedTime
+    updateElapsedTime,
+    elapsedSeconds
   } = useStudySessionStore();
   
   // Control audio playback based on session state
@@ -88,6 +87,7 @@ export function DashboardContent() {
     }
   }, [studySessionActive, studySessionPaused, selectedSound]);
   
+  // Update elapsed time counter
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
     
@@ -102,13 +102,18 @@ export function DashboardContent() {
     return () => clearInterval(interval);
   }, [studySessionActive, studySessionPaused, elapsedSeconds, updateElapsedTime]);
   
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
+  // Event listener for opening the study modal from navbar
+  useEffect(() => {
+    const handleOpenStudyModal = () => {
+      setShowStudyModal(true);
+    };
     
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+    document.addEventListener('open-study-modal', handleOpenStudyModal);
+    
+    return () => {
+      document.removeEventListener('open-study-modal', handleOpenStudyModal);
+    };
+  }, []);
 
   const handleStartStudySession = () => {
     // La lógica de inicio ahora está en el componente modal
@@ -122,7 +127,6 @@ export function DashboardContent() {
   
   const handlePauseStudy = () => {
     pauseSession();
-    // Audio will be paused in the useEffect when state changes
     toast({
       title: "Sesión de estudio pausada",
       description: "Puedes continuar cuando estés listo.",
@@ -289,7 +293,7 @@ export function DashboardContent() {
           </CardContent>
         </Card>
 
-        {/* Botón empezar sesión de estudio o Temporizador de estudio */}
+        {/* Botón empezar sesión de estudio */}
         {!studySessionActive ? (
           <Card 
             className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer"
@@ -312,16 +316,10 @@ export function DashboardContent() {
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center">
                 <Clock className="mr-2 h-6 w-6" />
-                Temporizador de estudio
+                Controles de estudio
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-center">
-                <div className="text-4xl font-bold tabular-nums">
-                  {formatTime(elapsedSeconds)}
-                </div>
-              </div>
-              
+            <CardContent className="space-y-4">              
               <div className="flex justify-center space-x-2">
                 {studySessionPaused ? (
                   <Button onClick={handleResumeStudy} size="sm" className="px-4">
@@ -345,18 +343,6 @@ export function DashboardContent() {
                   Finalizar
                 </Button>
               </div>
-
-              {startTime && (
-                <div className="text-center text-xs text-muted-foreground">
-                  Sesión iniciada a las {startTime.toLocaleTimeString()}
-                </div>
-              )}
-              
-              {selectedSound !== "none" && (
-                <div className="text-center text-xs text-muted-foreground">
-                  Sonido: {selectedSound.replace(/-/g, ' ')}
-                </div>
-              )}
             </CardContent>
           </Card>
         )}
