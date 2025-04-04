@@ -1,15 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useStudySessionStore } from "@/stores/useStudySessionStore";
 import {
   Award,
   Calendar,
@@ -19,19 +15,17 @@ import {
   PlayCircle,
   Rocket,
   Search,
-  Settings,
   StopCircle
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AnkiCard } from "./AnkiCard";
 import { StudySessionModal } from "./StudySessionModal";
-import { useStudySessionStore } from "@/stores/useStudySessionStore";
 
 export function DashboardContent() {
   const [showStudyModal, setShowStudyModal] = useState(false);
   const { toast } = useToast();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  
+
   // Obtenemos estado y acciones del store
   const {
     isActive: studySessionActive,
@@ -41,16 +35,16 @@ export function DashboardContent() {
     resumeSession,
     endSession,
     updateElapsedTime,
-    elapsedSeconds
+    elapsedSeconds,
   } = useStudySessionStore();
-  
+
   // Control audio playback based on session state
   useEffect(() => {
     if (studySessionActive && !studySessionPaused && selectedSound !== "none") {
       // Buscar la URL del sonido seleccionado y reproducirlo
       // En una aplicación real, esto podría requerir una consulta a la base de datos
       // para obtener la URL correcta basada en selectedSound
-      
+
       const loadAndPlayAudio = async () => {
         try {
           // Aquí deberíamos obtener la URL real del sonido desde la base de datos
@@ -60,16 +54,16 @@ export function DashboardContent() {
             .select("url")
             .eq("value", selectedSound)
             .single();
-          
+
           if (data?.url) {
             if (audioRef.current) {
               audioRef.current.pause();
             }
-            
+
             const audio = new Audio(data.url);
             audio.loop = true;
             audio.volume = 0.4;
-            audio.play().catch(error => {
+            audio.play().catch((error) => {
               console.error("Error playing audio:", error);
             });
             audioRef.current = audio;
@@ -78,7 +72,7 @@ export function DashboardContent() {
           console.error("Error fetching sound URL:", error);
         }
       };
-      
+
       if (selectedSound !== "none") {
         loadAndPlayAudio();
       }
@@ -86,11 +80,11 @@ export function DashboardContent() {
       audioRef.current.pause();
     }
   }, [studySessionActive, studySessionPaused, selectedSound]);
-  
+
   // Update elapsed time counter
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
-    
+
     if (studySessionActive && !studySessionPaused) {
       interval = setInterval(() => {
         updateElapsedTime(elapsedSeconds + 1);
@@ -98,20 +92,25 @@ export function DashboardContent() {
     } else {
       clearInterval(interval);
     }
-    
+
     return () => clearInterval(interval);
-  }, [studySessionActive, studySessionPaused, elapsedSeconds, updateElapsedTime]);
-  
+  }, [
+    studySessionActive,
+    studySessionPaused,
+    elapsedSeconds,
+    updateElapsedTime,
+  ]);
+
   // Event listener for opening the study modal from navbar
   useEffect(() => {
     const handleOpenStudyModal = () => {
       setShowStudyModal(true);
     };
-    
-    document.addEventListener('open-study-modal', handleOpenStudyModal);
-    
+
+    document.addEventListener("open-study-modal", handleOpenStudyModal);
+
     return () => {
-      document.removeEventListener('open-study-modal', handleOpenStudyModal);
+      document.removeEventListener("open-study-modal", handleOpenStudyModal);
     };
   }, []);
 
@@ -124,7 +123,7 @@ export function DashboardContent() {
     });
     setShowStudyModal(false);
   };
-  
+
   const handlePauseStudy = () => {
     pauseSession();
     toast({
@@ -132,7 +131,7 @@ export function DashboardContent() {
       description: "Puedes continuar cuando estés listo.",
     });
   };
-  
+
   const handleResumeStudy = () => {
     resumeSession();
     toast({
@@ -140,16 +139,16 @@ export function DashboardContent() {
       description: "¡Continúa con tu estudio!",
     });
   };
-  
+
   const handleFinishStudy = () => {
     endSession();
-    
+
     // Ensure audio is stopped when study session is finished
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
-    
+
     toast({
       title: "Sesión de estudio finalizada",
       description: "¡Buen trabajo! Has completado tu sesión de estudio.",
@@ -229,15 +228,148 @@ export function DashboardContent() {
         icono: <Clock className="h-5 w-5 text-blue-500" />,
       },
     ],
-   
   };
 
   return (
     <div className="space-y-6">
       {/* Grid layout for the dashboard */}
+      <div className="flex gap-6 mb-6">
+        <Button
+          variant="outline"
+          className="w-full flex items-center justify-start h-16"
+        >
+          <Search className="mr-2 h-5 w-5" />
+          <div className="text-left">
+            <div className="font-medium">Buscar un tema</div>
+            <div className="text-xs text-muted-foreground">
+              Encuentra contenido rápidamente
+            </div>
+          </div>
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full flex items-center justify-start h-16"
+        >
+          <Calendar className="mr-2 h-5 w-5" />
+          <div className="text-left">
+            <div className="font-medium">Modo examen</div>
+            <div className="text-xs text-muted-foreground">
+              Simula un examen real
+            </div>
+          </div>
+        </Button>
+      </div>
+
       <div className="grid grid-cols-12 gap-6">
-        {/* Resumen del Progreso - 5 columns, spans 2 rows */}
-        <Card className="col-span-8 row-span-1 shadow-md">
+
+           {/* Motivación - 4 columns, spans 1 row */}
+           <Card className="col-span-3 shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center text-2xl">
+              🏆 ¡Menuda crack!
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h3 className="text-sm font-semibold mb-2">
+                Logros desbloqueados
+              </h3>
+              <div className="space-y-2">
+                {motivacionData.logros.map((logro) => (
+                  <div
+                    key={logro.id}
+                    className="flex items-center bg-muted/50 p-2 rounded-md"
+                  >
+                    {logro.icono}
+                    <span className="ml-2 text-sm">{logro.titulo}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator />
+          </CardContent>
+        </Card>
+
+     {/* Nueva sección - Anki Card */}
+     <div className="col-span-5">
+          <AnkiCard
+            front="🔹 El órgano de contratación en la Administración General del Estado es el __________."
+            back="🔹 Ministro del departamento correspondiente o el titular del organismo autónomo, salvo delegación."
+          />
+        </div>
+        {/* Botón empezar sesión de estudio */}
+        {!studySessionActive ? (
+          <Card
+            className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer"
+            onClick={() => setShowStudyModal(true)}
+          >
+            <CardContent className="flex h-full items-center justify-center p-6">
+              <div className="flex flex-col items-center text-center">
+                <Rocket className="h-12 w-12 text-primary mb-2" />
+                <h3 className="text-xl font-semibold">
+                  Empezar sesión de estudio
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Activa el temportizador y concéntrate.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="col-span-4 shadow-md">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center">
+                <Clock className="mr-2 h-6 w-6" />
+                Controles de estudio
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-center space-x-2">
+                {studySessionPaused ? (
+                  <Button
+                    onClick={handleResumeStudy}
+                    size="sm"
+                    className="px-4"
+                  >
+                    <PlayCircle className="mr-2 h-4 w-4" />
+                    Continuar
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handlePauseStudy}
+                    size="sm"
+                    className="px-4"
+                    variant="outline"
+                  >
+                    <PauseCircle className="mr-2 h-4 w-4" />
+                    Pausar
+                  </Button>
+                )}
+
+                <Button
+                  onClick={handleFinishStudy}
+                  size="sm"
+                  className="px-4"
+                  variant="destructive"
+                >
+                  <StopCircle className="mr-2 h-4 w-4" />
+                  Finalizar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Modal de sesión de estudio */}
+        <StudySessionModal
+          open={showStudyModal}
+          onOpenChange={setShowStudyModal}
+          onStart={handleStartStudySession}
+        />
+       {/* Resumen del Progreso - 5 columns, spans 2 rows */}
+
+       <Card className="col-span-8 row-span-1 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               📊 Tu progreso
@@ -293,185 +425,8 @@ export function DashboardContent() {
           </CardContent>
         </Card>
 
-        {/* Botón empezar sesión de estudio */}
-        {!studySessionActive ? (
-          <Card 
-            className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer"
-            onClick={() => setShowStudyModal(true)}
-          >
-            <CardContent className="flex h-full items-center justify-center p-6">
-              <div className="flex flex-col items-center text-center">
-                <Rocket className="h-12 w-12 text-primary mb-2" />
-                <h3 className="text-xl font-semibold">
-                  Empezar sesión de estudio
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Activa el temportizador y concéntrate.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="col-span-4 shadow-md">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center">
-                <Clock className="mr-2 h-6 w-6" />
-                Controles de estudio
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">              
-              <div className="flex justify-center space-x-2">
-                {studySessionPaused ? (
-                  <Button onClick={handleResumeStudy} size="sm" className="px-4">
-                    <PlayCircle className="mr-2 h-4 w-4" />
-                    Continuar
-                  </Button>
-                ) : (
-                  <Button onClick={handlePauseStudy} size="sm" className="px-4" variant="outline">
-                    <PauseCircle className="mr-2 h-4 w-4" />
-                    Pausar
-                  </Button>
-                )}
-                
-                <Button 
-                  onClick={handleFinishStudy} 
-                  size="sm" 
-                  className="px-4" 
-                  variant="destructive"
-                >
-                  <StopCircle className="mr-2 h-4 w-4" />
-                  Finalizar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Modal de sesión de estudio */}
-        <StudySessionModal 
-          open={showStudyModal} 
-          onOpenChange={setShowStudyModal}
-          onStart={handleStartStudySession}
-        />
-
-        {/* Motivación - 4 columns, spans 1 row */}
-        <Card className="col-span-4 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-2xl">
-              🏆 ¡Menuda crack!
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h3 className="text-sm font-semibold mb-2">
-                Logros desbloqueados
-              </h3>
-              <div className="space-y-2">
-                {motivacionData.logros.map((logro) => (
-                  <div
-                    key={logro.id}
-                    className="flex items-center bg-muted/50 p-2 rounded-md"
-                  >
-                    {logro.icono}
-                    <span className="ml-2 text-sm">{logro.titulo}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Separator />
-          </CardContent>
-        </Card>
-
-        {/* Revisión Inteligente - 3 columns, spans 2 rows */}
-        <Card className="col-span-8 row-span-1 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-2xl">
-              🧠 Revisión Inteligente
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h3 className="text-sm font-semibold mb-2">
-                Repasos programados
-              </h3>
-              <div className="space-y-2">
-                {revisionData.repasos.map((repaso) => (
-                  <div
-                    key={repaso.id}
-                    className="flex items-center justify-between bg-muted/50 p-2 rounded-md"
-                  >
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{repaso.titulo}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {repaso.fecha}
-                      </p>
-                    </div>
-                    <Badge
-                      variant={
-                        repaso.prioridad === "Alta"
-                          ? "default"
-                          : repaso.prioridad === "Media"
-                          ? "secondary"
-                          : "outline"
-                      }
-                      className="text-xs"
-                    >
-                      {repaso.prioridad}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Atajos útiles - ocupa las columnas restantes */}
-        <Card className="col-span-4 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-2xl">
-              <Settings className="mr-2 h-6 w-6 text-primary" />
-              ¿Con prisas?
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Button
-                variant="outline"
-                className="w-full flex items-center justify-start h-16"
-              >
-                <Calendar className="mr-2 h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-medium">Modo examen</div>
-                  <div className="text-xs text-muted-foreground">
-                    Simula un examen real
-                  </div>
-                </div>
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full flex items-center justify-start h-16"
-              >
-                <Search className="mr-2 h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-medium">Buscar un tema</div>
-                  <div className="text-xs text-muted-foreground">
-                    Encuentra contenido rápidamente
-                  </div>
-                </div>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Nueva sección - Anki Card */}
-        <div className="col-span-4">
-          <AnkiCard 
-            front="🔹 El órgano de contratación en la Administración General del Estado es el __________."
-            back="🔹 Ministro del departamento correspondiente o el titular del organismo autónomo, salvo delegación."
-          />
-        </div>
+     
+    
 
         <Card className="col-span-4">
           <CardHeader className="pb-2">
