@@ -1,12 +1,12 @@
 
 import { create } from 'zustand';
 
-interface OnboardingInfo {
+export interface OnboardingInfo {
   id: string;
   user_id: string;
   available_hours: number;
   study_days: number;
-  objectives: Record<string, string> | null;
+  objectives: Record<string, any> | null;
   created_at: string;
 }
 

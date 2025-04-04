@@ -450,6 +450,41 @@ export type Database = {
         }
         Relationships: []
       }
+      study_cycles: {
+        Row: {
+          completed_at: string | null
+          cycle_number: number
+          id: string
+          opposition_id: string
+          started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          cycle_number: number
+          id?: string
+          opposition_id: string
+          started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          cycle_number?: number
+          id?: string
+          opposition_id?: string
+          started_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_cycles_opposition_id_fkey"
+            columns: ["opposition_id"]
+            isOneToOne: false
+            referencedRelation: "oppositions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       study_sounds: {
         Row: {
           created_at: string | null

@@ -7,15 +7,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import OnboardingChat from "./OnboardingChat";
+import OpositionSelect from "./OpositionSelect";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOnboardingStore } from "@/stores/useOnboardingStore";
+import { useOppositionStore } from "@/stores/useOppositionStore";
 
 const OnboardingModal = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showChat, setShowChat] = useState(false);
   const { user } = useAuth();
   const { setOnboardingInfo } = useOnboardingStore();
+  const { setOnboardingOppositionId } = useOppositionStore();
 
   useEffect(() => {
     if (!user) return;
@@ -51,6 +55,16 @@ const OnboardingModal = () => {
     checkOnboardingStatus();
   }, [user, setOnboardingInfo]);
 
+  // Function to handle opposition selection
+  const handleOppositionSelect = (oppositionId: string) => {
+    setOnboardingOppositionId(oppositionId);
+  };
+
+  // Function to handle confirmation of opposition selection
+  const handleOppositionConfirm = () => {
+    setShowChat(true);
+  };
+
   // Function to handle successful onboarding completion
   const handleOnboardingComplete = () => {
     setOpen(false);
@@ -83,7 +97,14 @@ const OnboardingModal = () => {
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
-          <OnboardingChat onComplete={handleOnboardingComplete} />
+          {!showChat ? (
+            <OpositionSelect
+              onSelect={handleOppositionSelect}
+              onConfirm={handleOppositionConfirm}
+            />
+          ) : (
+            <OnboardingChat onComplete={handleOnboardingComplete} />
+          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -1,8 +1,10 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOppositionStore } from "@/stores/useOppositionStore";
 import { toast } from "sonner";
 import { ArrowUp } from "lucide-react";
 import OnboardingSummary from "./OnboardingSummary";
@@ -65,6 +67,7 @@ const OnboardingChat = ({ onComplete }: OnboardingChatProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const { onboardingSelectedOppositionId } = useOppositionStore();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -129,13 +132,29 @@ const OnboardingChat = ({ onComplete }: OnboardingChatProps) => {
           user_id: user.id,
           available_hours: availableHours,
           study_days: studyDays,
-          objectives: { areas: objectives }
+          objectives: { areas: objectives },
+          opposition_id: onboardingSelectedOppositionId
         });
 
       if (error) {
         console.error('Error saving onboarding data:', error);
         toast.error('Error al guardar tus preferencias');
         return;
+      }
+
+      // Also create a user_oppositions entry
+      if (onboardingSelectedOppositionId) {
+        const { error: userOppositionError } = await supabase
+          .from('user_oppositions')
+          .insert({
+            profile_id: user.id,
+            opposition_id: onboardingSelectedOppositionId,
+            active: true
+          });
+
+        if (userOppositionError) {
+          console.error('Error associating user with opposition:', userOppositionError);
+        }
       }
 
       toast.success('¡Configuración completada con éxito!');
