@@ -19,6 +19,7 @@ import MisNotificaciones from "./pages/MisNotificaciones";
 import Oposiciones from "./pages/Oposiciones";
 import Ajustes from "./pages/Ajustes";
 import Roadmap from "./pages/Roadmap";
+import PerfilOpositor from "./pages/PerfilOpositor";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -54,6 +55,7 @@ const App = () => (
                 <Route path="oposiciones" element={<Oposiciones />} />
                 <Route path="roadmap" element={<Roadmap />} />
                 <Route path="ajustes" element={<Ajustes />} />
+                <Route path="perfil-opositor" element={<PerfilOpositor />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

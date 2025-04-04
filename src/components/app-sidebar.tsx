@@ -16,9 +16,10 @@ import {
   CheckSquare,
   Database,
   FileText,
+  FolderKanban,
   LayoutDashboard,
-  MessageSquare,
   Map,
+  MessageSquare,
 } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -58,6 +59,11 @@ const items = [
     title: "Mis notificaciones",
     url: "/dashboard/mis-notificaciones",
     icon: Bell,
+  },
+  {
+    title: "Perfil Opositor",
+    url: "/dashboard/perfil-opositor",
+    icon: FolderKanban,
   },
 ];
 
