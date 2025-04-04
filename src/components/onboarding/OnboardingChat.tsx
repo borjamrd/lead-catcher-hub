@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,13 +7,11 @@ import { toast } from "sonner";
 import { ArrowUp } from "lucide-react";
 import OnboardingSummary from "./OnboardingSummary";
 
-// Define the chat message structure
 interface ChatMessage {
   role: 'assistant' | 'user';
   content: string;
 }
 
-// Mock conversation data
 const MOCK_CONVERSATION: ChatMessage[] = [
   {
     role: 'assistant',
@@ -53,8 +50,11 @@ const MOCK_RESPONSES: ChatMessage[] = [
   }
 ];
 
-const OnboardingChat = (
-) => {
+interface OnboardingChatProps {
+  onComplete?: () => void;
+}
+
+const OnboardingChat = ({ onComplete }: OnboardingChatProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>(MOCK_CONVERSATION);
   const [currentMessage, setCurrentMessage] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
@@ -66,7 +66,6 @@ const OnboardingChat = (
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
 
-  // Scroll to bottom of chat on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -74,7 +73,6 @@ const OnboardingChat = (
   const handleSend = () => {
     if (!currentMessage.trim()) return;
 
-    // Add user message
     const userMessage: ChatMessage = {
       role: 'user',
       content: currentMessage
@@ -84,37 +82,31 @@ const OnboardingChat = (
     setCurrentMessage("");
     setInputDisabled(true);
 
-    // Process user input based on current step
     setTimeout(() => {
       switch (currentStep) {
-        case 0: // First response about wanting a plan
-          // No need to store this, just move to next step
+        case 0:
           break;
-        case 1: // Hours response
+        case 1:
           setAvailableHours(parseInt(currentMessage) || 2);
           break;
-        case 2: // Days response
-          // Simple parsing: count the number of days mentioned
+        case 2:
           const daysCount = currentMessage.toLowerCase().split(/[,\s]+/).filter(
             word => ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'].includes(word)
           ).length;
           setStudyDays(daysCount || 4);
           break;
-        case 3: // Study method
-          // Not storing this for now
+        case 3:
           break;
-        case 4: // Objectives
+        case 4:
           setObjectives([currentMessage]);
           break;
-        case 5: // Recommendations frequency
-          // Not storing this for now
+        case 5:
           break;
-        case 6: // Final confirmation
+        case 6:
           setIsCompleted(true);
           break;
       }
 
-      // Add assistant response with delay for natural feeling
       if (currentStep < MOCK_RESPONSES.length) {
         setTimeout(() => {
           setMessages(prev => [...prev, MOCK_RESPONSES[currentStep]]);
@@ -122,7 +114,6 @@ const OnboardingChat = (
           setInputDisabled(false);
         }, 1000);
       } else {
-        // Complete the onboarding process
         saveOnboardingData();
       }
     }, 500);
@@ -132,7 +123,6 @@ const OnboardingChat = (
     if (!user) return;
     
     try {
-      // Save onboarding data to Supabase
       const { error } = await supabase
         .from('onboarding_info')
         .insert({
@@ -162,14 +152,12 @@ const OnboardingChat = (
     }
   };
 
-
   if (isCompleted) {
     return (
       <OnboardingSummary
         availableHours={availableHours}
         studyDays={studyDays}
-        onConfirm={() => {}} 
-        
+        onConfirm={onComplete || (() => {})} 
       />
     );
   }

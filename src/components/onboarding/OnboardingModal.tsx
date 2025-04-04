@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -8,12 +9,13 @@ import {
 import OnboardingChat from "./OnboardingChat";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOnboardingStore } from "@/stores/useOnboardingStore";
 
 const OnboardingModal = () => {
   const [open, setOpen] = useState(false);
-
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const { setOnboardingInfo } = useOnboardingStore();
 
   useEffect(() => {
     if (!user) return;
@@ -32,6 +34,11 @@ const OnboardingModal = () => {
           return;
         }
 
+        // If data exists, store it in global state
+        if (data) {
+          setOnboardingInfo(data);
+        }
+
         // If no data exists, the user needs onboarding
         setOpen(!data);
       } catch (err) {
@@ -42,13 +49,18 @@ const OnboardingModal = () => {
     };
 
     checkOnboardingStatus();
-  }, [user]);
+  }, [user, setOnboardingInfo]);
+
+  // Function to handle successful onboarding completion
+  const handleOnboardingComplete = () => {
+    setOpen(false);
+  };
 
   // Prevent closing the dialog until onboarding is complete
-  const handleOpenChange = () => {
+  const handleOpenChange = (newOpen: boolean) => {
     // Only allow closing if we're explicitly setting it to closed
     // and we're no longer in the loading state
-    if (!open && !loading) {
+    if (!newOpen && !loading) {
       setOpen(true);
     }
   };
@@ -71,7 +83,7 @@ const OnboardingModal = () => {
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
-          <OnboardingChat />
+          <OnboardingChat onComplete={handleOnboardingComplete} />
         </div>
       </DialogContent>
     </Dialog>
