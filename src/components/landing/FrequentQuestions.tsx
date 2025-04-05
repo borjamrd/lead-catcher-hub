@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 
 // Definición de los mensajes de preguntas frecuentes
@@ -19,15 +19,29 @@ const answers = [
 
 const FrequentQuestions = () => {
   const controls = useAnimation();
+  const [visibleMessages, setVisibleMessages] = useState<number[]>([]);
   
   useEffect(() => {
     // Start animation when component mounts
     const startAnimation = async () => {
+      // Reveal messages one by one with a delay
+      const timer = setInterval(() => {
+        setVisibleMessages(prev => {
+          if (prev.length >= questions.length * 2 + 1) {
+            clearInterval(timer);
+            return prev;
+          }
+          return [...prev, prev.length];
+        });
+      }, 800);
+      
       await controls.start((i) => ({
         opacity: 1,
         x: 0,
-        transition: { delay: i * 0.3, duration: 0.5 }
+        transition: { delay: i * 0.8, duration: 0.5 }
       }));
+      
+      return () => clearInterval(timer);
     };
     
     const handleScroll = () => {
@@ -46,6 +60,15 @@ const FrequentQuestions = () => {
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, [controls]);
+
+  // Typing animation component
+  const TypingAnimation = () => (
+    <div className="flex space-x-1 ml-1">
+      <div className="w-1.5 h-1.5 rounded-full bg-white/70 animate-[pulse_1s_infinite_0ms]"></div>
+      <div className="w-1.5 h-1.5 rounded-full bg-white/70 animate-[pulse_1s_infinite_300ms]"></div>
+      <div className="w-1.5 h-1.5 rounded-full bg-white/70 animate-[pulse_1s_infinite_600ms]"></div>
+    </div>
+  );
 
   return (
     <section id="preguntas-frecuentes" className="pb-12 md:pb-20 mx-auto flex flex-col gap-12 md:gap-20 px-4 sm:px-6">
@@ -70,7 +93,7 @@ const FrequentQuestions = () => {
               >
                 <div className="before:absolute before:bottom-[-12px] before:left-3 before:content-['◤'] before:text-yinmn_blue-300 whitespace-nowrap">
                   <div className="w-fit">
-                    {question}
+                    {visibleMessages.includes(index) ? question : <TypingAnimation />}
                   </div>
                 </div>
               </motion.div>
@@ -86,7 +109,7 @@ const FrequentQuestions = () => {
             >
               <div className="before:absolute before:bottom-[-12px] before:right-3 before:content-['◥'] before:text-oxford_blue-300 whitespace-nowrap">
                 <div className="w-fit">
-                  {answers[0]}
+                  {visibleMessages.includes(2) ? answers[0] : <TypingAnimation />}
                 </div>
               </div>
             </motion.div>
@@ -103,7 +126,7 @@ const FrequentQuestions = () => {
               >
                 <div className="before:absolute before:bottom-[-12px] before:left-3 before:content-['◤'] before:text-yinmn_blue-300 whitespace-nowrap">
                   <div className="w-fit">
-                    {question}
+                    {visibleMessages.includes(index + 3) ? question : <TypingAnimation />}
                   </div>
                 </div>
               </motion.div>

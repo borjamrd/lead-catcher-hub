@@ -139,6 +139,10 @@ export default {
 				'accordion-up': {
 					from: { height: 'var(--radix-accordion-content-height)' },
 					to: { height: '0' }
+				},
+				'pulse': {
+					'0%, 100%': { opacity: '0.5' },
+					'50%': { opacity: '1' }
 				}
 			},
 			animation: {
