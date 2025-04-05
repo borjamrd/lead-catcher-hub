@@ -89,6 +89,7 @@ const OnboardingModal = () => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
+        closeIcon={false}
         className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] h-[60vh] p-20"
       >
         <DialogHeader>
