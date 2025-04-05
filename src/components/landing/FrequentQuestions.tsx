@@ -92,11 +92,29 @@ const FrequentQuestions = () => {
   const isVisible = (index: number) => visibleMessages.includes(index);
   const shouldShowMessage = (index: number) => typingIndex !== null || visibleMessages.length > 0 ? index <= Math.max(typingIndex || 0, ...visibleMessages) : false;
 
+  // Framer Motion variants for smooth transitions
+  const messageVariants = {
+    typing: { opacity: 1 },
+    visible: { opacity: 1 },
+    hidden: { opacity: 0 }
+  };
+
+  // Variants for the message container's vertical movement
+  const containerVariants = {
+    initial: { y: 0 },
+    animate: { y: 0, transition: { staggerChildren: 0.3 } }
+  };
+
   return (
     <section id="preguntas-frecuentes" className="pb-12 md:pb-20 mx-auto flex flex-col gap-12 md:gap-20 px-4 sm:px-6">
       <div className="bg-yinmn_blue-500 rounded-3xl text-white text-center px-6 pb-24 pt-12 flex flex-col items-center gap-6 relative overflow-hidden">
         {/* Área de los mensajes */}
-        <div className="w-full max-w-lg mx-auto h-[255px] relative mb-8">
+        <motion.div 
+          className="w-full max-w-lg mx-auto h-[255px] relative mb-8"
+          variants={containerVariants}
+          initial="initial"
+          animate="animate"
+        >
           <div 
             className="absolute w-full h-full px-4 bottom-0 flex flex-col justify-end gap-5 pb-2.5"
             style={{
@@ -108,16 +126,24 @@ const FrequentQuestions = () => {
               shouldShowMessage(index) && (
                 <motion.div
                   key={`question-${index}`}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5 }}
+                  initial={{ opacity: 0, x: -20, y: 20 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ 
+                    duration: 0.5,
+                    ease: "easeOut"
+                  }}
                   className="rounded-3xl bg-yinmn_blue-300 px-4 py-2 text-sm text-white relative text-left text-pretty self-start"
                   style={{ transform: `rotate(${-1 + Math.random() * 2}deg)` }}
                 >
                   <div className="before:absolute before:bottom-[-12px] before:left-3 before:content-['◤'] before:text-yinmn_blue-300 whitespace-nowrap">
-                    <div className="w-fit">
+                    <motion.div
+                      className="w-fit"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       {isTyping(index) ? <TypingDots /> : (isVisible(index) ? question : "")}
-                    </div>
+                    </motion.div>
                   </div>
                 </motion.div>
               )
@@ -127,16 +153,24 @@ const FrequentQuestions = () => {
             {shouldShowMessage(2) && (
               <motion.div
                 key="answer-first"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0, x: 20, y: 20 }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                transition={{ 
+                  duration: 0.5,
+                  ease: "easeOut" 
+                }}
                 className="rounded-3xl bg-oxford_blue-300 px-4 py-2 text-sm text-white relative text-left text-pretty self-end"
                 style={{ transform: `rotate(${-1 + Math.random() * 2}deg)` }}
               >
                 <div className="before:absolute before:bottom-[-12px] before:right-3 before:content-['◥'] before:text-oxford_blue-300 whitespace-nowrap">
-                  <div className="w-fit">
+                  <motion.div
+                    className="w-fit"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
                     {isTyping(2) ? <TypingDots /> : (isVisible(2) ? answers[0] : "")}
-                  </div>
+                  </motion.div>
                 </div>
               </motion.div>
             )}
@@ -146,22 +180,30 @@ const FrequentQuestions = () => {
               shouldShowMessage(index + 3) && (
                 <motion.div
                   key={`question-more-${index}`}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5 }}
+                  initial={{ opacity: 0, x: -20, y: 20 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ 
+                    duration: 0.5,
+                    ease: "easeOut" 
+                  }}
                   className="rounded-3xl bg-yinmn_blue-300 px-4 py-2 text-sm text-white relative text-left text-pretty self-start"
                   style={{ transform: `rotate(${-1 + Math.random() * 2}deg)` }}
                 >
                   <div className="before:absolute before:bottom-[-12px] before:left-3 before:content-['◤'] before:text-yinmn_blue-300 whitespace-nowrap">
-                    <div className="w-fit">
+                    <motion.div
+                      className="w-fit"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       {isTyping(index + 3) ? <TypingDots /> : (isVisible(index + 3) ? question : "")}
-                    </div>
+                    </motion.div>
                   </div>
                 </motion.div>
               )
             ))}
           </div>
-        </div>
+        </motion.div>
         
         {/* Textos de encabezado */}
         <div className="max-w-[588px] mx-auto flex flex-col gap-3 relative z-10">
@@ -193,3 +235,4 @@ const FrequentQuestions = () => {
 };
 
 export default FrequentQuestions;
+
