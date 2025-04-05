@@ -99,6 +99,7 @@ const OnboardingModal = () => {
         <div className="flex-1 overflow-hidden">
           {!showChat ? (
             <OpositionSelect
+              user={user}
               onSelect={handleOppositionSelect}
               onConfirm={handleOppositionConfirm}
             />
