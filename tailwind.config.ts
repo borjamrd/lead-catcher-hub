@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,6 +18,9 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'lora': ['Lora', 'serif'],
+			},
 			colors: {
 				'rich_black': {
 					DEFAULT: '#0d1b2a',

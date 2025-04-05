@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 
 // Definición de los mensajes de preguntas frecuentes
 const questions = [
@@ -18,6 +18,35 @@ const answers = [
 ];
 
 const FrequentQuestions = () => {
+  const controls = useAnimation();
+  
+  useEffect(() => {
+    // Start animation when component mounts
+    const startAnimation = async () => {
+      await controls.start((i) => ({
+        opacity: 1,
+        x: 0,
+        transition: { delay: i * 0.3, duration: 0.5 }
+      }));
+    };
+    
+    const handleScroll = () => {
+      const section = document.getElementById('preguntas-frecuentes');
+      if (section) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          startAnimation();
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    // Check on mount too
+    handleScroll();
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [controls]);
+
   return (
     <section id="preguntas-frecuentes" className="pb-12 md:pb-20 mx-auto flex flex-col gap-12 md:gap-20 px-4 sm:px-6">
       <div className="bg-yinmn_blue-500 rounded-3xl text-white text-center px-6 pb-24 pt-12 flex flex-col items-center gap-6 relative overflow-hidden">
@@ -34,8 +63,8 @@ const FrequentQuestions = () => {
               <motion.div
                 key={`question-${index}`}
                 initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.3, duration: 0.5 }}
+                custom={index}
+                animate={controls}
                 className="rounded-3xl bg-yinmn_blue-300 px-4 py-2 text-sm text-white relative text-left text-pretty self-start"
                 style={{ transform: `rotate(${-1 + Math.random() * 2}deg)` }}
               >
@@ -50,8 +79,8 @@ const FrequentQuestions = () => {
             {/* Mensaje de respuesta (derecha) */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.9, duration: 0.5 }}
+              custom={3}
+              animate={controls}
               className="rounded-3xl bg-oxford_blue-300 px-4 py-2 text-sm text-white relative text-left text-pretty self-end"
               style={{ transform: `rotate(${-1 + Math.random() * 2}deg)` }}
             >
@@ -67,8 +96,8 @@ const FrequentQuestions = () => {
               <motion.div
                 key={`question-more-${index}`}
                 initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: (index + 3) * 0.3, duration: 0.5 }}
+                custom={index + 4}
+                animate={controls}
                 className="rounded-3xl bg-yinmn_blue-300 px-4 py-2 text-sm text-white relative text-left text-pretty self-start"
                 style={{ transform: `rotate(${-1 + Math.random() * 2}deg)` }}
               >
@@ -84,7 +113,7 @@ const FrequentQuestions = () => {
         
         {/* Textos de encabezado */}
         <div className="max-w-[588px] mx-auto flex flex-col gap-3 relative z-10">
-          <h2 className="text-2xl md:text-4xl font-bold">
+          <h2 className="text-2xl md:text-4xl font-bold font-lora">
             Surgen <em>dudas</em>. Es normal.
           </h2>
           <p className="text-base md:text-lg">
