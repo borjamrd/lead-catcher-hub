@@ -1,13 +1,15 @@
 
 import { create } from 'zustand';
+import { Json } from '@/integrations/supabase/types';
 
 export interface OnboardingInfo {
   id: string;
   user_id: string;
   available_hours: number;
   study_days: number;
-  objectives: Record<string, any> | null;
+  objectives: Json | null;
   created_at: string;
+  opposition_id: string | null;
 }
 
 interface OnboardingState {

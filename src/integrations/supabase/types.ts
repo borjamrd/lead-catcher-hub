@@ -205,6 +205,7 @@ export type Database = {
           created_at: string | null
           id: string
           objectives: Json | null
+          opposition_id: string | null
           study_days: number
           user_id: string
         }
@@ -213,6 +214,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           objectives?: Json | null
+          opposition_id?: string | null
           study_days: number
           user_id: string
         }
@@ -221,10 +223,19 @@ export type Database = {
           created_at?: string | null
           id?: string
           objectives?: Json | null
+          opposition_id?: string | null
           study_days?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_info_opposition_id_fkey"
+            columns: ["opposition_id"]
+            isOneToOne: false
+            referencedRelation: "oppositions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       opposition_resources: {
         Row: {
