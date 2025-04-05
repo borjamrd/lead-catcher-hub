@@ -15,7 +15,7 @@ import {
   PlayCircle,
   Rocket,
   Search,
-  StopCircle
+  StopCircle,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AnkiCard } from "./AnkiCard";
@@ -261,9 +261,8 @@ export function DashboardContent() {
       </div>
 
       <div className="grid grid-cols-12 gap-6">
-
-           {/* Motivación - 4 columns, spans 1 row */}
-           <Card className="col-span-3 shadow-md">
+        {/* Motivación - 4 columns, spans 1 row */}
+        <Card className="col-span-3 ">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               🏆 ¡Menuda crack!
@@ -291,8 +290,8 @@ export function DashboardContent() {
           </CardContent>
         </Card>
 
-     {/* Nueva sección - Anki Card */}
-     <div className="col-span-5">
+        {/* Nueva sección - Anki Card */}
+        <div className="col-span-5">
           <AnkiCard
             front="🔹 El órgano de contratación en la Administración General del Estado es el __________."
             back="🔹 Ministro del departamento correspondiente o el titular del organismo autónomo, salvo delegación."
@@ -301,7 +300,7 @@ export function DashboardContent() {
         {/* Botón empezar sesión de estudio */}
         {!studySessionActive ? (
           <Card
-            className="col-span-4 shadow-md hover:bg-muted/50 transition-colors cursor-pointer"
+            className="col-span-4  hover:bg-muted/50 transition-colors cursor-pointer"
             onClick={() => setShowStudyModal(true)}
           >
             <CardContent className="flex h-full items-center justify-center p-6">
@@ -317,7 +316,7 @@ export function DashboardContent() {
             </CardContent>
           </Card>
         ) : (
-          <Card className="col-span-4 shadow-md">
+          <Card className="col-span-4 ">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center">
                 <Clock className="mr-2 h-6 w-6" />
@@ -367,9 +366,9 @@ export function DashboardContent() {
           onOpenChange={setShowStudyModal}
           onStart={handleStartStudySession}
         />
-       {/* Resumen del Progreso - 5 columns, spans 2 rows */}
+        {/* Resumen del Progreso - 5 columns, spans 2 rows */}
 
-       <Card className="col-span-8 row-span-1 shadow-md">
+        <Card className="col-span-8 row-span-1 ">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-2xl">
               📊 Tu progreso
@@ -424,9 +423,6 @@ export function DashboardContent() {
             </div>
           </CardContent>
         </Card>
-
-     
-    
 
         <Card className="col-span-4">
           <CardHeader className="pb-2">

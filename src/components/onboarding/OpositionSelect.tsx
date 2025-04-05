@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
+import { toast } from "@/hooks/use-toast";
+import { useOppositionStore } from "@/stores/useOppositionStore";
 
 interface Opposition {
   id: string;
@@ -18,12 +20,17 @@ interface OpositionSelectProps {
   onConfirm: () => void;
 }
 
-const OpositionSelect = ({ onSelect, onConfirm, user }: OpositionSelectProps) => {
+const OpositionSelect = ({
+  onSelect,
+  onConfirm,
+  user,
+}: OpositionSelectProps) => {
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOpposition, setSelectedOpposition] =
     useState<Opposition | null>(null);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-
+  const { setCurrentOppositionId } = useOppositionStore();
   // Debounce search term
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -41,14 +48,14 @@ const OpositionSelect = ({ onSelect, onConfirm, user }: OpositionSelectProps) =>
         .select("id, name")
         .ilike("name", `%${debouncedSearchTerm}%`)
         .order("name");
-  
+
       if (error) throw error;
       return data;
     },
     enabled: !!debouncedSearchTerm,
-    staleTime: 1000 * 60 * 10
+    staleTime: 1000 * 60 * 10,
   });
-  
+
   const handleOppositionSelect = (opposition: Opposition) => {
     setSelectedOpposition(opposition);
     onSelect(opposition.id);
@@ -56,32 +63,47 @@ const OpositionSelect = ({ onSelect, onConfirm, user }: OpositionSelectProps) =>
 
   const handleConfirm = async () => {
     if (!selectedOpposition || !user) return;
-  
-    try {
-      // 1. Asociar usuario con la oposición
-      await supabase
-        .from("user_oppositions")
-        .insert({
-          user_id: user.id,
-          opposition_id: selectedOpposition.id,
-          enrolled_at: new Date(),
-        });
-  
-      await supabase
-        .from("study_cycles")
-        .insert({
-          user_id: user.id,
-          opposition_id: selectedOpposition.id,
-          cycle_number: 1
-        });
-  
-      // 4. Continuar flujo
-      onConfirm();
-    } catch (error) {
-      console.error("Error durante la confirmación de oposición:", error);
+
+    // 1. Asociar usuario con la oposición
+    const { error: error_user_oppositions } = await supabase
+      .from("user_oppositions")
+      .insert({
+        profile_id: user.id,
+        opposition_id: selectedOpposition.id,
+        enrolled_at: new Date(),
+        active: true,
+      });
+
+    if (error_user_oppositions) {
+      toast({
+        title: "Error",
+        description: "No se pudo asociar el usuario con la oposición",
+        variant: "destructive",
+      });
+      return;
     }
+
+    queryClient.invalidateQueries({ queryKey: ["active_opposition"] });
+
+    const { error: error_study_cycles } = await supabase
+      .from("study_cycles")
+      .insert({
+        user_id: user.id,
+        opposition_id: selectedOpposition.id,
+        cycle_number: 1,
+      });
+
+    if (error_study_cycles) {
+      toast({
+        title: "Error",
+        description: "No se pudo crear el ciclo de estudio",
+        variant: "destructive",
+      });
+      return;
+    }
+    setCurrentOppositionId(selectedOpposition.id);
+    onConfirm();
   };
-  
 
   return (
     <div className="flex flex-col h-full space-y-4">
@@ -130,13 +152,15 @@ const OpositionSelect = ({ onSelect, onConfirm, user }: OpositionSelectProps) =>
       </div>
 
       <div className="flex justify-center">
-        <Button
-          onClick={handleConfirm}
-          disabled={!selectedOpposition}
-          className="w-full"
-        >
-          Confirmar selección
-        </Button>
+        {selectedOpposition && (
+          <Button
+            onClick={handleConfirm}
+            disabled={!selectedOpposition}
+            className="w-full"
+          >
+            Confirmar selección
+          </Button>
+        )}
       </div>
     </div>
   );

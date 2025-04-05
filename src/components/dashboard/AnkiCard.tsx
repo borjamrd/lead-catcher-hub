@@ -52,7 +52,7 @@ export function AnkiCard({ front, back }: AnkiCardProps) {
 
   return (
     <Card
-      className="perspective h-full shadow-md"
+      className="perspective h-full"
     >
       <div 
         className={`relative w-full h-full transition-all duration-500 preserve-3d cursor-pointer ${

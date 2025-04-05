@@ -85,7 +85,7 @@ const OnboardingModal = () => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         closeIcon={null} // Remove the close icon
-        className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] h-[50vh]"
+        className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] h-[60vh] p-20"
       >
         <DialogHeader>
           <DialogTitle className="text-center text-xl">

@@ -21,5 +21,6 @@ export const useStudyCycles = (oppositionId: string) => {
       return data;
     },
     enabled: !!user?.id && !!oppositionId,
+    staleTime: 1000 * 60 * 10,  // 10 minutes
   });
 };
