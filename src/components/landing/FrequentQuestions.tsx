@@ -20,27 +20,32 @@ const answers = [
 const FrequentQuestions = () => {
   const controls = useAnimation();
   const [visibleMessages, setVisibleMessages] = useState<number[]>([]);
-  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+  const [typingIndex, setTypingIndex] = useState<number | null>(null);
+  const [animationStarted, setAnimationStarted] = useState(false);
   
   useEffect(() => {
-    // Start animation when component mounts
+    // Start animation when component mounts or becomes visible
     const startAnimation = async () => {
+      if (animationStarted) return;
+      setAnimationStarted(true);
+      
       // Sequence for showing typing indicators and then messages
+      const totalMessages = questions.length * 2 - 1; // Questions + answer - last answer
       let currentIndex = 0;
       
       const showNextMessage = () => {
-        if (currentIndex >= questions.length * 2) return;
+        if (currentIndex >= totalMessages) return;
         
-        // Show typing indicator
-        setLoadingIndex(currentIndex);
+        // Show typing indicator for this message
+        setTypingIndex(currentIndex);
         
         // After a delay, show the actual message
         setTimeout(() => {
           setVisibleMessages(prev => [...prev, currentIndex]);
+          setTypingIndex(null);
           
           // Prepare to show the next message after a delay
           setTimeout(() => {
-            setLoadingIndex(currentIndex + 1);
             currentIndex++;
             showNextMessage();
           }, 500);
@@ -71,11 +76,11 @@ const FrequentQuestions = () => {
     handleScroll();
     
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [controls]);
+  }, [controls, animationStarted]);
 
   // Typing animation component
-  const TypingAnimation = () => (
-    <div className="flex space-x-1 ml-1">
+  const TypingDots = () => (
+    <div className="flex space-x-1">
       <div className="w-1.5 h-1.5 rounded-full bg-white/70 animate-[pulse_1s_infinite_0ms]"></div>
       <div className="w-1.5 h-1.5 rounded-full bg-white/70 animate-[pulse_1s_infinite_300ms]"></div>
       <div className="w-1.5 h-1.5 rounded-full bg-white/70 animate-[pulse_1s_infinite_600ms]"></div>
@@ -83,9 +88,9 @@ const FrequentQuestions = () => {
   );
 
   // Check if a message should be visible with typing animation or content
-  const shouldShowTyping = (index: number) => loadingIndex === index && !visibleMessages.includes(index);
-  const shouldShowContent = (index: number) => visibleMessages.includes(index);
-  const shouldShowMessage = (index: number) => loadingIndex !== null && loadingIndex >= index;
+  const isTyping = (index: number) => typingIndex === index;
+  const isVisible = (index: number) => visibleMessages.includes(index);
+  const shouldShowMessage = (index: number) => typingIndex !== null || visibleMessages.length > 0 ? index <= Math.max(typingIndex || 0, ...visibleMessages) : false;
 
   return (
     <section id="preguntas-frecuentes" className="pb-12 md:pb-20 mx-auto flex flex-col gap-12 md:gap-20 px-4 sm:px-6">
@@ -111,7 +116,7 @@ const FrequentQuestions = () => {
                 >
                   <div className="before:absolute before:bottom-[-12px] before:left-3 before:content-['◤'] before:text-yinmn_blue-300 whitespace-nowrap">
                     <div className="w-fit">
-                      {shouldShowTyping(index) ? <TypingAnimation /> : question}
+                      {isTyping(index) ? <TypingDots /> : (isVisible(index) ? question : "")}
                     </div>
                   </div>
                 </motion.div>
@@ -130,7 +135,7 @@ const FrequentQuestions = () => {
               >
                 <div className="before:absolute before:bottom-[-12px] before:right-3 before:content-['◥'] before:text-oxford_blue-300 whitespace-nowrap">
                   <div className="w-fit">
-                    {shouldShowTyping(2) ? <TypingAnimation /> : answers[0]}
+                    {isTyping(2) ? <TypingDots /> : (isVisible(2) ? answers[0] : "")}
                   </div>
                 </div>
               </motion.div>
@@ -149,7 +154,7 @@ const FrequentQuestions = () => {
                 >
                   <div className="before:absolute before:bottom-[-12px] before:left-3 before:content-['◤'] before:text-yinmn_blue-300 whitespace-nowrap">
                     <div className="w-fit">
-                      {shouldShowTyping(index + 3) ? <TypingAnimation /> : question}
+                      {isTyping(index + 3) ? <TypingDots /> : (isVisible(index + 3) ? question : "")}
                     </div>
                   </div>
                 </motion.div>
