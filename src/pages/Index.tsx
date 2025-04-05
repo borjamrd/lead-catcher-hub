@@ -6,6 +6,7 @@ import DetailedFeatures from '@/components/landing/DetailedFeatures';
 import Gamification from '@/components/landing/Gamification';
 import Pricing from '@/components/landing/Pricing';
 import Footer from '@/components/landing/Footer';
+import FrequentQuestions from '@/components/landing/FrequentQuestions';
 
 const Index = () => {
   return (
@@ -25,6 +26,7 @@ const Index = () => {
         <div className="max-w-6xl mx-auto space-y-24">
           <Features />
           <DetailedFeatures />
+          <FrequentQuestions />
           <Gamification />
           <Pricing />
         </div>
