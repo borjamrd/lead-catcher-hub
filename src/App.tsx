@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import IniciaSesion from "./pages/IniciaSesion";
 import Dashboard from "./pages/Dashboard";
 import Tests from "./pages/Tests";
+import TestDetail from "./pages/TestDetail";
 import ChatJuridico from "./pages/ChatJuridico";
 import MisApuntes from "./pages/MisApuntes";
 import DetalleApunte from "./pages/DetalleApunte";
@@ -47,6 +48,7 @@ const App = () => (
                 } 
               >
                 <Route path="tests" element={<Tests />} />
+                <Route path="tests/:id" element={<TestDetail />} />
                 <Route path="chat-juridico" element={<ChatJuridico />} />
                 <Route path="mis-apuntes" element={<MisApuntes />} />
                 <Route path="mis-apuntes/:id" element={<DetalleApunte />} />
