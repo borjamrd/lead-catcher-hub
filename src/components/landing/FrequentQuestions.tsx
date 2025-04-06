@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { cn } from "@/lib/utils";
+import TypewriterText from "../TypewritterText";
 
 // Definición de los mensajes de preguntas frecuentes
 const questions = [
@@ -48,8 +49,8 @@ const FrequentQuestions = () => {
           setTimeout(() => {
             currentIndex++;
             showNextMessage();
-          }, 500);
-        }, 1200);
+          }, 100);
+        }, 2200);
       };
 
       showNextMessage();
@@ -57,7 +58,7 @@ const FrequentQuestions = () => {
       await controls.start((i) => ({
         opacity: 1,
         x: 0,
-        transition: { delay: i * 0.8, duration: 0.5 },
+        transition: { delay: i * 0.4, duration: 0.5 },
       }));
     };
 
@@ -110,9 +111,8 @@ const FrequentQuestions = () => {
 
   const conversation = questions.flatMap((q, i) => [
     { type: "question", content: q },
-    { type: "answer", content: answers[i] }
+    { type: "answer", content: answers[i] },
   ]);
-  
 
   return (
     <section
@@ -139,13 +139,14 @@ const FrequentQuestions = () => {
                 shouldShowMessage(index) && (
                   <motion.div
                     key={`conv-${index}`}
-                    initial={{
-                      opacity: 0,
-                      x: item.type === "question" ? -20 : 20,
-                      y: 20,
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 30,
+                      mass: 0.8,
                     }}
-                    animate={{ opacity: 1, x: 0, y: 0 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
                     className={cn(
                       "rounded-3xl px-4 py-2 text-sm text-white relative text-pretty w-fit",
                       item.type === "question"
@@ -166,19 +167,24 @@ const FrequentQuestions = () => {
                     >
                       {item.type === "question" ? "◤" : "◥"}
                     </div>
+
                     <motion.div
-                      className="w-fit"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                      className="overflow-hidden"
                     >
-                      {isTyping(index) ? (
-                        <TypingDots />
-                      ) : isVisible(index) ? (
-                        item.content
-                      ) : (
-                        ""
-                      )}
+                      <div className="w-fit">
+                        {isTyping(index) ? (
+                          <TypingDots />
+                        ) : isVisible(index) ? (
+                          <TypewriterText text={item.content} />
+                        ) : (
+                          <span className="opacity-0 invisible">
+                            {item.content}
+                          </span>
+                        )}
+                      </div>
                     </motion.div>
                   </motion.div>
                 )
