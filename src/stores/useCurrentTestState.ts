@@ -22,6 +22,8 @@ export interface TestState {
   elapsedTime: number;
   selectedAnswers: Record<string, string>;
   questions: Question[];
+  isLastQuestion: boolean;
+  isFinished: boolean;
 
   // Actions
   startExam: () => void;
@@ -33,6 +35,7 @@ export interface TestState {
   selectAnswer: (questionId: string, answerId: string) => void;
   resetTest: () => void;
   addAnswersToQuestion: (questionId: string, answers: Answer[]) => void;
+  finishTest: () => void;
 }
 
 export const useCurrentTestState = create<TestState>()((set, get) => ({
@@ -42,6 +45,8 @@ export const useCurrentTestState = create<TestState>()((set, get) => ({
   elapsedTime: 0,
   selectedAnswers: {},
   questions: [],
+  isLastQuestion: false,
+  isFinished: false,
 
   startExam: () => set({ isExamMode: true, isTimerRunning: true }),
   
@@ -53,15 +58,26 @@ export const useCurrentTestState = create<TestState>()((set, get) => ({
   
   nextQuestion: () => {
     const { currentQuestionIndex, questions } = get();
-    if (currentQuestionIndex < questions.length - 1) {
-      set({ currentQuestionIndex: currentQuestionIndex + 1 });
+    
+    if (currentQuestionIndex === questions.length - 1) {
+      // If we're on the last question, mark the test as finished
+      set({ isFinished: true });
+    } else if (currentQuestionIndex < questions.length - 1) {
+      set({ 
+        currentQuestionIndex: currentQuestionIndex + 1,
+        // Set isLastQuestion true when on the second-to-last question (about to go to last)
+        isLastQuestion: currentQuestionIndex + 1 === questions.length - 1
+      });
     }
   },
   
   previousQuestion: () => {
     const { currentQuestionIndex } = get();
     if (currentQuestionIndex > 0) {
-      set({ currentQuestionIndex: currentQuestionIndex - 1 });
+      set({ 
+        currentQuestionIndex: currentQuestionIndex - 1,
+        isLastQuestion: false
+      });
     }
   },
   
@@ -79,7 +95,9 @@ export const useCurrentTestState = create<TestState>()((set, get) => ({
     isTimerRunning: false,
     currentQuestionIndex: 0,
     elapsedTime: 0,
-    selectedAnswers: {}
+    selectedAnswers: {},
+    isLastQuestion: false,
+    isFinished: false
   }),
   
   addAnswersToQuestion: (questionId, answers) => {
@@ -88,5 +106,7 @@ export const useCurrentTestState = create<TestState>()((set, get) => ({
         q.id === questionId ? { ...q, answers } : q
       )
     }));
-  }
+  },
+  
+  finishTest: () => set({ isFinished: true })
 }));

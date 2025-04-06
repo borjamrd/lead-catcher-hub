@@ -520,6 +520,67 @@ export type Database = {
         }
         Relationships: []
       }
+      test_attempts: {
+        Row: {
+          completed_at: string | null
+          correct_answers: number | null
+          id: string
+          opposition_id: string
+          score: number | null
+          study_cycle_id: string
+          test_id: string
+          total_questions: number | null
+          user_id: string
+          wrong_answers: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          correct_answers?: number | null
+          id?: string
+          opposition_id: string
+          score?: number | null
+          study_cycle_id: string
+          test_id: string
+          total_questions?: number | null
+          user_id: string
+          wrong_answers?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          correct_answers?: number | null
+          id?: string
+          opposition_id?: string
+          score?: number | null
+          study_cycle_id?: string
+          test_id?: string
+          total_questions?: number | null
+          user_id?: string
+          wrong_answers?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_attempts_opposition_id_fkey"
+            columns: ["opposition_id"]
+            isOneToOne: false
+            referencedRelation: "oppositions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_attempts_study_cycle_id_fkey"
+            columns: ["study_cycle_id"]
+            isOneToOne: false
+            referencedRelation: "study_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_attempts_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tests: {
         Row: {
           id: string

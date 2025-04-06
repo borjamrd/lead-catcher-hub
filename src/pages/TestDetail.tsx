@@ -7,6 +7,7 @@ import { useCurrentTestState } from "@/stores/useCurrentTestState";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TestTimer } from "@/components/test/TestTimer";
 import { QuestionDisplay } from "@/components/test/QuestionDisplay";
+import { TestFinished } from "@/components/test/TestFinished";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const TestDetail = () => {
@@ -18,7 +19,8 @@ const TestDetail = () => {
     isExamMode, 
     startExam, 
     setQuestions,
-    resetTest 
+    resetTest,
+    isFinished
   } = useCurrentTestState();
 
   // Reset test state when unmounting or changing test
@@ -69,7 +71,12 @@ const TestDetail = () => {
       {isExamMode && (
         <>
           <TestTimer />
-          <QuestionDisplay />
+          
+          {isFinished ? (
+            <TestFinished />
+          ) : (
+            <QuestionDisplay />
+          )}
         </>
       )}
       

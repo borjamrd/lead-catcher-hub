@@ -3,7 +3,7 @@ import { useCurrentTestState } from "@/stores/useCurrentTestState";
 import { useQuestionAnswers } from "@/hooks/useQuestionAnswers";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 export function QuestionDisplay() {
   const { 
@@ -12,7 +12,8 @@ export function QuestionDisplay() {
     selectedAnswers,
     selectAnswer,
     nextQuestion,
-    previousQuestion
+    previousQuestion,
+    isLastQuestion
   } = useCurrentTestState();
   
   const currentQuestion = questions[currentQuestionIndex];
@@ -25,6 +26,7 @@ export function QuestionDisplay() {
   
   const isAnswerSelected = selectedAnswers[currentQuestion.id] !== undefined;
   const currentAnswers = currentQuestion.answers || answers || [];
+  const isLastQuestionItem = currentQuestionIndex === questions.length - 1;
   
   return (
     <div className="space-y-6">
@@ -69,9 +71,17 @@ export function QuestionDisplay() {
         
         <Button
           onClick={nextQuestion}
-          disabled={!isAnswerSelected || currentQuestionIndex === questions.length - 1}
+          disabled={!isAnswerSelected || (isLastQuestionItem && isLastQuestion)}
         >
-          Siguiente <ArrowRight className="ml-2 h-4 w-4" />
+          {isLastQuestionItem ? (
+            <>
+              Finalizar <Check className="ml-2 h-4 w-4" />
+            </>
+          ) : (
+            <>
+              Siguiente <ArrowRight className="ml-2 h-4 w-4" />
+            </>
+          )}
         </Button>
       </div>
     </div>
