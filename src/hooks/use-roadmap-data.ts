@@ -5,14 +5,15 @@ import { Node, Edge } from "@xyflow/react";
 import { useOppositionStore } from "@/stores/useOppositionStore";
 
 export function useRoadmapData(oppositionId: string | null) {
-  const { currentSelectedOpposition } = useOppositionStore();
+  const { currentSelectedOpposition, currentSelectedOppositionId } =
+    useOppositionStore();
   return useQuery({
     queryKey: ["roadmap", oppositionId],
     enabled: !!oppositionId,
     queryFn: async () => {
       const blocksRes = await supabase
         .from("blocks")
-        .select("id, name, position")
+        .select("id, name, position, status")
         .eq("opposition_id", oppositionId);
 
       if (blocksRes.error) throw blocksRes.error;
@@ -23,7 +24,7 @@ export function useRoadmapData(oppositionId: string | null) {
 
       const topicsRes = await supabase
         .from("topics")
-        .select("id, name, block_id, position")
+        .select("id, name, block_id, position, status")
         .in("block_id", blockIds);
 
       if (topicsRes.error) throw topicsRes.error;
@@ -38,7 +39,7 @@ export function useRoadmapData(oppositionId: string | null) {
           data: {
             label: currentSelectedOpposition || "Oposición",
             type: "oposition",
-            completed: false,
+            status: 'in_progress',
           },
           position: { x: 0, y: 0 },
         },
@@ -48,10 +49,10 @@ export function useRoadmapData(oppositionId: string | null) {
           data: {
             label: block.name,
             type: "block",
-            completed: false,
+            status: block.status,
           },
           // Asignamos una posición para separar verticalmente cada bloque (ajusta los valores según necesites)
-          position: { x: 10, y: index * 150 },
+          position: { x: 0, y: 0  },
         })),
         ...topics.map((topic, index) => ({
           id: `topic-${topic.id}`,
@@ -59,10 +60,10 @@ export function useRoadmapData(oppositionId: string | null) {
           data: {
             label: topic.name,
             type: "topic",
-            completed: false,
+            status: topic.status,
           },
           // Asignamos una posición para separar verticalmente cada tema
-          position: { x: 0, y: index * 150 },
+          position:{ x: 0, y: 0  },
         })),
       ];
 

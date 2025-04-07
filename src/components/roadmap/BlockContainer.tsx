@@ -1,29 +1,28 @@
-
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
+import { updateBlockAndTopicsStatus } from "@/hooks/update-block-and-topic-status";
+import { useBlock } from "@/hooks/use-block";
+import { TopicAndBlockStatus } from "@/models/models";
+import { useQueryClient } from "@tanstack/react-query";
+import confetti from "canvas-confetti";
+import { StatusSelector } from "../StatusSelector";
 
 interface BlockContainerProps {
   blockId: string;
 }
 
 export function BlockContainer({ blockId }: BlockContainerProps) {
-  const { data: block, isLoading } = useQuery({
-    queryKey: ["block", blockId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("blocks")
-        .select("*")
-        .eq("id", blockId)
-        .single();
+  const queryClient = useQueryClient();
+  const { data: block, isLoading } = useBlock(blockId);
 
-      if (error) throw error;
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  const handleStatusChange = async (status: TopicAndBlockStatus) => {
+    const error = await updateBlockAndTopicsStatus(blockId, status);
 
+    if (!error && status === "completed") {
+      confetti({ particleCount: 100 });
+    }
+
+    await queryClient.invalidateQueries({ queryKey: ["roadmap"] });
+  };
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -36,27 +35,20 @@ export function BlockContainer({ blockId }: BlockContainerProps) {
   }
 
   if (!block) {
-    return <div className="text-muted-foreground">No se encontró información para este bloque.</div>;
+    return (
+      <div className="text-muted-foreground">
+        No se encontró información para este bloque.
+      </div>
+    );
   }
-
-  const getStatusBadge = () => {
-    switch (block.status) {
-      case "completed":
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Completado</Badge>;
-      case "in_progress":
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">En progreso</Badge>;
-      default:
-        return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">Pendiente</Badge>;
-    }
-  };
 
   return (
     <div className="space-y-6">
+      <StatusSelector value={block.status} onChange={handleStatusChange} />
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl font-bold">{block.name}</h2>
-        {getStatusBadge()}
       </div>
-      
+
       {block.description && (
         <div className="text-muted-foreground whitespace-pre-line">
           {block.description}

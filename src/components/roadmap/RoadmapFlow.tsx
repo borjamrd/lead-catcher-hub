@@ -26,7 +26,13 @@ const elkOptions = {
 interface RoadmapFlowProps {
   initialNodes: Node[];
   initialEdges: Edge[];
-  onNodeClick?: (nodeId: string) => void;
+  onNodeClick?: ({
+    nodeId,
+    nodeType,
+  }: {
+    nodeId: string;
+    nodeType: string;
+  }) => void;
 }
 
 const getLayoutedElements = async (
@@ -46,8 +52,8 @@ const getLayoutedElements = async (
       ...node,
       sourcePosition: isHorizontal ? "right" : "top",
       targetPosition: isHorizontal ? "left" : "bottom",
-      width: 253,
-      height: 120,
+      width: 240,
+      height: 220,
     })),
     edges: edges.map((edge) => ({
       id: edge.id,
@@ -55,10 +61,7 @@ const getLayoutedElements = async (
       targets: [edge.target],
       ...edge,
     })),
-    
   };
-
-  
 
   const layout = await elk.layout(graph);
 
@@ -111,16 +114,20 @@ const RoadmapFlow = ({
           custom: OpositionNode,
         }}
         className="bg-white"
-        connectionLineType={ConnectionLineType.Bezier}
         defaultEdgeOptions={{
-          animated: false,
+          animated: true,
           type: "smoothstep",
-          style: { stroke: "#334155", strokeWidth: 2 },
+          style: { stroke: "#334155", strokeWidth: 3 },
         }}
         nodeOrigin={[0, 0]}
-        onNodeClick={(_, node) => onNodeClick?.(node.id)}
+        onNodeClick={(_, node) =>
+          onNodeClick?.({
+            nodeId: node.id,
+            nodeType: node.data.type,
+          })
+        }
         fitView
-        zoomOnPinch={false}
+        zoomOnPinch={true}
       >
         <Controls />
         <Background />

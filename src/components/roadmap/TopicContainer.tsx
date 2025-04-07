@@ -1,28 +1,31 @@
-
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { TopicAndBlockStatus } from "@/models/models";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import confetti from "canvas-confetti";
+import { StatusSelector } from "../StatusSelector";
+import { updateBlockStatusIfNeeded } from "@/hooks/update-topic-status-if-needed";
+import { updateTopicStatus } from "@/hooks/update-topic-status";
+import { useTopic } from "@/hooks/use-topic";
 
 interface TopicContainerProps {
   topicId: string;
 }
 
 export function TopicContainer({ topicId }: TopicContainerProps) {
-  const { data: topic, isLoading } = useQuery({
-    queryKey: ["topic", topicId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("topics")
-        .select("*")
-        .eq("id", topicId)
-        .single();
+  const queryClient = useQueryClient();
+  const { data: topic, isLoading } = useTopic(topicId);
 
-      if (error) throw error;
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  const handleStatusChange = async (newStatus: TopicAndBlockStatus) => {
+    const error = await updateTopicStatus(topicId, newStatus);
+    if (error) return;
+
+    if (newStatus === "completed") confetti({ particleCount: 100 });
+    await updateBlockStatusIfNeeded(topic.block_id);
+    await queryClient.invalidateQueries({ queryKey: ["roadmap"] });
+    topic.status = newStatus;
+  };
 
   if (isLoading) {
     return (
@@ -36,27 +39,20 @@ export function TopicContainer({ topicId }: TopicContainerProps) {
   }
 
   if (!topic) {
-    return <div className="text-muted-foreground">No se encontró información para este tema.</div>;
+    return (
+      <div className="text-muted-foreground">
+        No se encontró información para este tema.
+      </div>
+    );
   }
-
-  const getStatusBadge = () => {
-    switch (topic.status) {
-      case "completed":
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Completado</Badge>;
-      case "in_progress":
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">En progreso</Badge>;
-      default:
-        return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">Pendiente</Badge>;
-    }
-  };
 
   return (
     <div className="space-y-6">
+      <StatusSelector value={topic.status} onChange={handleStatusChange} />
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl font-bold">{topic.name}</h2>
-        {getStatusBadge()}
       </div>
-      
+
       {topic.description && (
         <div className="text-muted-foreground whitespace-pre-line">
           {topic.description}

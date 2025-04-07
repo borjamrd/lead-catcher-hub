@@ -1,33 +1,36 @@
-
 import { NodeSidebarContent } from "@/components/roadmap/NodeSidebarContent";
 import RoadmapFlow from "@/components/roadmap/RoadmapFlow";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Sheet,
-  SheetContent,
-  SheetClose
-} from "@/components/ui/sheet";
 import { useRoadmapData } from "@/hooks/use-roadmap-data";
+import { cn } from "@/lib/utils";
 import { useOppositionStore } from "@/stores/useOppositionStore";
-import { useQuery } from "@tanstack/react-query";
-import { Edge, Node } from "@xyflow/react";
-import { Map, X } from "lucide-react";
+import { CheckCircle, Map } from "lucide-react";
 import { useState } from "react";
-
-interface RoadmapData {
-  nodes: Node[];
-  edges: Edge[];
-}
 
 const Roadmap = () => {
   const { currentSelectedOppositionId } = useOppositionStore();
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [selectedNode, setSelectedNode] = useState<{
+    nodeId: string;
+    nodeType: string;
+  } | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { data: roadmapData, isLoading } = useRoadmapData(currentSelectedOppositionId);
+  const { data: roadmapData, isLoading } = useRoadmapData(
+    currentSelectedOppositionId
+  );
 
-  const handleNodeClick = (id: string) => {
-    setSelectedNodeId(id);
+  const handleNodeClick = ({
+    nodeId,
+    nodeType,
+  }: {
+    nodeId: string;
+    nodeType: string;
+  }) => {
+    setSelectedNode({
+      nodeId,
+      nodeType,
+    });
     setSidebarOpen(true);
   };
 
@@ -82,9 +85,41 @@ const Roadmap = () => {
     );
   }
 
+  const baseStyle =
+    "px-1.5 py-1 rounded-md text-xs font-medium shadow-md border flex items-center gap-3";
+
+  const LegendStatus = () => {
+    return (
+      <div className="flex gap-4 flex-wrap mb-5">
+        <div
+          className={cn(baseStyle, "bg-gray-100 text-gray-400 border-gray-300")}
+        >
+          <span className="">No comenzado</span>
+        </div>
+
+        <div
+          className={cn(baseStyle, "bg-blue-100 text-blue-800 border-blue-400")}
+        >
+          <span className="">En progreso</span>
+        </div>
+
+        <div
+          className={cn(
+            baseStyle,
+            "bg-green-100 text-green-800 border-green-400 line-through relative"
+          )}
+        >
+          <CheckCircle className="absolute -top-1.5 -left-1.5 h-4 w-4 text-green-600" />
+          <span className="">Completado</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Roadmap de Estudio</h1>
+      <LegendStatus />
       <div className="border rounded-lg bg-card overflow-hidden">
         <RoadmapFlow
           initialNodes={roadmapData.nodes}
@@ -95,10 +130,10 @@ const Roadmap = () => {
 
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent side="right" className="w-2/5 overflow-y-auto p-6">
-          {selectedNodeId && (
-            <NodeSidebarContent 
+          {selectedNode && (
+            <NodeSidebarContent
               onClose={handleSidebarClose}
-              nodeId={selectedNodeId} 
+              node={selectedNode}
             />
           )}
         </SheetContent>

@@ -1,39 +1,34 @@
-
-import { X } from "lucide-react";
-import { TopicContainer } from "./TopicContainer";
 import { BlockContainer } from "./BlockContainer";
+import { TopicContainer } from "./TopicContainer";
 
 interface NodeSidebarContentProps {
-  nodeId: string;
+  node: { nodeId: string; nodeType: string };
   onClose: () => void;
 }
 
 export function NodeSidebarContent({
-  nodeId,
+  node: node,
   onClose,
 }: NodeSidebarContentProps) {
-  // Extract the node type and ID from the nodeId format
-  // Node IDs come in the format "type-actualId" (e.g., "topic-123" or "block-456")
-  const [nodeType, actualId] = nodeId.split('-');
+
+  const { nodeId, nodeType } = node;
+
+  const topicId = nodeId.split("topic-")[1];
+  const blockId = nodeId.split("block-")[1];
+
 
   return (
-    <div className="relative p-4">
-      <button
-        onClick={onClose}
-        className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
-        aria-label="Cerrar"
-      >
-        <X className="w-5 h-5" />
-      </button>
-
-      <div className="mt-6">
-        {nodeType === "topic" && <TopicContainer topicId={actualId} />}
-        {nodeType === "block" && <BlockContainer blockId={actualId} />}
-        {nodeType !== "topic" && nodeType !== "block" && (
-          <div className="text-muted-foreground">
-            Selecciona un bloque o tema para ver más información.
-          </div>
-        )}
+    <div className="relative">
+      <div className="">
+        {nodeType === "topic" && <TopicContainer topicId={topicId} />}
+        {nodeType === "block" && <BlockContainer blockId={blockId} />}
+        {nodeType !== "topic" &&
+          nodeType !== "block" &&
+          nodeType !== "opposition" && (
+            <div className="text-muted-foreground">
+              Selecciona un bloque o tema para ver más información.
+            </div>
+          )}
       </div>
     </div>
   );
