@@ -65,11 +65,13 @@ export function AppSidebar() {
   const location = useLocation();
   const { data: oppositionList = [] } = useActiveOpposition();
   
-  const { currentSelectedOppositionId, setCurrentOppositionId } = useOppositionStore();
+  const { currentSelectedOppositionId, setCurrentOppositionId, setCurrentSelectedOpposition } = useOppositionStore();
   
   useEffect(() => {
     if (oppositionList.length > 0 && !currentSelectedOppositionId) {
       setCurrentOppositionId(oppositionList[0].id);
+      setCurrentSelectedOpposition(oppositionList[0].name);
+    
     }
   }, [oppositionList, currentSelectedOppositionId, setCurrentOppositionId]);
 

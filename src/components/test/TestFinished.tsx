@@ -1,20 +1,21 @@
 
-import { useAuth } from "@/hooks/useAuth";
-import { useActiveOpposition } from "@/hooks/use-active-opposition";
-import { useStudyCycle } from "@/hooks/use-study-cycle";
-import { useCurrentTestState } from "@/stores/useCurrentTestState";
-import { Button } from "@/components/ui/button";
-import { Award, Save, Star, Check, X } from "lucide-react";
-import { useParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { useStudyCycles } from "@/hooks/use-study-cycle";
+import { supabase } from "@/integrations/supabase/client";
+import { useCurrentTestState } from "@/stores/useCurrentTestState";
+import { useOppositionStore } from "@/stores/useOppositionStore";
+import { Award, Check, Save, Star, X } from "lucide-react";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useStudyCycleStore } from "@/stores/useStudyCycleStore";
 
 export function TestFinished() {
   const { selectedAnswers, questions, resetTest } = useCurrentTestState();
@@ -22,8 +23,8 @@ export function TestFinished() {
   const [isSaved, setIsSaved] = useState(false);
   const { id: testId } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const { activeOpposition } = useActiveOpposition();
-  const { currentStudyCycle } = useStudyCycle();
+  const { currentSelectedOppositionId } = useOppositionStore();
+  const { selectedCycleId } = useStudyCycleStore();
   const { toast } = useToast();
 
   // Calculate test results
@@ -43,7 +44,7 @@ export function TestFinished() {
   const isPassed = score >= 5;
 
   const handleSaveResults = async () => {
-    if (!user || !activeOpposition || !testId || !currentStudyCycle) return;
+    if (!user || !currentSelectedOppositionId || !testId || !selectedCycleId) return;
     
     try {
       setIsSaving(true);
@@ -51,8 +52,8 @@ export function TestFinished() {
       await supabase.from("test_attempts").insert({
         user_id: user.id,
         test_id: testId,
-        opposition_id: activeOpposition.id,
-        study_cycle_id: currentStudyCycle.id,
+        opposition_id: currentSelectedOppositionId,
+        study_cycle_id: selectedCycleId,
         score,
         correct_answers: correctAnswers,
         wrong_answers: wrongAnswers,

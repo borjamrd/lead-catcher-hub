@@ -1,6 +1,7 @@
 import { NodeSidebarContent } from "@/components/roadmap/NodeSidebarContent";
 import RoadmapFlow from "@/components/roadmap/RoadmapFlow";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRoadmapData } from "@/hooks/use-roadmap-data";
 import { useOppositionStore } from "@/stores/useOppositionStore";
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node } from "@xyflow/react";
@@ -16,117 +17,7 @@ const Roadmap = () => {
   const { currentSelectedOppositionId } = useOppositionStore();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
-  const { data: roadmapData, isLoading } = useQuery({
-    queryKey: ["roadmap", currentSelectedOppositionId],
-    queryFn: async () => {
-      if (!currentSelectedOppositionId) return null;
-      return {
-        nodes: [
-          {
-            id: "oposicion",
-            type: "custom",
-            data: {
-              label: "Cuerpo de Gestión de la Administración Civil del Estado",
-              type: "oposition",
-              completed: false,
-            },
-            position: { x: 400, y: 50 },
-          },
-          {
-            id: "bloque1",
-            type: "custom",
-            data: {
-              label: "Organización del Estado",
-              type: "block",
-              completed: true,
-            },
-            position: { x: 100, y: 200 },
-          },
-          {
-            id: "bloque2",
-            type: "custom",
-            data: {
-              label: "Políticas Públicas",
-              type: "block",
-              completed: false,
-            },
-            position: { x: 400, y: 200 },
-          },
-          {
-            id: "bloque3",
-            type: "custom",
-            data: {
-              label: "Derecho Administrativo",
-              type: "block",
-              completed: false,
-            },
-            position: { x: 700, y: 200 },
-          },
-          {
-            id: "tema1",
-            type: "custom",
-            data: {
-              label: "Constitución Española",
-              type: "topic",
-              completed: true,
-            },
-            position: { x: 100, y: 350 },
-          },
-          {
-            id: "tema2",
-            type: "custom",
-            data: {
-              label: "Ley del Gobierno (50/1997)",
-              type: "topic",
-              completed: false,
-            },
-            position: { x: 100, y: 400 },
-          },
-          {
-            id: "tema3",
-            type: "custom",
-            data: {
-              label: "Evaluación de Políticas Públicas",
-              type: "topic",
-              completed: false,
-            },
-            position: { x: 400, y: 350 },
-          },
-          {
-            id: "contenido1",
-            type: "custom",
-            data: {
-              label: "Guía sobre Evaluación de Políticas",
-              type: "content",
-              completed: true,
-            },
-            position: { x: 400, y: 450 },
-          },
-          {
-            id: "tema5",
-            type: "custom",
-            data: {
-              label: "Ley 39/2015 - Procedimiento Administrativo",
-              type: "topic",
-              completed: false,
-            },
-            position: { x: 700, y: 350 },
-          },
-        ],
-        edges: [
-          { id: "e1", source: "oposicion", target: "bloque1"},
-          { id: "e2", source: "oposicion", target: "bloque2"},
-          { id: "e3", source: "oposicion", target: "bloque3"},
-          { id: "e4", source: "bloque1", target: "tema1" },
-          { id: "e5", source: "bloque1", target: "tema2" },
-          { id: "e6", source: "bloque2", target: "tema3" },
-          { id: "e7", source: "tema3", target: "contenido1" },
-          { id: "e8", source: "bloque3", target: "tema5" },
-        ],
-      } as RoadmapData;
-    },
-    enabled: !!currentSelectedOppositionId,
-  });
+  const { data: roadmapData, isLoading } = useRoadmapData(currentSelectedOppositionId);
 
   if (isLoading) {
     return (

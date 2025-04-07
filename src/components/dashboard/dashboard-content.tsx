@@ -20,6 +20,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { AnkiCard } from "./AnkiCard";
 import { StudySessionModal } from "./StudySessionModal";
+import { TuProgreso } from "./TuProgreso";
 
 export function DashboardContent() {
   const [showStudyModal, setShowStudyModal] = useState(false);
@@ -165,15 +166,6 @@ export function DashboardContent() {
     };
   }, []);
 
-  // Mock data
-  const progressData = {
-    temarioCompletado: 65,
-    testsRealizados: 78,
-    testsAprobados: 82,
-    rachaEstudio: 7,
-    tiempoEstudioSemana: "12h 30m",
-  };
-
   const revisionData = {
     repasos: [
       {
@@ -261,42 +253,9 @@ export function DashboardContent() {
       </div>
 
       <div className="grid grid-cols-12 gap-6">
-        {/* Motivación - 4 columns, spans 1 row */}
-        <Card className="col-span-3 ">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-2xl">
-              🏆 ¡Menuda crack!
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h3 className="text-sm font-semibold mb-2">
-                Logros desbloqueados
-              </h3>
-              <div className="space-y-2">
-                {motivacionData.logros.map((logro) => (
-                  <div
-                    key={logro.id}
-                    className="flex items-center bg-muted/50 p-2 rounded-md"
-                  >
-                    {logro.icono}
-                    <span className="ml-2 text-sm">{logro.titulo}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+        {/* Resumen del Progreso - 5 columns, spans 2 rows */}
+        <TuProgreso />
 
-            <Separator />
-          </CardContent>
-        </Card>
-
-        {/* Nueva sección - Anki Card */}
-        <div className="col-span-5">
-          <AnkiCard
-            front="🔹 El órgano de contratación en la Administración General del Estado es el __________."
-            back="🔹 Ministro del departamento correspondiente o el titular del organismo autónomo, salvo delegación."
-          />
-        </div>
         {/* Botón empezar sesión de estudio */}
         {!studySessionActive ? (
           <Card
@@ -366,63 +325,36 @@ export function DashboardContent() {
           onOpenChange={setShowStudyModal}
           onStart={handleStartStudySession}
         />
-        {/* Resumen del Progreso - 5 columns, spans 2 rows */}
 
-        <Card className="col-span-8 row-span-1 ">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-2xl">
-              📊 Tu progreso
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        {/* Motivación - 4 columns, spans 1 row */}
+        <Card className="col-span-4">
+          <CardContent className="space-y-4 mt-3">
             <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium">
-                  % de temario completado
-                </span>
-                <span className="text-sm font-semibold">
-                  {progressData.temarioCompletado}%
-                </span>
+              <h3 className="text-sm font-semibold mb-2">
+                Logros desbloqueados
+              </h3>
+              <div className="space-y-2">
+                {motivacionData.logros.map((logro) => (
+                  <div
+                    key={logro.id}
+                    className="flex items-center bg-muted/50 p-2 rounded-md"
+                  >
+                    {logro.icono}
+                    <span className="ml-2 text-sm">{logro.titulo}</span>
+                  </div>
+                ))}
               </div>
-              <Progress
-                value={progressData.temarioCompletado}
-                className="h-2"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium">
-                  % de tests aprobados
-                </span>
-                <span className="text-sm font-semibold">
-                  {progressData.testsAprobados}%
-                </span>
-              </div>
-              <Progress value={progressData.testsAprobados} className="h-2" />
-            </div>
-
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center">
-                <FlameIcon className="mr-2 h-5 w-5 text-orange-500" />
-                <span className="font-medium">Racha actual</span>
-              </div>
-              <Badge variant="outline" className="font-bold">
-                {progressData.rachaEstudio} días
-              </Badge>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Clock className="mr-2 h-5 w-5 text-primary" />
-                <span className="font-medium">Tiempo esta semana</span>
-              </div>
-              <Badge variant="outline" className="font-bold">
-                {progressData.tiempoEstudioSemana}
-              </Badge>
             </div>
           </CardContent>
         </Card>
+
+        {/* Nueva sección - Anki Card */}
+        <div className="col-span-4">
+          <AnkiCard
+            front="🔹 El órgano de contratación en la Administración General del Estado es el __________."
+            back="🔹 Ministro del departamento correspondiente o el titular del organismo autónomo, salvo delegación."
+          />
+        </div>
 
         <Card className="col-span-4">
           <CardHeader className="pb-2">

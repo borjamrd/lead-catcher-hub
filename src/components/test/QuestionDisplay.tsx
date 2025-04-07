@@ -71,7 +71,7 @@ export function QuestionDisplay() {
         
         <Button
           onClick={nextQuestion}
-          disabled={!isAnswerSelected || (isLastQuestionItem && isLastQuestion)}
+          disabled={!isAnswerSelected}
         >
           {isLastQuestionItem ? (
             <>

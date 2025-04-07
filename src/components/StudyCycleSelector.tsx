@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useStudyCycles } from "@/hooks/use-study-cycle";
 import {
   Select,
@@ -8,56 +8,53 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Badge } from "./ui/badge";
+import { useStudyCycleStore } from "@/stores/useStudyCycleStore";
 
 interface Props {
   oppositionId: string;
-  onCycleSelect?: (cycleId: string) => void;
 }
 
-const StudyCycleSelector = ({ oppositionId, onCycleSelect }: Props) => {
+const StudyCycleSelector = ({ oppositionId }: Props) => {
   const { data: cycles, isLoading } = useStudyCycles(oppositionId);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { selectedCycleId, setSelectedCycleId } = useStudyCycleStore();
 
+  // Seleccionar por defecto el activo
   useEffect(() => {
-    if (cycles && cycles.length > 0 && !selectedId) {
-      const activeCycle = cycles.find(cycle => !cycle.completed_at);
+    if (cycles?.length && !selectedCycleId) {
+      const activeCycle = cycles.find((c) => !c.completed_at);
       const defaultCycle = activeCycle ?? cycles[0];
-  
-      setSelectedId(defaultCycle.id);
-      onCycleSelect?.(defaultCycle.id);
+      setSelectedCycleId(defaultCycle.id);
     }
-  }, [cycles, selectedId, onCycleSelect]);
-  
+  }, [cycles, selectedCycleId, setSelectedCycleId]);
 
   const handleChange = (value: string) => {
-    setSelectedId(value);
-    onCycleSelect(value);
+    setSelectedCycleId(value);
   };
 
   return (
     <div className="w-full max-w-sm">
       {cycles?.length ? (
-        <Select 
-          value={selectedId || ""}
+        <Select
+          value={selectedCycleId || ""}
           onValueChange={handleChange}
-          disabled={isLoading || !cycles?.length}
+          disabled={isLoading}
         >
           <SelectTrigger className="mt-2 text-xs px-2 py-0">
             <SelectValue placeholder="Selecciona una vuelta" />
           </SelectTrigger>
           <SelectContent>
-            {cycles?.map((cycle) => (
-             <SelectItem key={cycle.id} value={cycle.id}>
-             <div className="flex justify-between items-center">
-               <span>Vuelta #{cycle.cycle_number}</span>
-               <Badge
-                 variant={cycle.completed_at ? "secondary" : "default"}
-                 className="ml-2 text-xs"
-               >
-                 {cycle.completed_at ? "Finalizado" : "Activo"}
-               </Badge>
-             </div>
-           </SelectItem>
+            {cycles.map((cycle) => (
+              <SelectItem key={cycle.id} value={cycle.id}>
+                <div className="flex justify-between items-center">
+                  <span>Vuelta #{cycle.cycle_number}</span>
+                  <Badge
+                    variant={cycle.completed_at ? "secondary" : "default"}
+                    className="ml-2 text-xs"
+                  >
+                    {cycle.completed_at ? "Finalizado" : "Activo"}
+                  </Badge>
+                </div>
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>

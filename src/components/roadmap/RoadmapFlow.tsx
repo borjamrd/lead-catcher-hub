@@ -7,12 +7,21 @@ import {
   Panel,
   ReactFlow,
   useEdgesState,
-  useNodesState
+  useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import dagre from "dagre";
 import { useCallback, useEffect } from "react";
 import { OpositionNode } from "./OpositionNode";
+
+import ELK from "elkjs/lib/elk.bundled.js";
+
+const elk = new ELK();
+
+const elkOptions = {
+  "elk.algorithm": "layered",
+  "elk.layered.spacing.nodeNodeBetweenLayers": "100",
+  "elk.spacing.nodeNode": "80",
+};
 
 interface RoadmapFlowProps {
   initialNodes: Node[];
@@ -20,65 +29,73 @@ interface RoadmapFlowProps {
   onNodeClick?: (nodeId: string) => void;
 }
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-const getLayoutedElements = (
+const getLayoutedElements = async (
   nodes: Node[],
   edges: Edge[],
-  direction = "TB"
-) => {
-  const isHorizontal = direction === "LR";
-  dagreGraph.setGraph({ rankdir: direction });
+  direction: "RIGHT" | "DOWN" = "DOWN"
+): Promise<{ nodes: Node[]; edges: Edge[] }> => {
+  const isHorizontal = direction === "RIGHT";
 
-  // Set nodes
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: 170, height: 40 });
-  });
-
-  // Set edges
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
-  // Apply layout
-  dagre.layout(dagreGraph);
-
-  // Get positions
-  const layoutedNodes = nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    return {
+  const graph = {
+    id: "root",
+    layoutOptions: {
+      "elk.direction": direction,
+      ...elkOptions,
+    },
+    children: nodes.map((node) => ({
       ...node,
-      position: {
-        x: nodeWithPosition.x - 85, // Center the node
-        y: nodeWithPosition.y - 20,
-      },
-    };
-  });
+      sourcePosition: isHorizontal ? "right" : "top",
+      targetPosition: isHorizontal ? "left" : "bottom",
+      width: 253,
+      height: 120,
+    })),
+    edges: edges.map((edge) => ({
+      id: edge.id,
+      sources: [edge.source],
+      targets: [edge.target],
+      ...edge,
+    })),
+    
+  };
 
-  return { nodes: layoutedNodes, edges };
+  
+
+  const layout = await elk.layout(graph);
+
+  return {
+    nodes: layout.children.map((node: any) => ({
+      ...node,
+      position: { x: node.x, y: node.y },
+    })),
+    edges: layout.edges,
+  };
 };
 
-const RoadmapFlow = ({ initialNodes, initialEdges, onNodeClick }: RoadmapFlowProps) => {
+const RoadmapFlow = ({
+  initialNodes,
+  initialEdges,
+  onNodeClick,
+}: RoadmapFlowProps) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   useEffect(() => {
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-      initialNodes,
-      initialEdges,
-      "TB"
-    );
-    setNodes(layoutedNodes);
-    setEdges(layoutedEdges);
+    if (initialNodes.length && initialEdges.length) {
+      getLayoutedElements(initialNodes, initialEdges, "DOWN").then(
+        ({ nodes, edges }) => {
+          setNodes(nodes);
+          setEdges(edges);
+        }
+      );
+    }
   }, [initialNodes, initialEdges]);
 
   const onLayout = useCallback(
-    (direction: "TB" | "LR") => {
-      const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(nodes, edges, direction);
-      setNodes([...layoutedNodes]);
-      setEdges([...layoutedEdges]);
+    (direction: "DOWN" | "RIGHT") => {
+      getLayoutedElements(nodes, edges, direction).then(({ nodes, edges }) => {
+        setNodes(nodes);
+        setEdges(edges);
+      });
     },
     [nodes, edges]
   );
@@ -100,25 +117,23 @@ const RoadmapFlow = ({ initialNodes, initialEdges, onNodeClick }: RoadmapFlowPro
           type: "smoothstep",
           style: { stroke: "#334155", strokeWidth: 2 },
         }}
-        nodeOrigin={[0.5, 0.5]}
+        nodeOrigin={[0, 0]}
         onNodeClick={(_, node) => onNodeClick?.(node.id)}
-   
         fitView
         zoomOnPinch={false}
-
       >
         <Controls />
         <Background />
         <Panel position="top-right">
           <div className="flex gap-2">
             <button
-              onClick={() => onLayout("TB")}
+              onClick={() => onLayout("DOWN")}
               className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
             >
               Vertical
             </button>
             <button
-              onClick={() => onLayout("LR")}
+              onClick={() => onLayout("RIGHT")}
               className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
             >
               Horizontal

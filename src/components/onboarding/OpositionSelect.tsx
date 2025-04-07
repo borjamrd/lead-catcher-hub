@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
 import { useOppositionStore } from "@/stores/useOppositionStore";
+import { useStudyCycleStore } from "@/stores/useStudyCycleStore";
 
 interface Opposition {
   id: string;
@@ -17,12 +18,10 @@ interface Opposition {
 interface OpositionSelectProps {
   user?: User;
   onSelect: (oppositionId: string) => void;
-  onConfirm: () => void;
 }
 
 const OpositionSelect = ({
   onSelect,
-  onConfirm,
   user,
 }: OpositionSelectProps) => {
   const queryClient = useQueryClient();
@@ -31,6 +30,7 @@ const OpositionSelect = ({
     useState<Opposition | null>(null);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const { setCurrentOppositionId } = useOppositionStore();
+  const { setSelectedCycleId} = useStudyCycleStore();
   // Debounce search term
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -85,13 +85,14 @@ const OpositionSelect = ({
 
     queryClient.invalidateQueries({ queryKey: ["active_opposition"] });
 
-    const { error: error_study_cycles } = await supabase
+    const { data: study_cycle, error: error_study_cycles } = await supabase
       .from("study_cycles")
       .insert({
         user_id: user.id,
         opposition_id: selectedOpposition.id,
         cycle_number: 1,
-      });
+      })
+      .single();
 
     if (error_study_cycles) {
       toast({
@@ -101,8 +102,8 @@ const OpositionSelect = ({
       });
       return;
     }
+    setSelectedCycleId(study_cycle.id);
     setCurrentOppositionId(selectedOpposition.id);
-    onConfirm();
   };
 
   return (

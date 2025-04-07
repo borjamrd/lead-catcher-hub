@@ -2,8 +2,9 @@ import { CheckCircle } from "lucide-react";
 import { Handle, Position } from "@xyflow/react";
 import { cn } from "@/lib/utils";
 
-export function OpositionNode({ data, type }: any) {
-  const baseStyle = "p-4 rounded-md text-sm font-medium shadow-md border";
+export function OpositionNode({ data }: any) {
+  const baseStyle = "min-w-[220px] max-w-[260px] px-5 py-4 rounded-md text-sm font-medium shadow-md border cursor-pointer";
+
   const completed = data?.completed;
 
   const stylesByType = {
@@ -13,7 +14,8 @@ export function OpositionNode({ data, type }: any) {
     content: "bg-gray-100 border-gray-400 text-gray-800",
   };
 
-  const nodeStyle = stylesByType[type as keyof typeof stylesByType] || "bg-white";
+  const nodeStyle =
+    stylesByType[data.type as keyof typeof stylesByType] || "bg-white";
 
   return (
     <div className={cn(baseStyle, nodeStyle, "relative")}>
@@ -22,7 +24,8 @@ export function OpositionNode({ data, type }: any) {
       {completed && (
         <CheckCircle className="absolute -top-1.5 -left-1.5 h-4 w-4 text-green-600" />
       )}
-      <div className="text-center">{data.label}</div>
+      <div className="text-center text-3xl">{data.label}</div>
     </div>
   );
 }
+
