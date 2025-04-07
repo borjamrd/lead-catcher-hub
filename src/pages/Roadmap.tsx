@@ -1,11 +1,17 @@
+
 import { NodeSidebarContent } from "@/components/roadmap/NodeSidebarContent";
 import RoadmapFlow from "@/components/roadmap/RoadmapFlow";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Sheet,
+  SheetContent,
+  SheetClose
+} from "@/components/ui/sheet";
 import { useRoadmapData } from "@/hooks/use-roadmap-data";
 import { useOppositionStore } from "@/stores/useOppositionStore";
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node } from "@xyflow/react";
-import { Map } from "lucide-react";
+import { Map, X } from "lucide-react";
 import { useState } from "react";
 
 interface RoadmapData {
@@ -16,8 +22,18 @@ interface RoadmapData {
 const Roadmap = () => {
   const { currentSelectedOppositionId } = useOppositionStore();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { data: roadmapData, isLoading } = useRoadmapData(currentSelectedOppositionId);
+
+  const handleNodeClick = (id: string) => {
+    setSelectedNodeId(id);
+    setSidebarOpen(true);
+  };
+
+  const handleSidebarClose = () => {
+    setSidebarOpen(false);
+  };
 
   if (isLoading) {
     return (
@@ -73,15 +89,20 @@ const Roadmap = () => {
         <RoadmapFlow
           initialNodes={roadmapData.nodes}
           initialEdges={roadmapData.edges}
-          onNodeClick={(id) => setSelectedNodeId(id)}
+          onNodeClick={handleNodeClick}
         />
       </div>
-      {selectedNodeId && (
-      <aside className="fixed top-0 right-0 w-2/5 h-full bg-white border-l shadow-lg z-50 p-6 overflow-y-auto">
-        <NodeSidebarContent onClose={() => setSelectedNodeId(null)} nodeId={selectedNodeId} />
-        
-      </aside>
-    )}
+
+      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SheetContent side="right" className="w-2/5 overflow-y-auto p-6">
+          {selectedNodeId && (
+            <NodeSidebarContent 
+              onClose={handleSidebarClose}
+              nodeId={selectedNodeId} 
+            />
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

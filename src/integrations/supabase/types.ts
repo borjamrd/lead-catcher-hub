@@ -45,6 +45,7 @@ export type Database = {
           name: string
           opposition_id: string | null
           position: number
+          status: Database["public"]["Enums"]["status_enum"] | null
         }
         Insert: {
           description?: string | null
@@ -52,6 +53,7 @@ export type Database = {
           name: string
           opposition_id?: string | null
           position?: number
+          status?: Database["public"]["Enums"]["status_enum"] | null
         }
         Update: {
           description?: string | null
@@ -59,6 +61,7 @@ export type Database = {
           name?: string
           opposition_id?: string | null
           position?: number
+          status?: Database["public"]["Enums"]["status_enum"] | null
         }
         Relationships: [
           {
@@ -625,6 +628,7 @@ export type Database = {
           id: string
           name: string
           position: number
+          status: Database["public"]["Enums"]["status_enum"] | null
         }
         Insert: {
           block_id?: string | null
@@ -633,6 +637,7 @@ export type Database = {
           id?: string
           name: string
           position?: number
+          status?: Database["public"]["Enums"]["status_enum"] | null
         }
         Update: {
           block_id?: string | null
@@ -641,6 +646,7 @@ export type Database = {
           id?: string
           name?: string
           position?: number
+          status?: Database["public"]["Enums"]["status_enum"] | null
         }
         Relationships: [
           {
@@ -817,6 +823,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      status_enum: "not_started" | "in_progress" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -933,6 +940,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      status_enum: ["not_started", "in_progress", "completed"],
     },
   },
 } as const
