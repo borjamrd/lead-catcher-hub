@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-interface StudyCycle {
+export interface StudyCycle {
   id: string;
   cycle_number: number;
   started_at: string;
@@ -22,7 +22,7 @@ export const useStudyCycles = (oppositionId: string) => {
 
       const { data, error } = await supabase
         .from("study_cycles")
-        .select("id, cycle_number, started_at, completed_at")
+        .select("id, cycle_number, started_at, completed_at, opposition_id, user_id")
         .eq("user_id", user.id)
         .eq("opposition_id", oppositionId)
         .order("cycle_number", { ascending: true });

@@ -12,10 +12,10 @@ import { useStudyCycles } from "@/hooks/use-study-cycle";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentTestState } from "@/stores/useCurrentTestState";
 import { useOppositionStore } from "@/stores/useOppositionStore";
+import { useStudyCycleStore } from "@/stores/useStudyCycleStore";
 import { Award, Check, Save, Star, X } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useStudyCycleStore } from "@/stores/useStudyCycleStore";
 
 export function TestFinished() {
   const { selectedAnswers, questions, resetTest } = useCurrentTestState();

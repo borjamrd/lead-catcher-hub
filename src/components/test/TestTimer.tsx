@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useCurrentTestState } from "@/stores/useCurrentTestState";
 import { Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ export function TestTimer() {
   const [seconds, setSeconds] = useState(0);
   
   useEffect(() => {
-    let interval: number | undefined;
+    let interval: ReturnType<typeof setInterval>;
     
     if (isTimerRunning) {
       interval = setInterval(() => {
