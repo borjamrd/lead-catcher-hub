@@ -1,5 +1,5 @@
-
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { Json } from '@/integrations/supabase/types';
 
 export interface OnboardingInfo {
@@ -15,9 +15,21 @@ export interface OnboardingInfo {
 interface OnboardingState {
   onboardingInfo: OnboardingInfo | null;
   setOnboardingInfo: (info: OnboardingInfo) => void;
+  isOnboardingDone: boolean;
+  setOnboardingDone: (done: boolean) => void;
 }
 
-export const useOnboardingStore = create<OnboardingState>((set) => ({
-  onboardingInfo: null,
-  setOnboardingInfo: (info) => set({ onboardingInfo: info }),
-}));
+export const useOnboardingStore = create<OnboardingState>()(
+  persist(
+    (set) => ({
+      onboardingInfo: null,
+      setOnboardingInfo: (info) => set({ onboardingInfo: info }),
+      isOnboardingDone: false,
+      setOnboardingDone: (done) => set({ isOnboardingDone: done }),
+    }),
+    {
+      name: 'onboarding-storage',
+      partialize: (state) => ({ isOnboardingDone: state.isOnboardingDone }), // solo persistimos este flag
+    }
+  )
+);

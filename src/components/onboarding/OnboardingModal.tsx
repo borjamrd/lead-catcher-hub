@@ -16,9 +16,8 @@ const OnboardingModal = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const { setOnboardingInfo } = useOnboardingStore();
-  const { currentSelectedOppositionId, setOnboardingOppositionId } =
-    useOppositionStore();
+  const { setOnboardingInfo, setOnboardingDone, isOnboardingDone } = useOnboardingStore();
+  const { currentSelectedOppositionId, setOnboardingOppositionId } = useOppositionStore();
 
   useEffect(() => {
     if (!user) return;
@@ -37,18 +36,15 @@ const OnboardingModal = () => {
           return;
         }
 
-        // If data exists, store it in global state
         if (data) {
           setOnboardingInfo(data);
-
-          // If there's an opposition_id, also set it in the opposition store
+          setOnboardingDone(true);
           if (data.opposition_id) {
             setOnboardingOppositionId(data.opposition_id);
           }
+        } else {
+          setOpen(true);
         }
-
-        // If no data exists, the user needs onboarding
-        setOpen(!data);
       } catch (err) {
         console.error("Unexpected error during onboarding check:", err);
       } finally {
@@ -57,34 +53,29 @@ const OnboardingModal = () => {
     };
 
     checkOnboardingStatus();
-  }, [user, setOnboardingInfo, setOnboardingOppositionId]);
+  }, [user]);
 
-  // Function to handle opposition selection
   const handleOppositionSelect = (oppositionId: string) => {
     setOnboardingOppositionId(oppositionId);
   };
 
-  // Function to handle successful onboarding completion
   const handleOnboardingComplete = () => {
     setOpen(false);
+    setOnboardingDone(true); // <- clave
   };
 
-  // Prevent closing the dialog until onboarding is complete
   const handleOpenChange = (newOpen: boolean) => {
-    // Only allow closing if we're explicitly setting it to closed
-    // and we're no longer in the loading state
-    if (!newOpen && !loading) {
+    // Solo permitir cerrar si ya se completó
+    if (!newOpen && !loading && !isOnboardingDone) {
       setOpen(true);
     }
   };
-
-  if (loading) return null;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         closeIcon={false}
-        className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] h-[60vh] p-20"
+        className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] h-[90vh] p-20"
       >
         <DialogHeader>
           <DialogTitle className="text-center text-xl">
