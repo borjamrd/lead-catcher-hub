@@ -1,12 +1,11 @@
-import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOppositionStore } from "@/stores/useOppositionStore";
-import { toast } from "sonner";
 import { ArrowUp } from "lucide-react";
-import OnboardingSummary from "./OnboardingSummary";
+import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
+import { toast } from "@/hooks/use-toast";
 
 interface ChatMessage {
   role: "assistant" | "user";
@@ -14,11 +13,13 @@ interface ChatMessage {
 }
 
 const OnboardingChat = ({ onComplete }: { onComplete?: () => void }) => {
-  const { currentSelectedOpposition } = useOppositionStore();
+  const { user } = useAuth();
+  const { currentSelectedOpposition, currentSelectedOppositionId } =
+    useOppositionStore();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      content: `¡Hola! Soy Janiro, tu asistente en Opositaplace. ¿Te gustaría que te ayudara a configurar tu plan de estudio para ${currentSelectedOpposition} ?`,
+      content: `¡Hola! Soy Janiro, tu asistente en Opositaplace. ¿Te gustaría que te ayudara a configurar tu plan de estudio para ${currentSelectedOpposition}?`,
     },
   ]);
   const [currentMessage, setCurrentMessage] = useState("");
@@ -26,16 +27,19 @@ const OnboardingChat = ({ onComplete }: { onComplete?: () => void }) => {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, [inputDisabled]);
+
   const getGeminiHistory = () => {
     const trimmed = [...messages];
-    if (trimmed[0]?.role === "assistant") {
-      trimmed.shift(); // evita error: el primer mensaje debe ser del user
-    }
+    if (trimmed[0]?.role === "assistant") trimmed.shift();
     return trimmed.map((m) => ({
       role: m.role === "user" ? "user" : "model",
       parts: [{ text: m.content }],
@@ -45,30 +49,25 @@ const OnboardingChat = ({ onComplete }: { onComplete?: () => void }) => {
   const handleSend = async () => {
     if (!currentMessage.trim()) return;
 
-    const newUserMessage: ChatMessage = {
-      role: "user",
-      content: currentMessage,
-    };
-
+    const newUserMessage = { role: "user", content: currentMessage };
     setMessages((prev) => [...prev, newUserMessage]);
     setCurrentMessage("");
     setInputDisabled(true);
 
     try {
-      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-      const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
       const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/google-genai-chat`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/google-genai-chat`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           },
           body: JSON.stringify({
             history: getGeminiHistory(),
             message: currentMessage,
+            user_id: user?.id,
+            opposition_id: currentSelectedOppositionId,
           }),
         }
       );
@@ -84,18 +83,28 @@ const OnboardingChat = ({ onComplete }: { onComplete?: () => void }) => {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
-        console.log({ chunk });
 
-        console.log("[chunk recibido]", chunk);
-
-        // ✅ Detecta finalización del onboarding sin mostrar al usuario
-        if (chunk.includes("<<ONBOARDING_DONE>>:true")) {
-          setIsCompleted(true);
-          continue;
+        // Intenta parsear como JSON estructurado
+        try {
+          const maybeJson = JSON.parse(chunk);
+          if (maybeJson.done) {
+            if (maybeJson.success) {
+              setIsCompleted(true);
+            } else {
+              console.error("Error en Supabase:", maybeJson.error);
+              toast({
+                title: "Error",
+                description: "Hubo un error al enviar tu mensaje.",
+                variant: "destructive",
+              });
+            }
+            continue;
+          }
+        } catch {
+          // No es JSON, continúa
         }
 
         assistantMessage += chunk;
-
         if (firstChunk) {
           setMessages((prev) => [
             ...prev,
@@ -114,23 +123,20 @@ const OnboardingChat = ({ onComplete }: { onComplete?: () => void }) => {
         }
       }
     } catch (err) {
-      console.error("Error al enviar mensaje:", err);
-      toast.error("Error al comunicarse con el asistente.");
+      console.error(err);
+      toast({
+        title: "Error",
+        description: "Hubo un error al enviar tu mensaje.",
+        variant: "destructive",
+      });
     } finally {
       setInputDisabled(false);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
   return (
     <div className="flex flex-col h-full max-h-[70vh]">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 min-h-[500px] rounded-t-md">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 rounded-t-md min-h-[500px]">
         {messages.map((message, index) => (
           <div
             key={index}
@@ -143,66 +149,34 @@ const OnboardingChat = ({ onComplete }: { onComplete?: () => void }) => {
                 message.role === "user" ? "bg-indigo-100" : "bg-gray-200"
               }`}
             >
-              <Markdown
-                components={{
-                  p: ({ children }) => (
-                    <p className="mb-2 text-sm">{children}</p>
-                  ),
-                  li: ({ children }) => (
-                    <li className="ml-4 list-disc text-sm">{children}</li>
-                  ),
-                  strong: ({ children }) => (
-                    <strong className="font-semibold">{children}</strong>
-                  ),
-                }}
-              >
-                {message.content}
-              </Markdown>
+              <Markdown>{message.content}</Markdown>
             </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
-
       {isCompleted ? (
         <div className="flex flex-col items-center justify-center h-full space-y-4 p-6">
           <p className="text-lg font-semibold text-center">
             🎉 ¡Gracias por completar el onboarding!
           </p>
           <div className="flex gap-4 mt-4">
-            <Button
-              onClick={() => {
-                console.log("Confirmado");
-                onComplete?.();
-              }}
-            >
-              Confirmar
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setMessages([
-                  {
-                    role: "assistant",
-                    content:
-                      "¡Hola! Soy Janiro, tu asistente en Opositaplace. ¿Te gustaría que te ayudara a configurar tu plan de estudio?",
-                  },
-                ]);
-                setCurrentMessage("");
-                setIsCompleted(false);
-              }}
-            >
-              Comenzar de nuevo
-            </Button>
+            <Button onClick={onComplete}>Confirmar</Button>
           </div>
         </div>
       ) : (
         <div className="p-4 border-t bg-background rounded-b-md">
           <div className="flex space-x-2">
             <Textarea
+              ref={textareaRef}
               value={currentMessage}
               onChange={(e) => setCurrentMessage(e.target.value)}
-              onKeyDown={handleKeyPress}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
               placeholder="Escribe tu mensaje..."
               className="flex-1 resize-none focus-visible:ring-0"
               disabled={inputDisabled || isCompleted}

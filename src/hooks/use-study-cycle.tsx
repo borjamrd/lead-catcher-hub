@@ -21,7 +21,7 @@ export const useStudyCycles = (oppositionId: string) => {
       if (!user?.id || !oppositionId) return [];
 
       const { data, error } = await supabase
-        .from("study_cycles")
+        .from("user_study_cycles")
         .select("id, cycle_number, started_at, completed_at, opposition_id, user_id")
         .eq("user_id", user.id)
         .eq("opposition_id", oppositionId)

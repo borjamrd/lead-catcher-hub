@@ -20,17 +20,14 @@ interface OpositionSelectProps {
   onSelect: (oppositionId: string) => void;
 }
 
-const OpositionSelect = ({
-  onSelect,
-  user,
-}: OpositionSelectProps) => {
+const OpositionSelect = ({ onSelect, user }: OpositionSelectProps) => {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOpposition, setSelectedOpposition] =
     useState<Opposition | null>(null);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const { setCurrentOppositionId } = useOppositionStore();
-  const { setSelectedCycleId} = useStudyCycleStore();
+  const { setCurrentOppositionId, setCurrentSelectedOpposition } = useOppositionStore();
+  const { setSelectedCycleId } = useStudyCycleStore();
   // Debounce search term
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -64,7 +61,6 @@ const OpositionSelect = ({
   const handleConfirm = async () => {
     if (!selectedOpposition || !user) return;
 
-    // 1. Asociar usuario con la oposición
     const { error: error_user_oppositions } = await supabase
       .from("user_oppositions")
       .insert({
@@ -75,6 +71,10 @@ const OpositionSelect = ({
       });
 
     if (error_user_oppositions) {
+      console.error(
+        "Error al asociar el usuario con la oposición:",
+        error_user_oppositions
+      );
       toast({
         title: "Error",
         description: "No se pudo asociar el usuario con la oposición",
@@ -83,27 +83,31 @@ const OpositionSelect = ({
       return;
     }
 
-    queryClient.invalidateQueries({ queryKey: ["active_opposition"] });
-
-    const { data: study_cycle, error: error_study_cycles } = await supabase
-      .from("study_cycles")
-      .insert({
-        user_id: user.id,
-        opposition_id: selectedOpposition.id,
-        cycle_number: 1,
-      })
+    // ⬇️ Recuperar el ciclo recién creado por el trigger
+    const { data: study_cycle, error: error_study_cycle } = await supabase
+      .from("user_study_cycles")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("opposition_id", selectedOpposition.id)
+      .eq("cycle_number", 1)
       .single();
 
-    if (error_study_cycles) {
+    if (error_study_cycle || !study_cycle) {
+      console.error("Error al obtener el ciclo de estudio:", error_study_cycle);
       toast({
         title: "Error",
-        description: "No se pudo crear el ciclo de estudio",
+        description: "No se pudo obtener el ciclo de estudio",
         variant: "destructive",
       });
       return;
     }
+
+    // ✅ Guardar en el store
     setSelectedCycleId(study_cycle.id);
     setCurrentOppositionId(selectedOpposition.id);
+    setCurrentSelectedOpposition(selectedOpposition.name);
+
+    queryClient.invalidateQueries({ queryKey: ["active_opposition"] });
   };
 
   return (

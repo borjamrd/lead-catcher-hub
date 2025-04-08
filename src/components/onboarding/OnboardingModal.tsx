@@ -75,15 +75,11 @@ const OnboardingModal = () => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         closeIcon={false}
-        className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] h-[90vh] p-20"
+        className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] h-[90vh] p-10"
       >
         <DialogHeader>
           <DialogTitle className="text-center text-xl">
-            Bienvenid@ a{" "}
-            <span className="font-bold">
-              <span className="text-oxford_blue">oposita</span>
-              <span className="text-yinmn_blue">place</span>
-            </span>
+           Onboarding
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">

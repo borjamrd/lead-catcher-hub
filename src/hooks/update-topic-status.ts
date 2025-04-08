@@ -1,13 +1,23 @@
-// services/updateTopicStatus.ts
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { TopicAndBlockStatus } from "@/models/models";
+import { useStudyCycleStore } from "@/stores/useStudyCycleStore";
+import { useAuth } from "@/contexts/AuthContext";
 
-export const updateTopicStatus = async (topicId: string, status: TopicAndBlockStatus) => {
+// Puedes hacer esto como función normal, o hook si necesitas contexto React
+export const updateTopicStatus = async (
+  idUser: string,
+  topicId: string,
+  status: TopicAndBlockStatus
+) => {
+  const { selectedCycleId } = useStudyCycleStore.getState();
+
   const { error } = await supabase
-    .from("topics")
+    .from("user_topics")
     .update({ status })
-    .eq("id", topicId);
+    .eq("user_id", idUser)
+    .eq("topic_id", topicId)
+    .eq("study_cycle_id", selectedCycleId);
 
   if (error) {
     console.error("Error updating topic status:", error);

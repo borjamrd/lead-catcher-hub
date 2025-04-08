@@ -1,28 +1,26 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { TopicAndBlockStatus } from "@/models/models";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import confetti from "canvas-confetti";
-import { StatusSelector } from "../StatusSelector";
-import { updateBlockStatusIfNeeded } from "@/hooks/update-topic-status-if-needed";
 import { updateTopicStatus } from "@/hooks/update-topic-status";
 import { useTopic } from "@/hooks/use-topic";
+import { TopicAndBlockStatus } from "@/models/models";
+import { useQueryClient } from "@tanstack/react-query";
+import confetti from "canvas-confetti";
+import { StatusSelector } from "../StatusSelector";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface TopicContainerProps {
   topicId: string;
 }
 
 export function TopicContainer({ topicId }: TopicContainerProps) {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const { data: topic, isLoading } = useTopic(topicId);
 
   const handleStatusChange = async (newStatus: TopicAndBlockStatus) => {
-    const error = await updateTopicStatus(topicId, newStatus);
+    const error = await updateTopicStatus(user.id, topicId, newStatus);
     if (error) return;
 
     if (newStatus === "completed") confetti({ particleCount: 100 });
-    await updateBlockStatusIfNeeded(topic.block_id);
     await queryClient.invalidateQueries({ queryKey: ["roadmap"] });
     topic.status = newStatus;
   };
